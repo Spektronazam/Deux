@@ -1,114 +1,63 @@
 --[[
-	New Dex
-	Final Version
-	Developed by Moon
+	Deux - The Successor Explorer
+	Version 2.0.0
 	
-	Dex is a debugging suite designed to help the user debug games and find any potential vulnerabilities.
+	Originally developed by Moon (New Dex)
+	Continued and rewritten as Deux by Spektronazam
 	
-	This is the final version of this script.
-	You are encouraged to edit, fork, do whatever with this. I pretty much won't be updating it anymore.
-	Though I would appreciate it if you kept the credits in the script if you enjoy this hard work.
+	Deux is a full debugging suite: explorer, properties, script editor,
+	remote spy, data inspector, terminal, save instance, and more.
 	
-	If you want more info, you can join the server: https://discord.io/zinnia
-	Note that very limited to no support will be provided.
+	Built on UNC/sUNC standards. No Synapse-specific code.
+	
+	Credits:
+		Moon/LorekeeperZinnia - Original New Dex architecture & Lib
+		Spektronazam - Deux successor rewrite
 ]]
 
--- Main vars
-local Main, Explorer, Properties, ScriptViewer, DefaultSettings, Notebook, Serializer, Lib
-local API, RMD
+-- Prevent double-execution
+if _G.DeuxLoaded then return end
+_G.DeuxLoaded = true
 
--- Default Settings
-DefaultSettings = (function()
-	local rgb = Color3.fromRGB
-	return {
-		Explorer = {
-			_Recurse = true,
-			Sorting = true,
-			TeleportToOffset = Vector3.new(0,0,0),
-			ClickToRename = true,
-			AutoUpdateSearch = true,
-			AutoUpdateMode = 0, -- 0 Default, 1 no tree update, 2 no descendant events, 3 frozen
-			PartSelectionBox = true,
-			GuiSelectionBox = true,
-			CopyPathUseGetChildren = true
-		},
-		Properties = {
-			_Recurse = true,
-			MaxConflictCheck = 50,
-			ShowDeprecated = false,
-			ShowHidden = false,
-			ClearOnFocus = false,
-			LoadstringInput = true,
-			NumberRounding = 3,
-			ShowAttributes = false,
-			MaxAttributes = 50,
-			ScaleType = 1 -- 0 Full Name Shown, 1 Equal Halves
-		},
-		Theme = {
-			_Recurse = true,
-			Main1 = rgb(52,52,52),
-			Main2 = rgb(45,45,45),
-			Outline1 = rgb(33,33,33), -- Mainly frames
-			Outline2 = rgb(55,55,55), -- Mainly button
-			Outline3 = rgb(30,30,30), -- Mainly textbox
-			TextBox = rgb(38,38,38),
-			Menu = rgb(32,32,32),
-			ListSelection = rgb(11,90,175),
-			Button = rgb(60,60,60),
-			ButtonHover = rgb(68,68,68),
-			ButtonPress = rgb(40,40,40),
-			Highlight = rgb(75,75,75),
-			Text = rgb(255,255,255),
-			PlaceholderText = rgb(100,100,100),
-			Important = rgb(255,0,0),
-			ExplorerIconMap = "",
-			MiscIconMap = "",
-			Syntax = {
-				Text = rgb(204,204,204),
-				Background = rgb(36,36,36),
-				Selection = rgb(255,255,255),
-				SelectionBack = rgb(11,90,175),
-				Operator = rgb(204,204,204),
-				Number = rgb(255,198,0),
-				String = rgb(173,241,149),
-				Comment = rgb(102,102,102),
-				Keyword = rgb(248,109,124),
-				Error = rgb(255,0,0),
-				FindBackground = rgb(141,118,0),
-				MatchingWord = rgb(85,85,85),
-				BuiltIn = rgb(132,214,247),
-				CurrentLine = rgb(45,50,65),
-				LocalMethod = rgb(253,251,172),
-				LocalProperty = rgb(97,161,241),
-				Nil = rgb(255,198,0),
-				Bool = rgb(255,198,0),
-				Function = rgb(248,109,124),
-				Local = rgb(248,109,124),
-				Self = rgb(248,109,124),
-				FunctionName = rgb(253,251,172),
-				Bracket = rgb(204,204,204)
-			},
-		}
-	}
-end)()
+------------------------------------------------------------------------
+-- CORE BOOTSTRAP
+------------------------------------------------------------------------
+local Env, Settings, Theme, Keybinds, Notifications, Store
+local Lib, API, RMD
+local Explorer, Properties, ScriptEditor, Terminal, RemoteSpy
+local SaveInstance, DataInspector, NetworkSpy, APIReference
+local PluginAPI, WorkspaceTools, Console
 
--- Vars
-local Settings = {}
-local Apps = {}
-local env = {}
-local service = setmetatable({},{__index = function(self,name)
-	local serv = game:GetService(name)
-	self[name] = serv
-	return serv
-end})
-local plr = service.Players.LocalPlayer or service.Players.PlayerAdded:wait()
+-- Module references (populated by build system)
+local EmbeddedModules = EmbeddedModules or {}
 
+-- Service accessor with cloneref hardening
+local serviceCache = {}
+local service = setmetatable({}, {
+	__index = function(self, name)
+		if serviceCache[name] then return serviceCache[name] end
+		local s, serv = pcall(game.GetService, game, name)
+		if not s or not serv then return nil end
+		-- cloneref if available (set after Env loads)
+		if Env and Env.cloneref then
+			serv = Env.cloneref(serv)
+		end
+		serviceCache[name] = serv
+		rawset(self, name, serv)
+		return serv
+	end
+})
+
+local plr = service.Players.LocalPlayer or service.Players.PlayerAdded:Wait()
+
+------------------------------------------------------------------------
+-- UTILITY: Instance creation (preserved from original for Lib compat)
+------------------------------------------------------------------------
 local create = function(data)
 	local insts = {}
-	for i,v in pairs(data) do insts[v[1]] = Instance.new(v[2]) end
-	
-	for _,v in pairs(data) do
-		for prop,val in pairs(v[3]) do
+	for i, v in pairs(data) do insts[v[1]] = Instance.new(v[2]) end
+	for _, v in pairs(data) do
+		for prop, val in pairs(v[3]) do
 			if type(val) == "table" then
 				insts[v[1]][prop] = insts[val[1]]
 			else
@@ -116,989 +65,961 @@ local create = function(data)
 			end
 		end
 	end
-	
 	return insts[1]
 end
 
-local createSimple = function(class,props)
+local createSimple = function(class, props)
 	local inst = Instance.new(class)
-	for i,v in next,props do
+	for i, v in next, props do
 		inst[i] = v
 	end
 	return inst
 end
 
-Main = (function()
-	local Main = {}
+------------------------------------------------------------------------
+-- MAIN CONTROLLER
+------------------------------------------------------------------------
+local Main = {}
+Main.Version = "2.0.0"
+Main.CodeName = "Deux"
+Main.Elevated = false
+Main.Mouse = plr:GetMouse()
+Main.Apps = {}
+Main.AppControls = {}
+Main.MenuApps = {}
+Main.ModuleList = {
+	"Lib", "Explorer", "Properties", "ScriptEditor",
+	"Terminal", "RemoteSpy", "SaveInstance", "DataInspector",
+	"NetworkSpy", "APIReference", "PluginAPI", "WorkspaceTools", "Console"
+}
+Main.DisplayOrders = {
+	SideWindow = 8,
+	Window = 10,
+	Menu = 100000,
+	Core = 101000
+}
+
+------------------------------------------------------------------------
+-- ENV INITIALIZATION (UNC/sUNC)
+------------------------------------------------------------------------
+Main.InitEnv = function()
+	-- Load core/Env (embedded by build system)
+	if EmbeddedModules["Env"] then
+		Env = EmbeddedModules["Env"]()
+	else
+		-- Fallback: construct minimal env
+		Env = {Capabilities = {}, MissingAPIs = {}, ExecutorName = "Unknown"}
+		Env.getService = function(n) return game:GetService(n) end
+		Env.getGuiParent = function()
+			local s = pcall(function() return game:GetService("CoreGui"):GetFullName() end)
+			if s then return game:GetService("CoreGui") end
+			return plr:FindFirstChildOfClass("PlayerGui")
+		end
+		Env.protectGui = function() end
+	end
 	
-	Main.ModuleList = {"Explorer","Properties","ScriptViewer"}
-	Main.Elevated = false
-	Main.MissingEnv = {}
-	Main.Version = "Beta 1.0.0"
-	Main.Mouse = plr:GetMouse()
-	Main.AppControls = {}
-	Main.Apps = Apps
-	Main.MenuApps = {}
-	Main.GitRepoName = "LorekeeperZinnia/Dex"
+	-- Refresh service cache with cloneref now available
+	if Env.cloneref then
+		for name, serv in pairs(serviceCache) do
+			serviceCache[name] = Env.cloneref(serv)
+			rawset(service, name, serviceCache[name])
+		end
+	end
 	
-	Main.DisplayOrders = {
-		SideWindow = 8,
-		Window = 10,
-		Menu = 100000,
-		Core = 101000
+	Main.Elevated = pcall(function() local _ = game:GetService("CoreGui"):GetFullName() end)
+	Main.GuiHolder = Env.getGuiParent()
+	Main.Executor = Env.ExecutorName
+end
+
+------------------------------------------------------------------------
+-- CORE SYSTEMS INITIALIZATION
+------------------------------------------------------------------------
+Main.InitCoreSystems = function()
+	-- Settings
+	if EmbeddedModules["Settings"] then
+		Settings = EmbeddedModules["Settings"]()
+	else
+		Settings = {Get = function() return nil end, Set = function() end, Init = function() end}
+	end
+	Settings.Init(Env, service)
+	
+	-- Theme
+	if EmbeddedModules["Theme"] then
+		Theme = EmbeddedModules["Theme"]()
+	else
+		Theme = {Get = function(k) return Color3.new(0.2,0.2,0.2) end, Init = function() end, Apply = function() end}
+	end
+	Theme.Init(Env, Settings, service)
+	
+	-- Keybinds
+	if EmbeddedModules["Keybinds"] then
+		Keybinds = EmbeddedModules["Keybinds"]()
+	else
+		Keybinds = {Init = function() end, Register = function() end}
+	end
+	Keybinds.Init(Settings, service)
+	
+	-- Store
+	if EmbeddedModules["Store"] then
+		Store = EmbeddedModules["Store"]()
+	else
+		Store = {Set = function() end, Get = function() end, Subscribe = function() return function() end end, On = function() return function() end end, Emit = function() end, SetSelection = function() end, GetSelection = function() return {} end}
+	end
+	
+	-- Notifications (needs GUI parent)
+	if EmbeddedModules["Notifications"] then
+		Notifications = EmbeddedModules["Notifications"]()
+	else
+		Notifications = {Init = function() end, Info = function() end, Error = function() end, Success = function() end, Warning = function() end}
+	end
+	Notifications.Init(Env, Theme, service)
+end
+
+------------------------------------------------------------------------
+-- DEPS TABLE (passed to all modules for initialization)
+------------------------------------------------------------------------
+Main.GetInitDeps = function()
+	return {
+		Main = Main,
+		Lib = Lib,
+		Apps = Main.Apps,
+		Settings = Settings,
+		Theme = Theme,
+		Keybinds = Keybinds,
+		Notifications = Notifications,
+		Store = Store,
+		API = API,
+		RMD = RMD,
+		Env = Env,
+		env = Env, -- backward compat
+		service = service,
+		plr = plr,
+		create = create,
+		createSimple = createSimple,
+	}
+end
+
+
+------------------------------------------------------------------------
+-- MODULE LOADER
+------------------------------------------------------------------------
+Main.LoadModule = function(name)
+	local control
+	
+	if EmbeddedModules and EmbeddedModules[name] then
+		local s, result = pcall(EmbeddedModules[name])
+		if not s then
+			Main.Error("Failed to load module '" .. name .. "': " .. tostring(result))
+			return nil
+		end
+		control = result
+	else
+		Main.Error("Module not found: " .. name)
+		return nil
+	end
+	
+	if not control then return nil end
+	
+	Main.AppControls[name] = control
+	
+	if control.InitDeps then
+		control.InitDeps(Main.GetInitDeps())
+	end
+	
+	if control.Main then
+		local moduleData = control.Main()
+		Main.Apps[name] = moduleData
+		return moduleData
+	end
+	
+	return control
+end
+
+Main.LoadModules = function()
+	for _, name in ipairs(Main.ModuleList) do
+		if name ~= "Lib" then -- Lib loaded separately first
+			local s, e = pcall(Main.LoadModule, name)
+			if not s then
+				local msg = "FAILED LOADING " .. tostring(name) .. " CAUSE " .. tostring(e)
+				Main.Error(msg)
+				if Notifications then
+					Notifications.Error("Module load failed: " .. name)
+				end
+			end
+		end
+	end
+	
+	-- Assign major app references
+	Explorer = Main.Apps.Explorer
+	Properties = Main.Apps.Properties
+	ScriptEditor = Main.Apps.ScriptEditor
+	Terminal = Main.Apps.Terminal
+	RemoteSpy = Main.Apps.RemoteSpy
+	SaveInstance = Main.Apps.SaveInstance
+	DataInspector = Main.Apps.DataInspector
+	NetworkSpy = Main.Apps.NetworkSpy
+	APIReference = Main.Apps.APIReference
+	PluginAPI = Main.Apps.PluginAPI
+	WorkspaceTools = Main.Apps.WorkspaceTools
+	Console = Main.Apps.Console
+	
+	-- Call InitAfterMain on all modules
+	local appTable = {
+		Explorer = Explorer,
+		Properties = Properties,
+		ScriptEditor = ScriptEditor,
+		Terminal = Terminal,
+		RemoteSpy = RemoteSpy,
+		SaveInstance = SaveInstance,
+		DataInspector = DataInspector,
+		NetworkSpy = NetworkSpy,
+		APIReference = APIReference,
+		PluginAPI = PluginAPI,
+		WorkspaceTools = WorkspaceTools,
+		Console = Console,
 	}
 	
-	Main.GetInitDeps = function()
-		return {
-			Main = Main,
-			Lib = Lib,
-			Apps = Apps,
-			Settings = Settings,
-			
-			API = API,
-			RMD = RMD,
-			env = env,
-			service = service,
-			plr = plr,
-			create = create,
-			createSimple = createSimple
-		}
-	end
-	
-	Main.Error = function(str)
-		if rconsoleprint then
-			rconsoleprint("DEX ERROR: "..tostring(str).."\n")
-			wait(9e9)
-		else
-			error(str)
-		end
-	end
-	
-	Main.LoadModule = function(name)
-		if Main.Elevated then -- If you don't have filesystem api then ur outta luck tbh
-			local control
-			
-			if EmbeddedModules then -- Offline Modules
-				control = EmbeddedModules[name]()
-				
-				-- TODO: Remove when open source
-				if gethsfuncs then
-					control = _G.moduleData
-				end
-				
-				if not control then Main.Error("Missing Embedded Module: "..name) end
-			elseif _G.DebugLoadModel then -- Load Debug Model File
-				local model = Main.DebugModel
-				if not model then model = game:GetObjects(getsynasset("AfterModules.rbxm"))[1] end
-				
-				control = loadstring(model.Modules[name].Source)()
-				print("Locally Loaded Module",name,control)
-			else
-				-- Get hash data
-				local hashs = Main.ModuleHashData
-				if not hashs then
-					local s,hashDataStr = pcall(game.HttpGet, game, "https://api.github.com/repos/"..Main.GitRepoName.."/ModuleHashs.dat")
-					if not s then Main.Error("Failed to get module hashs") end
-					
-					local s,hashData = pcall(service.HttpService.JSONDecode,service.HttpService,hashDataStr)
-					if not s then Main.Error("Failed to decode module hash JSON") end
-					
-					hashs = hashData
-					Main.ModuleHashData = hashs
-				end
-				
-				-- Check if local copy exists with matching hashs
-				local hashfunc = (syn and syn.crypt.hash) or function() return "" end
-				local filePath = "dex/ModuleCache/"..name..".lua"
-				local s,moduleStr = pcall(env.readfile,filePath)
-				
-				if s and hashfunc(moduleStr) == hashs[name] then
-					control = loadstring(moduleStr)()
-				else
-					-- Download and cache
-					local s,moduleStr = pcall(game.HttpGet, game, "https://api.github.com/repos/"..Main.GitRepoName.."/Modules/"..name..".lua")
-					if not s then Main.Error("Failed to get external module data of "..name) end
-					
-					env.writefile(filePath,moduleStr)
-					control = loadstring(moduleStr)()
-				end
-			end
-			
-			Main.AppControls[name] = control
-			control.InitDeps(Main.GetInitDeps())
-
-			local moduleData = control.Main()
-			Apps[name] = moduleData
-			return moduleData
-		else
-			local module = script:WaitForChild("Modules"):WaitForChild(name,2)
-			if not module then Main.Error("CANNOT FIND MODULE "..name) end
-			
-			local control = require(module)
-			Main.AppControls[name] = control
-			control.InitDeps(Main.GetInitDeps())
-			
-			local moduleData = control.Main()
-			Apps[name] = moduleData
-			return moduleData
-		end
-	end
-	
-	Main.LoadModules = function()
-		for i,v in pairs(Main.ModuleList) do
-			local s,e = pcall(Main.LoadModule,v)
-			if not s then
-				Main.Error("FAILED LOADING " + v + " CAUSE " + e)
-			end
-		end
-		
-		-- Init Major Apps and define them in modules
-		Explorer = Apps.Explorer
-		Properties = Apps.Properties
-		ScriptViewer = Apps.ScriptViewer
-		Notebook = Apps.Notebook
-		local appTable = {
-			Explorer = Explorer,
-			Properties = Properties,
-			ScriptViewer = ScriptViewer,
-			Notebook = Notebook
-		}
-		
+	if Main.AppControls.Lib and Main.AppControls.Lib.InitAfterMain then
 		Main.AppControls.Lib.InitAfterMain(appTable)
-		for i,v in pairs(Main.ModuleList) do
-			local control = Main.AppControls[v]
-			if control then
-				control.InitAfterMain(appTable)
-			end
-		end
 	end
 	
-	Main.InitEnv = function()
-		setmetatable(env,{__newindex = function(self,name,func)
-			if not func then Main.MissingEnv[#Main.MissingEnv+1] = name return end
-			rawset(self,name,func)
-		end})
-		
-		-- file
-		env.readfile = readfile
-		env.writefile = writefile
-		env.appendfile = appendfile
-		env.makefolder = makefolder
-		env.listfiles = listfiles
-		env.loadfile = loadfile
-		env.saveinstance = saveinstance
-		
-		-- debug
-		env.getupvalues = debug.getupvalues or getupvals
-		env.getconstants = debug.getconstants or getconsts
-		env.islclosure = islclosure or is_l_closure
-		env.checkcaller = checkcaller
-		env.getreg = getreg
-		env.getgc = getgc
-		
-		-- other
-		env.setfflag = setfflag
-		env.decompile = decompile
-		env.protectgui = protect_gui or (syn and syn.protect_gui)
-		env.gethui = gethui
-		env.setclipboard = setclipboard
-		env.getnilinstances = getnilinstances or get_nil_instances
-		env.getloadedmodules = getloadedmodules
-		
-		if identifyexecutor then
-			Main.Executor = identifyexecutor()
-		end
-		
-		Main.GuiHolder = Main.Elevated and service.CoreGui or plr:FindFirstChildOfClass("PlayerGui")
-		
-		setmetatable(env,nil)
-	end
-	
-	--[[
-	Main.IncompatibleTest = function()
-		local function incompatibleMessage(reason)
-			local msg = Instance.new("ScreenGui")
-			local t = Instance.new("TextLabel",msg)
-			t.BackgroundColor3 = Color3.fromRGB(50,50,50)
-			t.Position = UDim2.new(0,0,0,-36)
-			t.Size = UDim2.new(1,0,1,36)
-			t.TextColor3 = Color3.new(1,1,1)
-			t.TextWrapped = true
-			t.TextScaled = true
-			t.Text = "\n\n\n\n\n\n\n\nHello Skidsploit user,\nZinnia and the Secret Service does not approve of Dex being used on your skidsploit.\nPlease consider getting something better.\n\nIncompatible Reason: "..reason.."\n\n\n\n\n\n\n\n"
-			
-			local sound = Instance.new("Sound",msg)
-			sound.SoundId = "rbxassetid://175964948"
-			sound.Volume = 1
-			sound.Looped = true
-			sound.Playing = true
-			Lib.ShowGui(msg)
-			
-			if os and os.execute then pcall(os.execute,'explorer "https://x.synapse.to/"') end
-			while wait() do end
-		end
-		
-		local t = {}
-		t[1] = t
-		local x = unpack(t) or incompatibleMessage("WRAPPER FAILED TO CYCLIC #1")
-		if x[1] ~= t then incompatibleMessage("WRAPPER FAILED TO CYCLIC #2") end
-		
-		if game ~= workspace.Parent then incompatibleMessage("WRAPPER NO CACHE") end
-		
-		if Main.Elevated and not loadstring("for i = 1,1 do continue end") then incompatibleMessage("CAN'T CONTINUE OR NO LOADSTRING") end
-		
-		local obj = newproxy(true)
-		local mt = getmetatable(obj)
-		mt.__index = function() incompatibleMessage("CAN'T NAMECALL") end
-		mt.__namecall = function() end
-		obj:No()
-		
-		local fEnv = setmetatable({zin = 5},{__index = getfenv()})
-		local caller = function(f) f() end
-		setfenv(caller,fEnv)
-		caller(function() if not getfenv(2).zin then incompatibleMessage("RERU WILL BE FILING A LAWSUIT AGAINST YOU SOON") end end)
-		
-		local second = false
-		coroutine.wrap(function() local start = tick() wait(5) if tick() - start < 0.1 or not second then incompatibleMessage("SKIDDED YIELDING") end end)()
-		second = true
-	end
-	]]
-	
-	Main.LoadSettings = function()
-		local s,data = pcall(env.readfile or error,"DexSettings.json")
-		if s and data and data ~= "" then
-			local s,decoded = service.HttpService:JSONDecode(data)
-			if s and decoded then
-				for i,v in next,decoded do
-					
-				end
-			else
-				-- TODO: Notification
-			end
-		else
-			Main.ResetSettings()
+	for _, name in ipairs(Main.ModuleList) do
+		local control = Main.AppControls[name]
+		if control and control.InitAfterMain then
+			pcall(control.InitAfterMain, appTable)
 		end
 	end
-	
-	Main.ResetSettings = function()
-		local function recur(t,res)
-			for set,val in pairs(t) do
-				if type(val) == "table" and val._Recurse then
-					if type(res[set]) ~= "table" then
-						res[set] = {}
-					end
-					recur(val,res[set])
-				else
-					res[set] = val
-				end
-			end
-			return res
-		end
-		recur(DefaultSettings,Settings)
-	end
-	
-	Main.FetchAPI = function()
-		local api,rawAPI
-		if Main.Elevated then
-			if Main.LocalDepsUpToDate() then
-				local localAPI = Lib.ReadFile("dex/rbx_api.dat")
-				if localAPI then 
-					rawAPI = localAPI
-				else
-					Main.DepsVersionData[1] = ""
-				end
-			end
-			rawAPI = rawAPI or game:HttpGet("http://setup.roblox.com/"..Main.RobloxVersion.."-API-Dump.json")
-		else
-			if script:FindFirstChild("API") then
-				rawAPI = require(script.API)
-			else
-				error("NO API EXISTS")
-			end
-		end
-		Main.RawAPI = rawAPI
-		api = service.HttpService:JSONDecode(rawAPI)
-		
-		local classes,enums = {},{}
-		local categoryOrder,seenCategories = {},{}
-		
-		local function insertAbove(t,item,aboveItem)
-			local findPos = table.find(t,item)
-			if not findPos then return end
-			table.remove(t,findPos)
+end
 
-			local pos = table.find(t,aboveItem)
-			if not pos then return end
-			table.insert(t,pos,item)
-		end
-		
-		for _,class in pairs(api.Classes) do
-			local newClass = {}
-			newClass.Name = class.Name
-			newClass.Superclass = class.Superclass
-			newClass.Properties = {}
-			newClass.Functions = {}
-			newClass.Events = {}
-			newClass.Callbacks = {}
-			newClass.Tags = {}
-			
-			if class.Tags then for c,tag in pairs(class.Tags) do newClass.Tags[tag] = true end end
-			for __,member in pairs(class.Members) do
-				local newMember = {}
-				newMember.Name = member.Name
-				newMember.Class = class.Name
-				newMember.Security = member.Security
-				newMember.Tags ={}
-				if member.Tags then for c,tag in pairs(member.Tags) do newMember.Tags[tag] = true end end
-				
-				local mType = member.MemberType
-				if mType == "Property" then
-					local propCategory = member.Category or "Other"
-					propCategory = propCategory:match("^%s*(.-)%s*$")
-					if not seenCategories[propCategory] then
-						categoryOrder[#categoryOrder+1] = propCategory
-						seenCategories[propCategory] = true
-					end
-					newMember.ValueType = member.ValueType
-					newMember.Category = propCategory
-					newMember.Serialization = member.Serialization
-					table.insert(newClass.Properties,newMember)
-				elseif mType == "Function" then
-					newMember.Parameters = {}
-					newMember.ReturnType = member.ReturnType.Name
-					for c,param in pairs(member.Parameters) do
-						table.insert(newMember.Parameters,{Name = param.Name, Type = param.Type.Name})
-					end
-					table.insert(newClass.Functions,newMember)
-				elseif mType == "Event" then
-					newMember.Parameters = {}
-					for c,param in pairs(member.Parameters) do
-						table.insert(newMember.Parameters,{Name = param.Name, Type = param.Type.Name})
-					end
-					table.insert(newClass.Events,newMember)
-				end
-			end
-			
-			classes[class.Name] = newClass
-		end
-		
-		for _,class in pairs(classes) do
-			class.Superclass = classes[class.Superclass]
-		end
-		
-		for _,enum in pairs(api.Enums) do
-			local newEnum = {}
-			newEnum.Name = enum.Name
-			newEnum.Items = {}
-			newEnum.Tags = {}
-			
-			if enum.Tags then for c,tag in pairs(enum.Tags) do newEnum.Tags[tag] = true end end
-			for __,item in pairs(enum.Items) do
-				local newItem = {}
-				newItem.Name = item.Name
-				newItem.Value = item.Value
-				table.insert(newEnum.Items,newItem)
-			end
-			
-			enums[enum.Name] = newEnum
-		end
-		
-		local function getMember(class,member)
-			if not classes[class] or not classes[class][member] then return end
-	        local result = {}
+------------------------------------------------------------------------
+-- ERROR HANDLING
+------------------------------------------------------------------------
+Main.Error = function(str)
+	local msg = "[Deux] ERROR: " .. tostring(str)
+	if Env and Env.rconsoleprinт then
+		pcall(Env.rconsoleprinт, msg .. "\n")
+	end
+	warn(msg)
+end
+
+Main.Warn = function(str)
+	local msg = "[Deux] WARN: " .. tostring(str)
+	warn(msg)
+end
+
+------------------------------------------------------------------------
+-- SETTINGS (load from disk)
+------------------------------------------------------------------------
+Main.LoadSettings = function()
+	-- Settings.Init already handles loading; this is for compat
+	if Settings and Settings.Load then
+		Settings.Load()
+	end
+end
+
+------------------------------------------------------------------------
+-- FILESYSTEM SETUP
+------------------------------------------------------------------------
+Main.SetupFilesystem = function()
+	if not Env.Capabilities.Filesystem then return end
 	
-	        local currentClass = classes[class]
-	        while currentClass do
-	            for _,entry in pairs(currentClass[member]) do
-	                result[#result+1] = entry
-	            end
-	            currentClass = currentClass.Superclass
-	        end
+	local folders = {
+		"deux", "deux/saved", "deux/saved/scripts", "deux/saved/places",
+		"deux/saved/bookmarks", "deux/saved/hooks", "deux/themes",
+		"deux/plugins", "deux/cache"
+	}
 	
-	        table.sort(result,function(a,b) return a.Name < b.Name end)
-	        return result
+	for _, folder in ipairs(folders) do
+		pcall(Env.makefolder, folder)
+	end
+end
+
+
+------------------------------------------------------------------------
+-- API FETCH (Roblox API Dump + RMD)
+------------------------------------------------------------------------
+Main.FetchAPI = function()
+	local rawAPI
+	
+	if Main.Elevated then
+		-- Try cached first
+		if Env.Capabilities.Filesystem then
+			local s, cached = pcall(Env.readfile, "deux/cache/rbx_api.json")
+			if s and cached and cached ~= "" then
+				rawAPI = cached
+			end
 		end
 		
-		insertAbove(categoryOrder,"Behavior","Tuning")
-		insertAbove(categoryOrder,"Appearance","Data")
-		insertAbove(categoryOrder,"Attachments","Axes")
-		insertAbove(categoryOrder,"Cylinder","Slider")
-		insertAbove(categoryOrder,"Localization","Jump Settings")
-		insertAbove(categoryOrder,"Surface","Motion")
-		insertAbove(categoryOrder,"Surface Inputs","Surface")
-		insertAbove(categoryOrder,"Part","Surface Inputs")
-		insertAbove(categoryOrder,"Assembly","Surface Inputs")
-		insertAbove(categoryOrder,"Character","Controls")
-		categoryOrder[#categoryOrder+1] = "Unscriptable"
-		categoryOrder[#categoryOrder+1] = "Attributes"
-		
-		local categoryOrderMap = {}
-		for i = 1,#categoryOrder do
-			categoryOrderMap[categoryOrder[i]] = i
+		-- Fetch from Roblox CDN if not cached
+		if not rawAPI then
+			local version = Main.RobloxVersion
+			if version then
+				local s, data = pcall(game.HttpGet, game, "http://setup.roblox.com/" .. version .. "-API-Dump.json")
+				if s and data then rawAPI = data end
+			end
 		end
-		
-		return {
-			Classes = classes,
-			Enums = enums,
-			CategoryOrder = categoryOrderMap,
-			GetMember = getMember
+	end
+	
+	if not rawAPI then
+		Main.Warn("Could not fetch API dump, some features will be limited")
+		return {Classes = {}, Enums = {}, CategoryOrder = {}, GetMember = function() return {} end}
+	end
+	
+	Main.RawAPI = rawAPI
+	
+	-- Cache for next time
+	if Env.Capabilities.Filesystem and not pcall(Env.isfile, "deux/cache/rbx_api.json") then
+		pcall(Env.writefile, "deux/cache/rbx_api.json", rawAPI)
+	end
+	
+	local s, api = pcall(service.HttpService.JSONDecode, service.HttpService, rawAPI)
+	if not s then
+		Main.Error("Failed to decode API JSON")
+		return {Classes = {}, Enums = {}, CategoryOrder = {}, GetMember = function() return {} end}
+	end
+	
+	-- Process API into usable format
+	local classes, enums = {}, {}
+	local categoryOrder, seenCategories = {}, {}
+	
+	for _, class in pairs(api.Classes) do
+		local newClass = {
+			Name = class.Name,
+			Superclass = class.Superclass,
+			Properties = {},
+			Functions = {},
+			Events = {},
+			Callbacks = {},
+			Tags = {}
 		}
-	end
-	
-	Main.FetchRMD = function()
-		local rawXML
-		if Main.Elevated then
-			if Main.LocalDepsUpToDate() then
-				local localRMD = Lib.ReadFile("dex/rbx_rmd.dat")
-				if localRMD then 
-					rawXML = localRMD
-				else
-					Main.DepsVersionData[1] = ""
-				end
+		
+		if class.Tags then
+			for _, tag in pairs(class.Tags) do newClass.Tags[tag] = true end
+		end
+		
+		for _, member in pairs(class.Members) do
+			local newMember = {
+				Name = member.Name,
+				Class = class.Name,
+				Security = member.Security,
+				Tags = {}
+			}
+			if member.Tags then
+				for _, tag in pairs(member.Tags) do newMember.Tags[tag] = true end
 			end
-			rawXML = rawXML or game:HttpGet("https://raw.githubusercontent.com/CloneTrooper1019/Roblox-Client-Tracker/roblox/ReflectionMetadata.xml")
-		else
-			if script:FindFirstChild("RMD") then
-				rawXML = require(script.RMD)
-			else
-				error("NO RMD EXISTS")
-			end
-		end
-		Main.RawRMD = rawXML
-		local parsed = Lib.ParseXML(rawXML)
-		local classList = parsed.children[1].children[1].children
-		local enumList = parsed.children[1].children[2].children
-		local propertyOrders = {}
-		
-		local classes,enums = {},{}
-		for _,class in pairs(classList) do
-			local className = ""
-			for _,child in pairs(class.children) do
-				if child.tag == "Properties" then
-					local data = {Properties = {}, Functions = {}}
-					local props = child.children
-					for _,prop in pairs(props) do
-						local name = prop.attrs.name
-						name = name:sub(1,1):upper()..name:sub(2)
-						data[name] = prop.children[1].text
-					end
-					className = data.Name
-					classes[className] = data
-				elseif child.attrs.class == "ReflectionMetadataProperties" then
-					local members = child.children
-					for _,member in pairs(members) do
-						if member.attrs.class == "ReflectionMetadataMember" then
-							local data = {}
-							if member.children[1].tag == "Properties" then
-								local props = member.children[1].children
-								for _,prop in pairs(props) do
-									if prop.attrs then
-										local name = prop.attrs.name
-										name = name:sub(1,1):upper()..name:sub(2)
-										data[name] = prop.children[1].text
-									end
-								end
-								if data.PropertyOrder then
-									local orders = propertyOrders[className]
-									if not orders then orders = {} propertyOrders[className] = orders end
-									orders[data.Name] = tonumber(data.PropertyOrder)
-								end
-								classes[className].Properties[data.Name] = data
-							end
-						end
-					end
-				elseif child.attrs.class == "ReflectionMetadataFunctions" then
-					local members = child.children
-					for _,member in pairs(members) do
-						if member.attrs.class == "ReflectionMetadataMember" then
-							local data = {}
-							if member.children[1].tag == "Properties" then
-								local props = member.children[1].children
-								for _,prop in pairs(props) do
-									if prop.attrs then
-										local name = prop.attrs.name
-										name = name:sub(1,1):upper()..name:sub(2)
-										data[name] = prop.children[1].text
-									end
-								end
-								classes[className].Functions[data.Name] = data
-							end
-						end
-					end
-				end
-			end
-		end
-		
-		for _,enum in pairs(enumList) do
-			local enumName = ""
-			for _,child in pairs(enum.children) do
-				if child.tag == "Properties" then
-					local data = {Items = {}}
-					local props = child.children
-					for _,prop in pairs(props) do
-						local name = prop.attrs.name
-						name = name:sub(1,1):upper()..name:sub(2)
-						data[name] = prop.children[1].text
-					end
-					enumName = data.Name
-					enums[enumName] = data
-				elseif child.attrs.class == "ReflectionMetadataEnumItem" then
-					local data = {}
-					if child.children[1].tag == "Properties" then
-						local props = child.children[1].children
-						for _,prop in pairs(props) do
-							local name = prop.attrs.name
-							name = name:sub(1,1):upper()..name:sub(2)
-							data[name] = prop.children[1].text
-						end
-						enums[enumName].Items[data.Name] = data
-					end
-				end
-			end
-		end
-		
-		return {Classes = classes, Enums = enums, PropertyOrders = propertyOrders}
-	end
-	
-	Main.ShowGui = function(gui)
-		if env.protectgui then
-			env.protectgui(gui)
-		end
-		gui.Parent = Main.GuiHolder
-	end
-	
-	Main.CreateIntro = function(initStatus) -- TODO: Must theme and show errors
-		local gui = create({
-			{1,"ScreenGui",{Name="Intro",}},
-			{2,"Frame",{Active=true,BackgroundColor3=Color3.new(0.20392157137394,0.20392157137394,0.20392157137394),BorderSizePixel=0,Name="Main",Parent={1},Position=UDim2.new(0.5,-175,0.5,-100),Size=UDim2.new(0,350,0,200),}},
-			{3,"Frame",{BackgroundColor3=Color3.new(0.17647059261799,0.17647059261799,0.17647059261799),BorderSizePixel=0,ClipsDescendants=true,Name="Holder",Parent={2},Size=UDim2.new(1,0,1,0),}},
-			{4,"UIGradient",{Parent={3},Rotation=30,Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,1,0),NumberSequenceKeypoint.new(1,1,0),}),}},
-			{5,"TextLabel",{BackgroundColor3=Color3.new(1,1,1),BackgroundTransparency=1,Font=4,Name="Title",Parent={3},Position=UDim2.new(0,-190,0,15),Size=UDim2.new(0,100,0,50),Text="Dex",TextColor3=Color3.new(1,1,1),TextSize=50,TextTransparency=1,}},
-			{6,"TextLabel",{BackgroundColor3=Color3.new(1,1,1),BackgroundTransparency=1,Font=3,Name="Desc",Parent={3},Position=UDim2.new(0,-230,0,60),Size=UDim2.new(0,180,0,25),Text="Ultimate Debugging Suite",TextColor3=Color3.new(1,1,1),TextSize=18,TextTransparency=1,}},
-			{7,"TextLabel",{BackgroundColor3=Color3.new(1,1,1),BackgroundTransparency=1,Font=3,Name="StatusText",Parent={3},Position=UDim2.new(0,20,0,110),Size=UDim2.new(0,180,0,25),Text="Fetching API",TextColor3=Color3.new(1,1,1),TextSize=14,TextTransparency=1,}},
-			{8,"Frame",{BackgroundColor3=Color3.new(0.20392157137394,0.20392157137394,0.20392157137394),BorderSizePixel=0,Name="ProgressBar",Parent={3},Position=UDim2.new(0,110,0,145),Size=UDim2.new(0,0,0,4),}},
-			{9,"Frame",{BackgroundColor3=Color3.new(0.2392156869173,0.56078433990479,0.86274510622025),BorderSizePixel=0,Name="Bar",Parent={8},Size=UDim2.new(0,0,1,0),}},
-			{10,"ImageLabel",{BackgroundColor3=Color3.new(1,1,1),BackgroundTransparency=1,Image="rbxassetid://2764171053",ImageColor3=Color3.new(0.17647059261799,0.17647059261799,0.17647059261799),Parent={8},ScaleType=1,Size=UDim2.new(1,0,1,0),SliceCenter=Rect.new(2,2,254,254),}},
-			{11,"TextLabel",{BackgroundColor3=Color3.new(1,1,1),BackgroundTransparency=1,Font=3,Name="Creator",Parent={2},Position=UDim2.new(1,-110,1,-20),Size=UDim2.new(0,105,0,20),Text="Developed by Moon",TextColor3=Color3.new(1,1,1),TextSize=14,TextXAlignment=1,}},
-			{12,"UIGradient",{Parent={11},Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,1,0),NumberSequenceKeypoint.new(1,1,0),}),}},
-			{13,"TextLabel",{BackgroundColor3=Color3.new(1,1,1),BackgroundTransparency=1,Font=3,Name="Version",Parent={2},Position=UDim2.new(1,-110,1,-35),Size=UDim2.new(0,105,0,20),Text="Beta 1.0.0",TextColor3=Color3.new(1,1,1),TextSize=14,TextXAlignment=1,}},
-			{14,"UIGradient",{Parent={13},Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,1,0),NumberSequenceKeypoint.new(1,1,0),}),}},
-			{15,"ImageLabel",{BackgroundColor3=Color3.new(1,1,1),BackgroundTransparency=1,BorderSizePixel=0,Image="rbxassetid://1427967925",Name="Outlines",Parent={2},Position=UDim2.new(0,-5,0,-5),ScaleType=1,Size=UDim2.new(1,10,1,10),SliceCenter=Rect.new(6,6,25,25),TileSize=UDim2.new(0,20,0,20),}},
-			{16,"UIGradient",{Parent={15},Rotation=-30,Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,1,0),NumberSequenceKeypoint.new(1,1,0),}),}},
-			{17,"UIGradient",{Parent={2},Rotation=-30,Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,1,0),NumberSequenceKeypoint.new(1,1,0),}),}},
-		})
-		Main.ShowGui(gui)
-		local backGradient = gui.Main.UIGradient
-		local outlinesGradient = gui.Main.Outlines.UIGradient
-		local holderGradient = gui.Main.Holder.UIGradient
-		local titleText = gui.Main.Holder.Title
-		local descText = gui.Main.Holder.Desc
-		local versionText = gui.Main.Version
-		local versionGradient = versionText.UIGradient
-		local creatorText = gui.Main.Creator
-		local creatorGradient = creatorText.UIGradient
-		local statusText = gui.Main.Holder.StatusText
-		local progressBar = gui.Main.Holder.ProgressBar
-		local tweenS = service.TweenService
-		
-		local renderStepped = service.RunService.RenderStepped
-		local signalWait = renderStepped.wait
-		local fastwait = function(s)
-			if not s then return signalWait(renderStepped) end
-			local start = tick()
-			while tick() - start < s do signalWait(renderStepped) end
-		end
-		
-		statusText.Text = initStatus
-		
-		local function tweenNumber(n,ti,func)
-			local tweenVal = Instance.new("IntValue")
-			tweenVal.Value = 0
-			tweenVal.Changed:Connect(func)
-			local tween = tweenS:Create(tweenVal,ti,{Value = n})
-			tween:Play()
-			tween.Completed:Connect(function()
-				tweenVal:Destroy()
-			end)
-		end
-		
-		local ti = TweenInfo.new(0.4,Enum.EasingStyle.Quad,Enum.EasingDirection.Out)
-		tweenNumber(100,ti,function(val)
-			    val = val/200
-				local start = NumberSequenceKeypoint.new(0,0)
-				local a1 = NumberSequenceKeypoint.new(val,0)
-				local a2 = NumberSequenceKeypoint.new(math.min(0.5,val+math.min(0.05,val)),1)
-				if a1.Time == a2.Time then a2 = a1 end
-				local b1 = NumberSequenceKeypoint.new(1-val,0)
-				local b2 = NumberSequenceKeypoint.new(math.max(0.5,1-val-math.min(0.05,val)),1)
-				if b1.Time == b2.Time then b2 = b1 end
-				local goal = NumberSequenceKeypoint.new(1,0)
-				backGradient.Transparency = NumberSequence.new({start,a1,a2,b2,b1,goal})
-				outlinesGradient.Transparency = NumberSequence.new({start,a1,a2,b2,b1,goal})
-		end)
-		
-		fastwait(0.4)
-		
-		tweenNumber(100,ti,function(val)
-			val = val/166.66
-			local start = NumberSequenceKeypoint.new(0,0)
-			local a1 = NumberSequenceKeypoint.new(val,0)
-			local a2 = NumberSequenceKeypoint.new(val+0.01,1)
-			local goal = NumberSequenceKeypoint.new(1,1)
-			holderGradient.Transparency = NumberSequence.new({start,a1,a2,goal})
-		end)
-		
-		tweenS:Create(titleText,ti,{Position = UDim2.new(0,60,0,15), TextTransparency = 0}):Play()
-		tweenS:Create(descText,ti,{Position = UDim2.new(0,20,0,60), TextTransparency = 0}):Play()
-		
-		local function rightTextTransparency(obj)
-			tweenNumber(100,ti,function(val)
-				val = val/100
-				local a1 = NumberSequenceKeypoint.new(1-val,0)
-				local a2 = NumberSequenceKeypoint.new(math.max(0,1-val-0.01),1)
-				if a1.Time == a2.Time then a2 = a1 end
-				local start = NumberSequenceKeypoint.new(0,a1 == a2 and 0 or 1)
-				local goal = NumberSequenceKeypoint.new(1,0)
-				obj.Transparency = NumberSequence.new({start,a2,a1,goal})
-			end)
-		end
-		rightTextTransparency(versionGradient)
-		rightTextTransparency(creatorGradient)
-		
-		fastwait(0.9)
-		
-		local progressTI = TweenInfo.new(0.25,Enum.EasingStyle.Quad,Enum.EasingDirection.Out)
-		
-		tweenS:Create(statusText,progressTI,{Position = UDim2.new(0,20,0,120), TextTransparency = 0}):Play()
-		tweenS:Create(progressBar,progressTI,{Position = UDim2.new(0,60,0,145), Size = UDim2.new(0,100,0,4)}):Play()
-		
-		fastwait(0.25)
-		
-		local function setProgress(text,n)
-			statusText.Text = text
-			tweenS:Create(progressBar.Bar,progressTI,{Size = UDim2.new(n,0,1,0)}):Play()
-		end
-		
-		local function close()
-			tweenS:Create(titleText,progressTI,{TextTransparency = 1}):Play()
-			tweenS:Create(descText,progressTI,{TextTransparency = 1}):Play()
-			tweenS:Create(versionText,progressTI,{TextTransparency = 1}):Play()
-			tweenS:Create(creatorText,progressTI,{TextTransparency = 1}):Play()
-			tweenS:Create(statusText,progressTI,{TextTransparency = 1}):Play()
-			tweenS:Create(progressBar,progressTI,{BackgroundTransparency = 1}):Play()
-			tweenS:Create(progressBar.Bar,progressTI,{BackgroundTransparency = 1}):Play()
-			tweenS:Create(progressBar.ImageLabel,progressTI,{ImageTransparency = 1}):Play()
 			
-			tweenNumber(100,TweenInfo.new(0.4,Enum.EasingStyle.Back,Enum.EasingDirection.In),function(val)
-				val = val/250
-				local start = NumberSequenceKeypoint.new(0,0)
-				local a1 = NumberSequenceKeypoint.new(0.6+val,0)
-				local a2 = NumberSequenceKeypoint.new(math.min(1,0.601+val),1)
-				if a1.Time == a2.Time then a2 = a1 end
-				local goal = NumberSequenceKeypoint.new(1,a1 == a2 and 0 or 1)
-				holderGradient.Transparency = NumberSequence.new({start,a1,a2,goal})
-			end)
-			
-			fastwait(0.5)
-			gui.Main.BackgroundTransparency = 1
-			outlinesGradient.Rotation = 30
-			
-			tweenNumber(100,ti,function(val)
-				val = val/100
-				local start = NumberSequenceKeypoint.new(0,1)
-				local a1 = NumberSequenceKeypoint.new(val,1)
-				local a2 = NumberSequenceKeypoint.new(math.min(1,val+math.min(0.05,val)),0)
-				if a1.Time == a2.Time then a2 = a1 end
-				local goal = NumberSequenceKeypoint.new(1,a1 == a2 and 1 or 0)
-				outlinesGradient.Transparency = NumberSequence.new({start,a1,a2,goal})
-				holderGradient.Transparency = NumberSequence.new({start,a1,a2,goal})
-			end)
-			
-			fastwait(0.45)
-			gui:Destroy()
-		end
-		
-		return {SetProgress = setProgress, Close = close}
-	end
-	
-	Main.CreateApp = function(data)
-		if Main.MenuApps[data.Name] then return end -- TODO: Handle conflict
-		local control = {}
-		
-		local app = Main.AppTemplate:Clone()
-		
-		local iconIndex = data.Icon
-		if data.IconMap and iconIndex then
-			if type(iconIndex) == "number" then
-				data.IconMap:Display(app.Main.Icon,iconIndex)
-			elseif type(iconIndex) == "string" then
-				data.IconMap:DisplayByKey(app.Main.Icon,iconIndex)
-			end
-		elseif type(iconIndex) == "string" then
-			app.Main.Icon.Image = iconIndex
-		else
-			app.Main.Icon.Image = ""
-		end
-		
-		local function updateState()
-			app.Main.BackgroundTransparency = data.Open and 0 or (Lib.CheckMouseInGui(app.Main) and 0 or 1)
-			app.Main.Highlight.Visible = data.Open
-		end
-		
-		local function enable(silent)
-			if data.Open then return end
-			data.Open = true
-			updateState()
-			if not silent then
-				if data.Window then data.Window:Show() end
-				if data.OnClick then data.OnClick(data.Open) end
-			end
-		end
-		
-		local function disable(silent)
-			if not data.Open then return end
-			data.Open = false
-			updateState()
-			if not silent then
-				if data.Window then data.Window:Hide() end
-				if data.OnClick then data.OnClick(data.Open) end
-			end
-		end
-		
-		updateState()
-		
-		local ySize = service.TextService:GetTextSize(data.Name,14,Enum.Font.SourceSans,Vector2.new(62,999999)).Y
-		app.Main.Size = UDim2.new(1,0,0,math.clamp(46+ySize,60,74))
-		app.Main.AppName.Text = data.Name
-		
-		app.Main.InputBegan:Connect(function(input)
-			if input.UserInputType == Enum.UserInputType.MouseMovement then
-				app.Main.BackgroundTransparency = 0
-				app.Main.BackgroundColor3 = Settings.Theme.ButtonHover
-			end
-		end)
-		
-		app.Main.InputEnded:Connect(function(input)
-			if input.UserInputType == Enum.UserInputType.MouseMovement then
-				app.Main.BackgroundTransparency = data.Open and 0 or 1
-				app.Main.BackgroundColor3 = Settings.Theme.Button
-			end
-		end)
-		
-		app.Main.MouseButton1Click:Connect(function()
-			if data.Open then disable() else enable() end
-		end)
-		
-		local window = data.Window
-		if window then
-			window.OnActivate:Connect(function() enable(true) end)
-			window.OnDeactivate:Connect(function() disable(true) end)
-		end
-		
-		app.Visible = true
-		app.Parent = Main.AppsContainer
-		Main.AppsFrame.CanvasSize = UDim2.new(0,0,0,Main.AppsContainerGrid.AbsoluteCellCount.Y*82 + 8)
-		
-		control.Enable = enable
-		control.Disable = disable
-		Main.MenuApps[data.Name] = control
-		return control
-	end
-	
-	Main.SetMainGuiOpen = function(val)
-		Main.MainGuiOpen = val
-		
-		Main.MainGui.OpenButton.Text = val and "X" or "Dex"
-		if val then Main.MainGui.OpenButton.MainFrame.Visible = true end
-		Main.MainGui.OpenButton.MainFrame:TweenSize(val and UDim2.new(0,224,0,200) or UDim2.new(0,0,0,0),Enum.EasingDirection.Out,Enum.EasingStyle.Quad,0.2,true)
-		--Main.MainGui.OpenButton.BackgroundTransparency = val and 0 or (Lib.CheckMouseInGui(Main.MainGui.OpenButton) and 0 or 0.2)
-		service.TweenService:Create(Main.MainGui.OpenButton,TweenInfo.new(0.2,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{BackgroundTransparency = val and 0 or (Lib.CheckMouseInGui(Main.MainGui.OpenButton) and 0 or 0.2)}):Play()
-		
-		if Main.MainGuiMouseEvent then Main.MainGuiMouseEvent:Disconnect() end
-		
-		if not val then
-			local startTime = tick()
-			Main.MainGuiCloseTime = startTime
-			coroutine.wrap(function()
-				Lib.FastWait(0.2)
-				if not Main.MainGuiOpen and startTime == Main.MainGuiCloseTime then Main.MainGui.OpenButton.MainFrame.Visible = false end
-			end)()
-		else
-			Main.MainGuiMouseEvent = service.UserInputService.InputBegan:Connect(function(input)
-				if input.UserInputType == Enum.UserInputType.MouseButton1 and not Lib.CheckMouseInGui(Main.MainGui.OpenButton) and not Lib.CheckMouseInGui(Main.MainGui.OpenButton.MainFrame) then
-					Main.SetMainGuiOpen(false)
+			local mType = member.MemberType
+			if mType == "Property" then
+				local propCategory = (member.Category or "Other"):match("^%s*(.-)%s*$")
+				if not seenCategories[propCategory] then
+					categoryOrder[#categoryOrder + 1] = propCategory
+					seenCategories[propCategory] = true
 				end
-			end)
+				newMember.ValueType = member.ValueType
+				newMember.Category = propCategory
+				newMember.Serialization = member.Serialization
+				table.insert(newClass.Properties, newMember)
+			elseif mType == "Function" then
+				newMember.Parameters = {}
+				newMember.ReturnType = member.ReturnType and member.ReturnType.Name or "void"
+				for _, param in pairs(member.Parameters) do
+					table.insert(newMember.Parameters, {Name = param.Name, Type = param.Type.Name})
+				end
+				table.insert(newClass.Functions, newMember)
+			elseif mType == "Event" then
+				newMember.Parameters = {}
+				for _, param in pairs(member.Parameters) do
+					table.insert(newMember.Parameters, {Name = param.Name, Type = param.Type.Name})
+				end
+				table.insert(newClass.Events, newMember)
+			elseif mType == "Callback" then
+				newMember.Parameters = {}
+				for _, param in pairs(member.Parameters) do
+					table.insert(newMember.Parameters, {Name = param.Name, Type = param.Type.Name})
+				end
+				table.insert(newClass.Callbacks, newMember)
+			end
 		end
+		
+		classes[class.Name] = newClass
 	end
 	
-	Main.CreateMainGui = function()
-		local gui = create({
-			{1,"ScreenGui",{IgnoreGuiInset=true,Name="MainMenu",}},
-			{2,"TextButton",{AnchorPoint=Vector2.new(0.5,0),AutoButtonColor=false,BackgroundColor3=Color3.new(0.17647059261799,0.17647059261799,0.17647059261799),BorderSizePixel=0,Font=4,Name="OpenButton",Parent={1},Position=UDim2.new(0.5,0,0,2),Size=UDim2.new(0,32,0,32),Text="Dex",TextColor3=Color3.new(1,1,1),TextSize=16,TextTransparency=0.20000000298023,}},
-			{3,"UICorner",{CornerRadius=UDim.new(0,4),Parent={2},}},
-			{4,"Frame",{AnchorPoint=Vector2.new(0.5,0),BackgroundColor3=Color3.new(0.17647059261799,0.17647059261799,0.17647059261799),ClipsDescendants=true,Name="MainFrame",Parent={2},Position=UDim2.new(0.5,0,1,-4),Size=UDim2.new(0,224,0,200),}},
-			{5,"UICorner",{CornerRadius=UDim.new(0,4),Parent={4},}},
-			{6,"Frame",{BackgroundColor3=Color3.new(0.20392157137394,0.20392157137394,0.20392157137394),Name="BottomFrame",Parent={4},Position=UDim2.new(0,0,1,-24),Size=UDim2.new(1,0,0,24),}},
-			{7,"UICorner",{CornerRadius=UDim.new(0,4),Parent={6},}},
-			{8,"Frame",{BackgroundColor3=Color3.new(0.20392157137394,0.20392157137394,0.20392157137394),BorderSizePixel=0,Name="CoverFrame",Parent={6},Size=UDim2.new(1,0,0,4),}},
-			{9,"Frame",{BackgroundColor3=Color3.new(0.1294117718935,0.1294117718935,0.1294117718935),BorderSizePixel=0,Name="Line",Parent={8},Position=UDim2.new(0,0,0,-1),Size=UDim2.new(1,0,0,1),}},
-			{10,"TextButton",{BackgroundColor3=Color3.new(1,1,1),BackgroundTransparency=1,Font=3,Name="Settings",Parent={6},Position=UDim2.new(1,-48,0,0),Size=UDim2.new(0,24,1,0),Text="",TextColor3=Color3.new(1,1,1),TextSize=14,}},
-			{11,"ImageLabel",{BackgroundColor3=Color3.new(1,1,1),BackgroundTransparency=1,Image="rbxassetid://6578871732",ImageTransparency=0.20000000298023,Name="Icon",Parent={10},Position=UDim2.new(0,4,0,4),Size=UDim2.new(0,16,0,16),}},
-			{12,"TextButton",{BackgroundColor3=Color3.new(1,1,1),BackgroundTransparency=1,Font=3,Name="Information",Parent={6},Position=UDim2.new(1,-24,0,0),Size=UDim2.new(0,24,1,0),Text="",TextColor3=Color3.new(1,1,1),TextSize=14,}},
-			{13,"ImageLabel",{BackgroundColor3=Color3.new(1,1,1),BackgroundTransparency=1,Image="rbxassetid://6578933307",ImageTransparency=0.20000000298023,Name="Icon",Parent={12},Position=UDim2.new(0,4,0,4),Size=UDim2.new(0,16,0,16),}},
-			{14,"ScrollingFrame",{Active=true,AnchorPoint=Vector2.new(0.5,0),BackgroundColor3=Color3.new(1,1,1),BackgroundTransparency=1,BorderColor3=Color3.new(0.1294117718935,0.1294117718935,0.1294117718935),BorderSizePixel=0,Name="AppsFrame",Parent={4},Position=UDim2.new(0.5,0,0,0),ScrollBarImageColor3=Color3.new(0,0,0),ScrollBarThickness=4,Size=UDim2.new(0,222,1,-25),}},
-			{15,"Frame",{BackgroundColor3=Color3.new(1,1,1),BackgroundTransparency=1,Name="Container",Parent={14},Position=UDim2.new(0,7,0,8),Size=UDim2.new(1,-14,0,2),}},
-			{16,"UIGridLayout",{CellSize=UDim2.new(0,66,0,74),Parent={15},SortOrder=2,}},
-			{17,"Frame",{BackgroundColor3=Color3.new(1,1,1),BackgroundTransparency=1,Name="App",Parent={1},Size=UDim2.new(0,100,0,100),Visible=false,}},
-			{18,"TextButton",{AutoButtonColor=false,BackgroundColor3=Color3.new(0.2352941185236,0.2352941185236,0.2352941185236),BorderSizePixel=0,Font=3,Name="Main",Parent={17},Size=UDim2.new(1,0,0,60),Text="",TextColor3=Color3.new(0,0,0),TextSize=14,}},
-			{19,"ImageLabel",{BackgroundColor3=Color3.new(1,1,1),BackgroundTransparency=1,Image="rbxassetid://6579106223",ImageRectSize=Vector2.new(32,32),Name="Icon",Parent={18},Position=UDim2.new(0.5,-16,0,4),ScaleType=4,Size=UDim2.new(0,32,0,32),}},
-			{20,"TextLabel",{BackgroundColor3=Color3.new(1,1,1),BackgroundTransparency=1,BorderSizePixel=0,Font=3,Name="AppName",Parent={18},Position=UDim2.new(0,2,0,38),Size=UDim2.new(1,-4,1,-40),Text="Explorer",TextColor3=Color3.new(1,1,1),TextSize=14,TextTransparency=0.10000000149012,TextTruncate=1,TextWrapped=true,TextYAlignment=0,}},
-			{21,"Frame",{BackgroundColor3=Color3.new(0,0.66666668653488,1),BorderSizePixel=0,Name="Highlight",Parent={18},Position=UDim2.new(0,0,1,-2),Size=UDim2.new(1,0,0,2),}},
-		})
-		Main.MainGui = gui
-		Main.AppsFrame = gui.OpenButton.MainFrame.AppsFrame
-		Main.AppsContainer = Main.AppsFrame.Container
-		Main.AppsContainerGrid = Main.AppsContainer.UIGridLayout
-		Main.AppTemplate = gui.App
-		Main.MainGuiOpen = false
-		
-		local openButton = gui.OpenButton
-		openButton.BackgroundTransparency = 0.2
-		openButton.MainFrame.Size = UDim2.new(0,0,0,0)
-		openButton.MainFrame.Visible = false
-		openButton.MouseButton1Click:Connect(function()
-			Main.SetMainGuiOpen(not Main.MainGuiOpen)
-		end)
-		
-		openButton.InputBegan:Connect(function(input)
-			if input.UserInputType == Enum.UserInputType.MouseMovement then
-				service.TweenService:Create(Main.MainGui.OpenButton,TweenInfo.new(0,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{BackgroundTransparency = 0}):Play()
+	-- Resolve superclass references
+	for _, class in pairs(classes) do
+		class.Superclass = classes[class.Superclass]
+	end
+	
+	-- Process enums
+	for _, enum in pairs(api.Enums) do
+		local newEnum = {Name = enum.Name, Items = {}, Tags = {}}
+		if enum.Tags then
+			for _, tag in pairs(enum.Tags) do newEnum.Tags[tag] = true end
+		end
+		for _, item in pairs(enum.Items) do
+			table.insert(newEnum.Items, {Name = item.Name, Value = item.Value})
+		end
+		enums[enum.Name] = newEnum
+	end
+	
+	-- Category ordering
+	categoryOrder[#categoryOrder + 1] = "Unscriptable"
+	categoryOrder[#categoryOrder + 1] = "Attributes"
+	local categoryOrderMap = {}
+	for i = 1, #categoryOrder do
+		categoryOrderMap[categoryOrder[i]] = i
+	end
+	
+	local function getMember(class, member)
+		if not classes[class] or not classes[class][member] then return {} end
+		local result = {}
+		local currentClass = classes[class]
+		while currentClass do
+			for _, entry in pairs(currentClass[member]) do
+				result[#result + 1] = entry
 			end
-		end)
+			currentClass = currentClass.Superclass
+		end
+		table.sort(result, function(a, b) return a.Name < b.Name end)
+		return result
+	end
+	
+	return {
+		Classes = classes,
+		Enums = enums,
+		CategoryOrder = categoryOrderMap,
+		GetMember = getMember
+	}
+end
 
-		openButton.InputEnded:Connect(function(input)
-			if input.UserInputType == Enum.UserInputType.MouseMovement then
-				service.TweenService:Create(Main.MainGui.OpenButton,TweenInfo.new(0,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{BackgroundTransparency = Main.MainGuiOpen and 0 or 0.2}):Play()
+Main.FetchRMD = function()
+	local rawXML
+	
+	if Main.Elevated then
+		-- Try cached
+		if Env.Capabilities.Filesystem then
+			local s, cached = pcall(Env.readfile, "deux/cache/rbx_rmd.xml")
+			if s and cached and cached ~= "" then rawXML = cached end
+		end
+		
+		if not rawXML then
+			local s, data = pcall(game.HttpGet, game, "https://raw.githubusercontent.com/CloneTrooper1019/Roblox-Client-Tracker/roblox/ReflectionMetadata.xml")
+			if s and data then rawXML = data end
+		end
+	end
+	
+	if not rawXML then
+		Main.Warn("Could not fetch RMD, property descriptions unavailable")
+		return {Classes = {}, Enums = {}, PropertyOrders = {}}
+	end
+	
+	Main.RawRMD = rawXML
+	
+	-- Cache
+	if Env.Capabilities.Filesystem then
+		pcall(Env.writefile, "deux/cache/rbx_rmd.xml", rawXML)
+	end
+	
+	-- Parse (Lib.ParseXML needed — defer if Lib not loaded yet)
+	if Lib and Lib.ParseXML then
+		return Main.ParseRMD(rawXML)
+	end
+	
+	-- Store raw for later parsing after Lib loads
+	Main.RawRMDPending = rawXML
+	return {Classes = {}, Enums = {}, PropertyOrders = {}}
+end
+
+Main.ParseRMD = function(rawXML)
+	local parsed = Lib.ParseXML(rawXML)
+	if not parsed or not parsed.children or not parsed.children[1] then
+		return {Classes = {}, Enums = {}, PropertyOrders = {}}
+	end
+	
+	local classList = parsed.children[1].children[1] and parsed.children[1].children[1].children or {}
+	local enumList = parsed.children[1].children[2] and parsed.children[1].children[2].children or {}
+	local propertyOrders = {}
+	local classes, enums = {}, {}
+	
+	for _, class in pairs(classList) do
+		local className = ""
+		for _, child in pairs(class.children) do
+			if child.tag == "Properties" then
+				local data = {Properties = {}, Functions = {}}
+				for _, prop in pairs(child.children) do
+					if prop.attrs and prop.attrs.name then
+						local name = prop.attrs.name
+						name = name:sub(1,1):upper() .. name:sub(2)
+						data[name] = prop.children[1] and prop.children[1].text or ""
+					end
+				end
+				className = data.Name or ""
+				classes[className] = data
+			elseif child.attrs and child.attrs.class == "ReflectionMetadataProperties" then
+				for _, member in pairs(child.children) do
+					if member.attrs and member.attrs.class == "ReflectionMetadataMember" then
+						local data = {}
+						if member.children[1] and member.children[1].tag == "Properties" then
+							for _, prop in pairs(member.children[1].children) do
+								if prop.attrs and prop.attrs.name then
+									local name = prop.attrs.name
+									name = name:sub(1,1):upper() .. name:sub(2)
+									data[name] = prop.children[1] and prop.children[1].text or ""
+								end
+							end
+							if data.PropertyOrder then
+								local orders = propertyOrders[className]
+								if not orders then orders = {}; propertyOrders[className] = orders end
+								orders[data.Name] = tonumber(data.PropertyOrder)
+							end
+							if classes[className] then
+								classes[className].Properties[data.Name or ""] = data
+							end
+						end
+					end
+				end
+			end
+		end
+	end
+	
+	for _, enum in pairs(enumList) do
+		local enumName = ""
+		for _, child in pairs(enum.children) do
+			if child.tag == "Properties" then
+				local data = {Items = {}}
+				for _, prop in pairs(child.children) do
+					if prop.attrs and prop.attrs.name then
+						local name = prop.attrs.name
+						name = name:sub(1,1):upper() .. name:sub(2)
+						data[name] = prop.children[1] and prop.children[1].text or ""
+					end
+				end
+				enumName = data.Name or ""
+				enums[enumName] = data
+			elseif child.attrs and child.attrs.class == "ReflectionMetadataEnumItem" then
+				local data = {}
+				if child.children[1] and child.children[1].tag == "Properties" then
+					for _, prop in pairs(child.children[1].children) do
+						if prop.attrs and prop.attrs.name then
+							local name = prop.attrs.name
+							name = name:sub(1,1):upper() .. name:sub(2)
+							data[name] = prop.children[1] and prop.children[1].text or ""
+						end
+					end
+					if enums[enumName] then
+						enums[enumName].Items[data.Name or ""] = data
+					end
+				end
+			end
+		end
+	end
+	
+	return {Classes = classes, Enums = enums, PropertyOrders = propertyOrders}
+end
+
+
+------------------------------------------------------------------------
+-- GUI: Show with protection
+------------------------------------------------------------------------
+Main.ShowGui = function(gui)
+	Env.protectGui(gui)
+	gui.Parent = Main.GuiHolder
+end
+
+------------------------------------------------------------------------
+-- GUI: Intro / Splash Screen
+------------------------------------------------------------------------
+Main.CreateIntro = function(initStatus)
+	local gui = create({
+		{1,"ScreenGui",{IgnoreGuiInset=true,Name="DeuxIntro",ZIndexBehavior=Enum.ZIndexBehavior.Sibling}},
+		{2,"Frame",{Active=true,BackgroundColor3=Color3.fromRGB(25,25,25),BorderSizePixel=0,Name="Main",Parent={1},Position=UDim2.new(0.5,-180,0.5,-105),Size=UDim2.new(0,360,0,210)}},
+		{3,"UICorner",{CornerRadius=UDim.new(0,8),Parent={2}}},
+		{4,"Frame",{BackgroundColor3=Color3.fromRGB(20,20,20),BorderSizePixel=0,ClipsDescendants=true,Name="Holder",Parent={2},Size=UDim2.new(1,0,1,0)}},
+		{5,"UICorner",{CornerRadius=UDim.new(0,8),Parent={4}}},
+		{6,"TextLabel",{BackgroundTransparency=1,Font=Enum.Font.GothamBold,Name="Title",Parent={4},Position=UDim2.new(0,24,0,20),Size=UDim2.new(1,-48,0,40),Text="Deux",TextColor3=Color3.fromRGB(255,255,255),TextSize=36,TextXAlignment=Enum.TextXAlignment.Left}},
+		{7,"TextLabel",{BackgroundTransparency=1,Font=Enum.Font.Gotham,Name="Desc",Parent={4},Position=UDim2.new(0,24,0,58),Size=UDim2.new(1,-48,0,20),Text="The Successor Debugging Suite",TextColor3=Color3.fromRGB(180,180,180),TextSize=14,TextXAlignment=Enum.TextXAlignment.Left}},
+		{8,"TextLabel",{BackgroundTransparency=1,Font=Enum.Font.Gotham,Name="StatusText",Parent={4},Position=UDim2.new(0,24,0,120),Size=UDim2.new(1,-48,0,20),Text="Initializing...",TextColor3=Color3.fromRGB(150,150,150),TextSize=12,TextXAlignment=Enum.TextXAlignment.Left}},
+		{9,"Frame",{BackgroundColor3=Color3.fromRGB(40,40,40),BorderSizePixel=0,Name="ProgressBar",Parent={4},Position=UDim2.new(0,24,0,150),Size=UDim2.new(1,-48,0,4)}},
+		{10,"UICorner",{CornerRadius=UDim.new(0,2),Parent={9}}},
+		{11,"Frame",{BackgroundColor3=Color3.fromRGB(0,120,215),BorderSizePixel=0,Name="Bar",Parent={9},Size=UDim2.new(0,0,1,0)}},
+		{12,"UICorner",{CornerRadius=UDim.new(0,2),Parent={11}}},
+		{13,"TextLabel",{BackgroundTransparency=1,Font=Enum.Font.Gotham,Name="Version",Parent={4},Position=UDim2.new(1,-120,1,-28),Size=UDim2.new(0,100,0,20),Text="v"..Main.Version,TextColor3=Color3.fromRGB(100,100,100),TextSize=11,TextXAlignment=Enum.TextXAlignment.Right}},
+		{14,"TextLabel",{BackgroundTransparency=1,Font=Enum.Font.Gotham,Name="Executor",Parent={4},Position=UDim2.new(0,24,1,-28),Size=UDim2.new(0,200,0,20),Text=Env.ExecutorName,TextColor3=Color3.fromRGB(80,80,80),TextSize=11,TextXAlignment=Enum.TextXAlignment.Left}},
+	})
+	
+	Main.ShowGui(gui)
+	
+	local progressBar = gui.Main.Holder.ProgressBar.Bar
+	local statusText = gui.Main.Holder.StatusText
+	local tweenS = service.TweenService
+	local progressTI = TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+	
+	statusText.Text = initStatus or "Initializing..."
+	
+	local function setProgress(text, n)
+		statusText.Text = text
+		tweenS:Create(progressBar, progressTI, {Size = UDim2.new(n, 0, 1, 0)}):Play()
+	end
+	
+	local function close()
+		local fadeTI = TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
+		tweenS:Create(gui.Main, fadeTI, {BackgroundTransparency = 1}):Play()
+		tweenS:Create(gui.Main.Holder, fadeTI, {BackgroundTransparency = 1}):Play()
+		for _, desc in ipairs(gui.Main.Holder:GetDescendants()) do
+			if desc:IsA("TextLabel") then
+				tweenS:Create(desc, fadeTI, {TextTransparency = 1}):Play()
+			elseif desc:IsA("Frame") then
+				tweenS:Create(desc, fadeTI, {BackgroundTransparency = 1}):Play()
+			end
+		end
+		task.delay(0.5, function() gui:Destroy() end)
+	end
+	
+	return {SetProgress = setProgress, Close = close}
+end
+
+------------------------------------------------------------------------
+-- GUI: Main Menu (App Launcher)
+------------------------------------------------------------------------
+Main.CreateApp = function(data)
+	if Main.MenuApps[data.Name] then return end
+	local control = {}
+	
+	local app = Main.AppTemplate:Clone()
+	
+	local iconIndex = data.Icon
+	if data.IconMap and iconIndex then
+		if type(iconIndex) == "number" then
+			data.IconMap:Display(app.Main.Icon, iconIndex)
+		elseif type(iconIndex) == "string" then
+			data.IconMap:DisplayByKey(app.Main.Icon, iconIndex)
+		end
+	elseif type(iconIndex) == "string" then
+		app.Main.Icon.Image = iconIndex
+	else
+		app.Main.Icon.Image = ""
+	end
+	
+	local function updateState()
+		app.Main.BackgroundTransparency = data.Open and 0 or (Lib.CheckMouseInGui(app.Main) and 0 or 1)
+		app.Main.Highlight.Visible = data.Open
+	end
+	
+	local function enable(silent)
+		if data.Open then return end
+		data.Open = true
+		updateState()
+		if not silent then
+			if data.Window then data.Window:Show() end
+			if data.OnClick then data.OnClick(data.Open) end
+		end
+	end
+	
+	local function disable(silent)
+		if not data.Open then return end
+		data.Open = false
+		updateState()
+		if not silent then
+			if data.Window then data.Window:Hide() end
+			if data.OnClick then data.OnClick(data.Open) end
+		end
+	end
+	
+	updateState()
+	
+	local ySize = service.TextService:GetTextSize(data.Name, 14, Enum.Font.SourceSans, Vector2.new(62, 999999)).Y
+	app.Main.Size = UDim2.new(1, 0, 0, math.clamp(46 + ySize, 60, 74))
+	app.Main.AppName.Text = data.Name
+	
+	app.Main.InputBegan:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseMovement then
+			app.Main.BackgroundTransparency = 0
+			app.Main.BackgroundColor3 = Theme.Get("ButtonHover") or Color3.fromRGB(68, 68, 68)
+		end
+	end)
+	
+	app.Main.InputEnded:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseMovement then
+			app.Main.BackgroundTransparency = data.Open and 0 or 1
+			app.Main.BackgroundColor3 = Theme.Get("Button") or Color3.fromRGB(60, 60, 60)
+		end
+	end)
+	
+	app.Main.MouseButton1Click:Connect(function()
+		if data.Open then disable() else enable() end
+	end)
+	
+	local window = data.Window
+	if window then
+		window.OnActivate:Connect(function() enable(true) end)
+		window.OnDeactivate:Connect(function() disable(true) end)
+	end
+	
+	app.Visible = true
+	app.Parent = Main.AppsContainer
+	Main.AppsFrame.CanvasSize = UDim2.new(0, 0, 0, Main.AppsContainerGrid.AbsoluteCellCount.Y * 82 + 8)
+	
+	control.Enable = enable
+	control.Disable = disable
+	Main.MenuApps[data.Name] = control
+	return control
+end
+
+Main.SetMainGuiOpen = function(val)
+	Main.MainGuiOpen = val
+	
+	Main.MainGui.OpenButton.Text = val and "X" or "D"
+	if val then Main.MainGui.OpenButton.MainFrame.Visible = true end
+	
+	local targetSize = val and UDim2.new(0, 240, 0, 320) or UDim2.new(0, 0, 0, 0)
+	service.TweenService:Create(Main.MainGui.OpenButton.MainFrame, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = targetSize}):Play()
+	service.TweenService:Create(Main.MainGui.OpenButton, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundTransparency = val and 0 or 0.2}):Play()
+	
+	if Main.MainGuiMouseEvent then Main.MainGuiMouseEvent:Disconnect() end
+	
+	if not val then
+		local startTime = tick()
+		Main.MainGuiCloseTime = startTime
+		task.delay(0.2, function()
+			if not Main.MainGuiOpen and startTime == Main.MainGuiCloseTime then
+				Main.MainGui.OpenButton.MainFrame.Visible = false
 			end
 		end)
-		
-		-- Create Main Apps
+	else
+		Main.MainGuiMouseEvent = service.UserInputService.InputBegan:Connect(function(input)
+			if input.UserInputType == Enum.UserInputType.MouseButton1 
+				and not Lib.CheckMouseInGui(Main.MainGui.OpenButton) 
+				and not Lib.CheckMouseInGui(Main.MainGui.OpenButton.MainFrame) then
+				Main.SetMainGuiOpen(false)
+			end
+		end)
+	end
+end
+
+
+Main.CreateMainGui = function()
+	local gui = create({
+		{1,"ScreenGui",{IgnoreGuiInset=true,Name="DeuxMenu",ZIndexBehavior=Enum.ZIndexBehavior.Sibling}},
+		{2,"TextButton",{AnchorPoint=Vector2.new(0.5,0),AutoButtonColor=false,BackgroundColor3=Color3.fromRGB(30,30,30),BorderSizePixel=0,Font=Enum.Font.GothamBold,Name="OpenButton",Parent={1},Position=UDim2.new(0.5,0,0,2),Size=UDim2.new(0,34,0,34),Text="D",TextColor3=Color3.fromRGB(255,255,255),TextSize=16,TextTransparency=0.1}},
+		{3,"UICorner",{CornerRadius=UDim.new(0,6),Parent={2}}},
+		{4,"Frame",{AnchorPoint=Vector2.new(0.5,0),BackgroundColor3=Color3.fromRGB(25,25,25),ClipsDescendants=true,Name="MainFrame",Parent={2},Position=UDim2.new(0.5,0,1,-4),Size=UDim2.new(0,240,0,320)}},
+		{5,"UICorner",{CornerRadius=UDim.new(0,6),Parent={4}}},
+		{6,"Frame",{BackgroundColor3=Color3.fromRGB(30,30,30),Name="BottomFrame",Parent={4},Position=UDim2.new(0,0,1,-28),Size=UDim2.new(1,0,0,28)}},
+		{7,"UICorner",{CornerRadius=UDim.new(0,6),Parent={6}}},
+		{8,"Frame",{BackgroundColor3=Color3.fromRGB(30,30,30),BorderSizePixel=0,Name="CoverFrame",Parent={6},Size=UDim2.new(1,0,0,6)}},
+		{9,"Frame",{BackgroundColor3=Color3.fromRGB(18,18,18),BorderSizePixel=0,Name="Line",Parent={8},Position=UDim2.new(0,0,0,-1),Size=UDim2.new(1,0,0,1)}},
+		{10,"TextButton",{BackgroundTransparency=1,Font=Enum.Font.Gotham,Name="Settings",Parent={6},Position=UDim2.new(1,-56,0,0),Size=UDim2.new(0,28,1,0),Text="⚙",TextColor3=Color3.fromRGB(200,200,200),TextSize=14}},
+		{11,"TextButton",{BackgroundTransparency=1,Font=Enum.Font.Gotham,Name="Info",Parent={6},Position=UDim2.new(1,-28,0,0),Size=UDim2.new(0,28,1,0),Text="ℹ",TextColor3=Color3.fromRGB(200,200,200),TextSize=14}},
+		{12,"ScrollingFrame",{Active=true,AnchorPoint=Vector2.new(0.5,0),BackgroundTransparency=1,BorderSizePixel=0,Name="AppsFrame",Parent={4},Position=UDim2.new(0.5,0,0,0),ScrollBarImageColor3=Color3.fromRGB(60,60,60),ScrollBarThickness=3,Size=UDim2.new(1,-4,1,-29)}},
+		{13,"Frame",{BackgroundTransparency=1,Name="Container",Parent={12},Position=UDim2.new(0,6,0,6),Size=UDim2.new(1,-12,0,2)}},
+		{14,"UIGridLayout",{CellSize=UDim2.new(0,68,0,76),CellPadding=UDim2.new(0,4,0,4),Parent={13},SortOrder=Enum.SortOrder.LayoutOrder}},
+		{15,"Frame",{BackgroundTransparency=1,Name="App",Parent={1},Size=UDim2.new(0,100,0,100),Visible=false}},
+		{16,"TextButton",{AutoButtonColor=false,BackgroundColor3=Color3.fromRGB(35,35,35),BorderSizePixel=0,Font=Enum.Font.Gotham,Name="Main",Parent={15},Size=UDim2.new(1,0,0,60),Text="",TextColor3=Color3.new(0,0,0),TextSize=14}},
+		{17,"UICorner",{CornerRadius=UDim.new(0,4),Parent={16}}},
+		{18,"ImageLabel",{BackgroundTransparency=1,Image="",ImageRectSize=Vector2.new(32,32),Name="Icon",Parent={16},Position=UDim2.new(0.5,-14,0,4),ScaleType=Enum.ScaleType.Crop,Size=UDim2.new(0,28,0,28)}},
+		{19,"TextLabel",{BackgroundTransparency=1,Font=Enum.Font.Gotham,Name="AppName",Parent={16},Position=UDim2.new(0,2,0,34),Size=UDim2.new(1,-4,1,-36),Text="App",TextColor3=Color3.fromRGB(220,220,220),TextSize=11,TextTruncate=Enum.TextTruncate.AtEnd,TextWrapped=true,TextYAlignment=Enum.TextYAlignment.Top}},
+		{20,"Frame",{BackgroundColor3=Color3.fromRGB(0,120,215),BorderSizePixel=0,Name="Highlight",Parent={16},Position=UDim2.new(0,0,1,-2),Size=UDim2.new(1,0,0,2),Visible=false}},
+	})
+	
+	Main.MainGui = gui
+	Main.AppsFrame = gui.OpenButton.MainFrame.AppsFrame
+	Main.AppsContainer = Main.AppsFrame.Container
+	Main.AppsContainerGrid = Main.AppsContainer.UIGridLayout
+	Main.AppTemplate = gui.App
+	Main.MainGuiOpen = false
+	
+	local openButton = gui.OpenButton
+	openButton.BackgroundTransparency = 0.2
+	openButton.MainFrame.Size = UDim2.new(0, 0, 0, 0)
+	openButton.MainFrame.Visible = false
+	
+	openButton.MouseButton1Click:Connect(function()
+		Main.SetMainGuiOpen(not Main.MainGuiOpen)
+	end)
+	
+	openButton.InputBegan:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseMovement then
+			service.TweenService:Create(openButton, TweenInfo.new(0.15), {BackgroundTransparency = 0}):Play()
+		end
+	end)
+	
+	openButton.InputEnded:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseMovement then
+			service.TweenService:Create(openButton, TweenInfo.new(0.15), {BackgroundTransparency = Main.MainGuiOpen and 0 or 0.2}):Play()
+		end
+	end)
+	
+	-- Stealth mode: hide open button if enabled
+	if Settings.Get("General.StealthMode") then
+		openButton.Visible = false
+	end
+	
+	-- Register toggle keybind
+	Keybinds.Register("Main.ToggleMenu", {
+		Keys = {Enum.KeyCode.RightControl, Enum.KeyCode.D},
+		Category = "General",
+		Description = "Toggle Deux menu",
+		Callback = function()
+			if Settings.Get("General.StealthMode") then
+				openButton.Visible = not openButton.Visible
+			end
+			Main.SetMainGuiOpen(not Main.MainGuiOpen)
+		end
+	})
+	
+	-- Create apps for loaded modules
+	if Explorer and Explorer.Window then
 		Main.CreateApp({Name = "Explorer", IconMap = Main.LargeIcons, Icon = "Explorer", Open = true, Window = Explorer.Window})
-		
+	end
+	if Properties and Properties.Window then
 		Main.CreateApp({Name = "Properties", IconMap = Main.LargeIcons, Icon = "Properties", Open = true, Window = Properties.Window})
-		
-		Main.CreateApp({Name = "Script Viewer", IconMap = Main.LargeIcons, Icon = "Script_Viewer", Window = ScriptViewer.Window})
-		
-		Lib.ShowGui(gui)
+	end
+	if ScriptEditor and ScriptEditor.Window then
+		Main.CreateApp({Name = "Script Editor", IconMap = Main.LargeIcons, Icon = "Script_Viewer", Window = ScriptEditor.Window})
+	end
+	if Terminal and Terminal.Window then
+		Main.CreateApp({Name = "Terminal", Icon = "", Window = Terminal.Window})
+	end
+	if RemoteSpy and RemoteSpy.Window then
+		Main.CreateApp({Name = "Remote Spy", Icon = "", Window = RemoteSpy.Window})
+	end
+	if SaveInstance and SaveInstance.Window then
+		Main.CreateApp({Name = "Save Instance", Icon = "", Window = SaveInstance.Window})
+	end
+	if DataInspector and DataInspector.Window then
+		Main.CreateApp({Name = "Data Inspector", Icon = "", Window = DataInspector.Window})
+	end
+	if NetworkSpy and NetworkSpy.Window then
+		Main.CreateApp({Name = "Network Spy", Icon = "", Window = NetworkSpy.Window})
+	end
+	if APIReference and APIReference.Window then
+		Main.CreateApp({Name = "API Reference", Icon = "", Window = APIReference.Window})
+	end
+	if WorkspaceTools and WorkspaceTools.Window then
+		Main.CreateApp({Name = "Workspace Tools", Icon = "", Window = WorkspaceTools.Window})
+	end
+	if Console and Console.Window then
+		Main.CreateApp({Name = "Console", Icon = "", Window = Console.Window})
 	end
 	
-	Main.SetupFilesystem = function()
-		if not env.writefile or not env.makefolder then return end
-		
-		local writefile,makefolder = env.writefile,env.makefolder
-		
-		makefolder("dex")
-		makefolder("dex/assets")
-		makefolder("dex/saved")
-		makefolder("dex/plugins")
-		makefolder("dex/ModuleCache")
-	end
+	Main.ShowGui(gui)
+end
+
+------------------------------------------------------------------------
+-- MAIN INIT (Entry Point)
+------------------------------------------------------------------------
+Main.Init = function()
+	-- Phase 1: Environment
+	Main.InitEnv()
 	
-	Main.LocalDepsUpToDate = function()
-		return Main.DepsVersionData and Main.ClientVersion == Main.DepsVersionData[1]
-	end
+	-- Phase 2: Core systems
+	Main.InitCoreSystems()
+	Main.SetupFilesystem()
 	
-	Main.Init = function()
-		Main.Elevated = pcall(function() local a = game:GetService("CoreGui"):GetFullName() end)
-		Main.InitEnv()
-		Main.LoadSettings()
-		Main.SetupFilesystem()
-		
-		-- Load Lib
-		local intro = Main.CreateIntro("Initializing Library")
-		Lib = Main.LoadModule("Lib")
-		Lib.FastWait()
-		
-		-- Init other stuff
-		--Main.IncompatibleTest()
-		
-		-- Init icons
-		Main.MiscIcons = Lib.IconMap.new("rbxassetid://6511490623",256,256,16,16)
+	-- Phase 3: Splash
+	local intro = Main.CreateIntro("Initializing Library")
+	
+	-- Phase 4: Load Lib (foundation UI library)
+	intro.SetProgress("Loading Library", 0.1)
+	Lib = Main.LoadModule("Lib")
+	if Lib and Lib.FastWait then Lib.FastWait() end
+	
+	-- Phase 5: Icons
+	intro.SetProgress("Loading Icons", 0.2)
+	if Lib and Lib.IconMap then
+		Main.MiscIcons = Lib.IconMap.new("rbxassetid://6511490623", 256, 256, 16, 16)
 		Main.MiscIcons:SetDict({
-			Reference = 0,             Cut = 1,                         Cut_Disabled = 2,      Copy = 3,               Copy_Disabled = 4,    Paste = 5,                Paste_Disabled = 6,
-			Delete = 7,                Delete_Disabled = 8,             Group = 9,             Group_Disabled = 10,    Ungroup = 11,         Ungroup_Disabled = 12,    TeleportTo = 13,
-			Rename = 14,               JumpToParent = 15,               ExploreData = 16,      Save = 17,              CallFunction = 18,    CallRemote = 19,          Undo = 20,
-			Undo_Disabled = 21,        Redo = 22,                       Redo_Disabled = 23,    Expand_Over = 24,       Expand = 25,          Collapse_Over = 26,       Collapse = 27,
-			SelectChildren = 28,       SelectChildren_Disabled = 29,    InsertObject = 30,     ViewScript = 31,        AddStar = 32,         RemoveStar = 33,          Script_Disabled = 34,
-			LocalScript_Disabled = 35, Play = 36,                       Pause = 37,            Rename_Disabled = 38
+			Reference = 0, Cut = 1, Cut_Disabled = 2, Copy = 3, Copy_Disabled = 4, Paste = 5, Paste_Disabled = 6,
+			Delete = 7, Delete_Disabled = 8, Group = 9, Group_Disabled = 10, Ungroup = 11, Ungroup_Disabled = 12, TeleportTo = 13,
+			Rename = 14, JumpToParent = 15, ExploreData = 16, Save = 17, CallFunction = 18, CallRemote = 19, Undo = 20,
+			Undo_Disabled = 21, Redo = 22, Redo_Disabled = 23, Expand_Over = 24, Expand = 25, Collapse_Over = 26, Collapse = 27,
+			SelectChildren = 28, SelectChildren_Disabled = 29, InsertObject = 30, ViewScript = 31, AddStar = 32, RemoveStar = 33,
+			Script_Disabled = 34, LocalScript_Disabled = 35, Play = 36, Pause = 37, Rename_Disabled = 38
 		})
-		Main.LargeIcons = Lib.IconMap.new("rbxassetid://6579106223",256,256,32,32)
+		Main.LargeIcons = Lib.IconMap.new("rbxassetid://6579106223", 256, 256, 32, 32)
 		Main.LargeIcons:SetDict({
 			Explorer = 0, Properties = 1, Script_Viewer = 2,
 		})
-		
-		-- Fetch version if needed
-		intro.SetProgress("Fetching Roblox Version",0.2)
-		if Main.Elevated then
-			local fileVer = Lib.ReadFile("dex/deps_version.dat")
-			Main.ClientVersion = Version()
-			if fileVer then
-				Main.DepsVersionData = string.split(fileVer,"\n")
-				if Main.LocalDepsUpToDate() then
-					Main.RobloxVersion = Main.DepsVersionData[2]
-				end
-			end
-			Main.RobloxVersion = Main.RobloxVersion or game:HttpGet("http://setup.roblox.com/versionQTStudio")
+	end
+	
+	-- Phase 6: Fetch Roblox version
+	intro.SetProgress("Fetching Roblox Version", 0.25)
+	if Main.Elevated then
+		pcall(function()
+			Main.RobloxVersion = game:HttpGet("http://setup.roblox.com/versionQTStudio")
+		end)
+	end
+	
+	-- Phase 7: Fetch API + RMD
+	intro.SetProgress("Fetching API", 0.35)
+	API = Main.FetchAPI()
+	if Lib and Lib.FastWait then Lib.FastWait() end
+	
+	intro.SetProgress("Fetching RMD", 0.45)
+	RMD = Main.FetchRMD()
+	-- If RMD was deferred, parse now that Lib is available
+	if Main.RawRMDPending and Lib and Lib.ParseXML then
+		RMD = Main.ParseRMD(Main.RawRMDPending)
+		Main.RawRMDPending = nil
+	end
+	if Lib and Lib.FastWait then Lib.FastWait() end
+	
+	-- Phase 8: Update deps in Lib
+	intro.SetProgress("Loading Modules", 0.55)
+	if Main.AppControls.Lib and Main.AppControls.Lib.InitDeps then
+		Main.AppControls.Lib.InitDeps(Main.GetInitDeps())
+	end
+	
+	-- Phase 9: Load all other modules
+	Main.LoadModules()
+	if Lib and Lib.FastWait then Lib.FastWait() end
+	
+	-- Phase 10: Initialize modules
+	intro.SetProgress("Initializing Modules", 0.8)
+	local initOrder = {"Explorer", "Properties", "ScriptEditor", "Terminal", "RemoteSpy", "SaveInstance", "DataInspector", "NetworkSpy", "APIReference", "PluginAPI", "WorkspaceTools", "Console"}
+	for _, name in ipairs(initOrder) do
+		local app = Main.Apps[name]
+		if app and app.Init then
+			pcall(app.Init)
 		end
-		
-		-- Fetch external deps
-		intro.SetProgress("Fetching API",0.35)
-		API = Main.FetchAPI()
-		Lib.FastWait()
-		intro.SetProgress("Fetching RMD",0.5)
-		RMD = Main.FetchRMD()
-		Lib.FastWait()
-		
-		-- Save external deps locally if needed
-		if Main.Elevated and env.writefile and not Main.LocalDepsUpToDate() then
-			env.writefile("dex/deps_version.dat",Main.ClientVersion.."\n"..Main.RobloxVersion)
-			env.writefile("dex/rbx_api.dat",Main.RawAPI)
-			env.writefile("dex/rbx_rmd.dat",Main.RawRMD)
-		end
-		
-		-- Load other modules
-		intro.SetProgress("Loading Modules",0.75)
-		Main.AppControls.Lib.InitDeps(Main.GetInitDeps()) -- Missing deps now available
-		Main.LoadModules()
-		Lib.FastWait()
-		
-		-- Init other modules
-		intro.SetProgress("Initializing Modules",0.9)
-		Explorer.Init()
-		Properties.Init()
-		ScriptViewer.Init()
-		Lib.FastWait()
-		
-		-- Done
-		intro.SetProgress("Complete",1)
-		coroutine.wrap(function()
-			Lib.FastWait(1.25)
-			intro.Close()
-		end)()
-		
-		-- Init window system, create main menu, show explorer and properties
+	end
+	if Lib and Lib.FastWait then Lib.FastWait() end
+	
+	-- Phase 11: Done
+	intro.SetProgress("Complete", 1)
+	task.delay(1, function() intro.Close() end)
+	
+	-- Phase 12: Window system + main GUI
+	if Lib and Lib.Window and Lib.Window.Init then
 		Lib.Window.Init()
-		Main.CreateMainGui()
+	end
+	Main.CreateMainGui()
+	
+	-- Show default windows
+	if Explorer and Explorer.Window then
 		Explorer.Window:Show({Align = "right", Pos = 1, Size = 0.5, Silent = true})
+	end
+	if Properties and Properties.Window then
 		Properties.Window:Show({Align = "right", Pos = 2, Size = 0.5, Silent = true})
+	end
+	if Lib and Lib.DeferFunc and Lib.Window and Lib.Window.ToggleSide then
 		Lib.DeferFunc(function() Lib.Window.ToggleSide("right") end)
 	end
 	
-	return Main
-end)()
+	-- Phase 13: Load plugins
+	if PluginAPI and PluginAPI.LoadAll then
+		pcall(PluginAPI.LoadAll)
+	end
+	
+	-- Capability notification
+	local missing = Env.getMissingAPIs()
+	if #missing > 3 then
+		Notifications.Warning(#missing .. " UNC APIs unavailable on " .. Env.ExecutorName)
+	end
+	
+	Notifications.Success("Deux v" .. Main.Version .. " loaded")
+end
 
--- Start
+------------------------------------------------------------------------
+-- START
+------------------------------------------------------------------------
 Main.Init()
-
---for i,v in pairs(Main.MissingEnv) do print(i,v) end
