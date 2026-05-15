@@ -1,20 +1,4 @@
---[[
-	Deux :: Properties Module
-	
-	Full property editor with:
-	- Tag Editor (CollectionService) as side panel
-	- Attribute CRUD (all types, rename, delete)
-	- Copy value as Lua literal / display / JSON
-	- Multi-instance editing with conflict indicator
-	- Signal connections viewer (getconnections)
-	- Property search / filter
-	- Category grouping with collapsible sections
-	- Hidden/Deprecated toggles
-	- Inline editors for Color3, NumberSequence, ColorSequence, etc.
-	- Property change history (undo per-property)
-	
-	Credits: Original Properties architecture by Moon, rewritten for Deux
-]]
+-- Properties: property editor + tag editor + attribute CRUD + connections viewer.
 
 -- Common Locals
 local Main, Lib, Apps, Settings, Theme, Store, Keybinds, Notifications, Env
@@ -44,9 +28,7 @@ local function initAfterMain(appTable) end
 local function main()
 	local Properties = {}
 	
-	------------------------------------------------------------------------
-	-- STATE
-	------------------------------------------------------------------------
+	-- State
 	local currentInstances = {} -- list of selected instances (multi-edit)
 	local propertyRows = {} -- ordered display rows
 	local categoryStates = {} -- category -> expanded bool
@@ -63,9 +45,7 @@ local function main()
 	local scrollFrame
 	local changeListeners = {}
 	
-	------------------------------------------------------------------------
-	-- VALUE FORMATTING (Copy as Lua)
-	------------------------------------------------------------------------
+	-- typeof(value) -> Lua source string. Used for "Copy as Lua".
 	local function valueToLua(value)
 		local t = typeof(value)
 		if t == "string" then
@@ -140,9 +120,7 @@ local function main()
 	end
 
 
-	------------------------------------------------------------------------
-	-- PROPERTY READING
-	------------------------------------------------------------------------
+	-- Property reading
 	local function getProperties(instance)
 		if not instance or not API then return {} end
 		
@@ -209,9 +187,7 @@ local function main()
 		return s
 	end
 	
-	------------------------------------------------------------------------
-	-- MULTI-INSTANCE EDITING
-	------------------------------------------------------------------------
+	-- Multi-instance editing
 	local function getMultiValue(propName)
 		if #currentInstances == 0 then return nil, false, false end
 		if #currentInstances == 1 then
@@ -244,9 +220,7 @@ local function main()
 		Properties.Render()
 	end
 	
-	------------------------------------------------------------------------
-	-- ATTRIBUTES
-	------------------------------------------------------------------------
+	-- Attributes
 	local function getAttributes(instance)
 		local s, attrs = pcall(function() return instance:GetAttributes() end)
 		if not s then return {} end
@@ -280,9 +254,7 @@ local function main()
 		end
 	end
 	
-	------------------------------------------------------------------------
-	-- TAGS (CollectionService)
-	------------------------------------------------------------------------
+	-- Tags side-panel (CollectionService).
 	local CollectionService
 	
 	local function getTags(instance)
@@ -312,9 +284,7 @@ local function main()
 		pcall(function() CollectionService:RemoveTag(instance, tag) end)
 	end
 	
-	------------------------------------------------------------------------
-	-- CONNECTIONS VIEWER
-	------------------------------------------------------------------------
+	-- Connections viewer
 	local function getSignalConnections(instance, eventName)
 		if not Env or not Env.getconnections then return {} end
 		local s, signal = pcall(function() return instance[eventName] end)
@@ -336,9 +306,7 @@ local function main()
 	end
 
 
-	------------------------------------------------------------------------
-	-- PROPERTY HISTORY / UNDO
-	------------------------------------------------------------------------
+	-- Property history / undo
 	local function undoLast()
 		if #propertyHistory == 0 then return end
 		local entry = propertyHistory[#propertyHistory]
@@ -348,9 +316,7 @@ local function main()
 		if Notifications then Notifications.Info("Undid: " .. entry.Property) end
 	end
 	
-	------------------------------------------------------------------------
-	-- RENDERING
-	------------------------------------------------------------------------
+	-- Rendering
 	local rowPool = {}
 	local visibleRows = {}
 	local headerLabel, instanceCountLabel
@@ -676,9 +642,7 @@ local function main()
 	end
 
 
-	------------------------------------------------------------------------
-	-- CONTEXT MENU
-	------------------------------------------------------------------------
+	-- Context menu
 	Properties.ShowContextMenu = function(data)
 		if not Lib.ContextMenu then return end
 		local menu = Lib.ContextMenu.new()
@@ -764,9 +728,7 @@ local function main()
 		menu:Show()
 	end
 	
-	------------------------------------------------------------------------
-	-- SELECTION CHANGE LISTENER
-	------------------------------------------------------------------------
+	-- Selection change listener
 	local function onSelectionChanged(newSelection)
 		-- Disconnect old listeners
 		for _, conn in ipairs(changeListeners) do
@@ -791,9 +753,7 @@ local function main()
 		Properties.Render()
 	end
 	
-	------------------------------------------------------------------------
-	-- INIT
-	------------------------------------------------------------------------
+	-- Init
 	Properties.Init = function()
 		-- Create window
 		Properties.Window = Lib.Window.new()
@@ -946,9 +906,6 @@ local function main()
 		})
 	end
 	
-	------------------------------------------------------------------------
-	-- PUBLIC API
-	------------------------------------------------------------------------
 	Properties.GetCurrentInstances = function() return currentInstances end
 	Properties.SetPropertyValue = setPropertyValue
 	Properties.GetPropertyValue = getPropertyValue

@@ -1,17 +1,4 @@
---[[
-	Deux :: DataInspector Module
-	
-	Data viewer with:
-	- GC Explorer: filter getgc(true) by type, source script, name pattern, upvalue contents
-	- Function detail view: env, constants, upvalues, decompiled source, script path, references
-	- Reference explorer: find every gc-reachable holder with clickable path
-	- Constant-signature builder: select function, pick stable consts/upvals, generate findfunc snippet
-	- Thread browser: list coroutines, status, traceback
-	- All capability-gated (Env.Capabilities.GC, .Debug, etc.)
-	- Virtualized list rendering like Explorer
-	- Window with Lib.Window.new()
-	- Listens for Store "explore_data" event
-]]
+-- DataInspector: GC walker, function detail (env / consts / upvals / decompile), threads.
 
 -- Common Locals
 local Main, Lib, Apps, Settings, Theme, Store, Keybinds, Notifications, Env
@@ -41,9 +28,7 @@ local function initAfterMain(appTable) end
 local function main()
 	local DataInspector = {}
 
-	------------------------------------------------------------------------
-	-- STATE
-	------------------------------------------------------------------------
+	-- State
 	local connections = {}
 	local gcCache = {} -- cached getgc results
 	local gcLastRefresh = 0
@@ -70,9 +55,7 @@ local function main()
 	local window, contentFrame, listFrame, detailFrame
 	local tabBar, filterFrame, statusLabel
 
-	------------------------------------------------------------------------
-	-- CAPABILITY CHECKS
-	------------------------------------------------------------------------
+	-- Capability checks
 
 	local function hasGC()
 		return Env.Capabilities and Env.Capabilities.GC and Env.getgc
@@ -86,9 +69,7 @@ local function main()
 		return Env.decompile ~= nil
 	end
 
-	------------------------------------------------------------------------
-	-- GC EXPLORER
-	------------------------------------------------------------------------
+	-- Gc explorer
 
 	function DataInspector:RefreshGC()
 		if not hasGC() then
@@ -162,9 +143,7 @@ local function main()
 	end
 
 
-	------------------------------------------------------------------------
-	-- FUNCTION DETAIL VIEW
-	------------------------------------------------------------------------
+	-- Function detail view
 
 	function DataInspector:ShowFunctionDetail(fn)
 		if type(fn) ~= "function" then return end
@@ -219,9 +198,7 @@ local function main()
 		DataInspector:RenderDetail(detail)
 	end
 
-	------------------------------------------------------------------------
-	-- REFERENCE EXPLORER
-	------------------------------------------------------------------------
+	-- Reference explorer
 
 	function DataInspector:FindReferences(value)
 		if not hasGC() then return {} end
@@ -278,9 +255,7 @@ local function main()
 		DataInspector:RenderReferenceTabs()
 	end
 
-	------------------------------------------------------------------------
-	-- CONSTANT-SIGNATURE BUILDER
-	------------------------------------------------------------------------
+	-- Constant-signature builder
 
 	function DataInspector:BuildSignature(fn)
 		if type(fn) ~= "function" then return nil end
@@ -330,9 +305,7 @@ local function main()
 		return table.concat(lines, "\n")
 	end
 
-	------------------------------------------------------------------------
-	-- THREAD BROWSER
-	------------------------------------------------------------------------
+	-- Thread browser
 
 	function DataInspector:GetThreads()
 		if not Env.getthreads then return {} end
@@ -362,9 +335,7 @@ local function main()
 	end
 
 
-	------------------------------------------------------------------------
-	-- UI: VIRTUALIZED LIST
-	------------------------------------------------------------------------
+	-- Ui: virtualized list
 
 	function DataInspector:RenderList()
 		if not listFrame then return end
@@ -625,9 +596,7 @@ local function main()
 	end
 
 
-	------------------------------------------------------------------------
-	-- UI: BUILD
-	------------------------------------------------------------------------
+	-- Ui: build
 
 	function DataInspector:BuildUI()
 		window = Lib.Window.new()
@@ -804,9 +773,7 @@ local function main()
 		})
 	end
 
-	------------------------------------------------------------------------
-	-- TAB SWITCHING
-	------------------------------------------------------------------------
+	-- Tab switching
 
 	function DataInspector:SwitchTab(key)
 		activeTab = key
@@ -854,9 +821,7 @@ local function main()
 		listFrame.CanvasSize = UDim2.new(0, 0, 0, y)
 	end
 
-	------------------------------------------------------------------------
-	-- LIFECYCLE
-	------------------------------------------------------------------------
+	-- Lifecycle
 
 	function DataInspector:Init()
 		DataInspector:BuildUI()

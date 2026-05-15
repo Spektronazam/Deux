@@ -1,7 +1,4 @@
---[[
-	Deux :: APIReference Module
-	Searchable interactive API docs built from API and RMD tables
-]]
+-- APIReference: searchable docs from the Roblox API dump and ReflectionMetadata.
 
 local Main, Lib, Apps, Settings, Theme, Store, Keybinds, Notifications, Env
 local API, RMD, env, service, plr, create, createSimple

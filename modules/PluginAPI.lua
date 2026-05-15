@@ -1,7 +1,4 @@
---[[
-	Deux :: PluginAPI Module
-	Plugin system with loader, sandbox, manifest, manager UI, and hot-reload
-]]
+-- PluginAPI: loads user plugins from deux/plugins/ behind a sandboxed Dex.* surface.
 
 local Main, Lib, Apps, Settings, Theme, Store, Keybinds, Notifications, Env
 local API, RMD, env, service, plr, create, createSimple

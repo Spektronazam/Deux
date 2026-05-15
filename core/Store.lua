@@ -1,27 +1,7 @@
---[[
-	Deux Core :: Store
-	Pub/Sub State Store for Cross-Module Communication
-	
-	Features:
-	- Central state container shared across all modules
-	- Publish/subscribe with key-pattern matching
-	- Selection bus (Explorer, Properties, ScriptEditor all share "currentSelection")
-	- Event system for one-off signals (e.g. "navigate_to_instance")
-	- State history for undo support
-	
-	Usage:
-		local Store = require("core/Store")
-		Store.Set("selection", {instance1, instance2})
-		Store.Subscribe("selection", function(newVal, oldVal) ... end)
-		Store.On("navigate", function(target) Explorer.ScrollTo(target) end)
-		Store.Emit("navigate", someInstance)
-]]
+-- Store: shared state + pub/sub bus that lets modules talk without depending on each other.
 
 local Store = {}
 
-------------------------------------------------------------------------
--- INTERNAL STATE
-------------------------------------------------------------------------
 local state = {}
 local stateSubscribers = {} -- key -> {callback, ...}
 local wildcardSubscribers = {} -- any state change
@@ -29,14 +9,7 @@ local eventHandlers = {} -- eventName -> {callback, ...}
 local history = {} -- {key, oldVal, newVal, timestamp}
 local MAX_HISTORY = 100
 
-------------------------------------------------------------------------
--- STATE MANAGEMENT
-------------------------------------------------------------------------
-
---- Set a state value
--- @param key: state key (e.g. "selection", "activeScript", "hoveredInstance")
--- @param value: any value
--- @param silent: if true, don't notify subscribers
+-- Set state. Pass silent=true to skip subscriber notification (initial sync, etc.).
 function Store.Set(key, value, silent)
 	local old = state[key]
 	if old == value then return end -- no change
@@ -70,12 +43,10 @@ function Store.Set(key, value, silent)
 	end
 end
 
---- Get a state value
 function Store.Get(key)
 	return state[key]
 end
 
---- Get multiple state values
 function Store.GetMany(...)
 	local results = {}
 	for _, key in ipairs({...}) do
@@ -84,20 +55,15 @@ function Store.GetMany(...)
 	return unpack(results)
 end
 
---- Check if a key exists
 function Store.Has(key)
 	return state[key] ~= nil
 end
 
---- Delete a state key
 function Store.Delete(key)
 	Store.Set(key, nil)
 end
 
---- Subscribe to state changes for a specific key
--- @param key: the state key to watch
--- @param callback: function(newValue, oldValue, key)
--- @return: unsubscribe function
+-- Watch a single key. Returns an unsubscribe function.
 function Store.Subscribe(key, callback)
 	if not stateSubscribers[key] then
 		stateSubscribers[key] = {}
@@ -113,9 +79,7 @@ function Store.Subscribe(key, callback)
 	end
 end
 
---- Subscribe to all state changes
--- @param callback: function(key, newValue, oldValue)
--- @return: unsubscribe function
+-- Watch every key.
 function Store.SubscribeAll(callback)
 	table.insert(wildcardSubscribers, callback)
 	return function()
@@ -124,14 +88,9 @@ function Store.SubscribeAll(callback)
 	end
 end
 
-------------------------------------------------------------------------
--- EVENT SYSTEM (fire-and-forget signals between modules)
-------------------------------------------------------------------------
+-- Events: fire-and-forget signals between modules.
 
---- Register a handler for a named event
--- @param event: event name (e.g. "navigate", "open_script", "show_properties")
--- @param callback: function(...args)
--- @return: unsubscribe function
+-- Listen for a named event. Returns an unsubscribe function.
 function Store.On(event, callback)
 	if not eventHandlers[event] then
 		eventHandlers[event] = {}
@@ -147,9 +106,7 @@ function Store.On(event, callback)
 	end
 end
 
---- Emit a named event to all handlers
--- @param event: event name
--- @param ...: arguments passed to all handlers
+-- Fire an event. Args go to every listener.
 function Store.Emit(event, ...)
 	local handlers = eventHandlers[event]
 	if not handlers then return end
@@ -162,10 +119,7 @@ function Store.Emit(event, ...)
 	end
 end
 
---- Emit and wait for first response (request-reply pattern)
--- @param event: event name
--- @param ...: arguments
--- @return: first non-nil return value from handlers
+-- Request/reply: returns the first non-nil value any handler produces.
 function Store.Request(event, ...)
 	local handlers = eventHandlers[event]
 	if not handlers then return nil end
@@ -177,11 +131,8 @@ function Store.Request(event, ...)
 	return nil
 end
 
-------------------------------------------------------------------------
--- SELECTION BUS (convenience for the most common cross-module state)
-------------------------------------------------------------------------
+-- Selection bus: shorthand for the most-shared piece of state.
 
---- Set the current selection (list of instances)
 function Store.SetSelection(instances)
 	if type(instances) ~= "table" then
 		instances = {instances}
@@ -189,12 +140,10 @@ function Store.SetSelection(instances)
 	Store.Set("selection", instances)
 end
 
---- Get current selection
 function Store.GetSelection()
 	return state.selection or {}
 end
 
---- Add to selection
 function Store.AddToSelection(instance)
 	local sel = Store.GetSelection()
 	if not table.find(sel, instance) then
@@ -204,7 +153,6 @@ function Store.AddToSelection(instance)
 	end
 end
 
---- Remove from selection
 function Store.RemoveFromSelection(instance)
 	local sel = Store.GetSelection()
 	local idx = table.find(sel, instance)
@@ -215,12 +163,10 @@ function Store.RemoveFromSelection(instance)
 	end
 end
 
---- Clear selection
 function Store.ClearSelection()
 	Store.Set("selection", {})
 end
 
---- Toggle instance in selection
 function Store.ToggleSelection(instance)
 	local sel = Store.GetSelection()
 	if table.find(sel, instance) then
@@ -230,11 +176,6 @@ function Store.ToggleSelection(instance)
 	end
 end
 
-------------------------------------------------------------------------
--- HISTORY / UNDO
-------------------------------------------------------------------------
-
---- Get state change history
 function Store.GetHistory(key, limit)
 	limit = limit or 20
 	local filtered = {}
@@ -247,7 +188,7 @@ function Store.GetHistory(key, limit)
 	return filtered
 end
 
---- Undo the last state change for a key
+-- Undo the last state change for a key
 function Store.Undo(key)
 	for i = #history, 1, -1 do
 		if history[i].Key == key then
@@ -259,9 +200,7 @@ function Store.Undo(key)
 	return false
 end
 
-------------------------------------------------------------------------
--- CLEANUP
-------------------------------------------------------------------------
+-- Cleanup
 
 function Store.Reset()
 	state = {}

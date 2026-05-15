@@ -1,4 +1,4 @@
--- Deux v2.0.0 (d841f9a) | Built 2026-05-15 11:56:13 UTC
+-- Deux v2.0.0 (8afef99) | Built 2026-05-15 12:57:09 UTC
 -- https://github.com/Spektronazam/Deux
 -- Credits: Moon/LorekeeperZinnia, iris, Spektronazam, UNC Community
 
@@ -8,29 +8,29 @@ do
   if not prev then
     _G.DeuxBuild = {
       Version    = "2.0.0",
-      Commit     = "d841f9a",
-      BuildTime  = "2026-05-15T11:56:13Z",
+      Commit     = "8afef99",
+      BuildTime  = "2026-05-15T12:57:09Z",
       Credits    = {"Moon/LorekeeperZinnia (New Dex original)", "iris (successor co-conspirator)", "Spektronazam (Deux rewrite)", "UNC Community"},
       Modules    = {
-    {Name = "APIReference", SHA256 = "414b0e2711417993ab3a90cffebeb1c02377253e62e2e2818b6fcce35e1aab29"},
-    {Name = "Console", SHA256 = "74d83e5cbbe4cd0728c888e509b7ac113f4c3cf3c9031859d18bec46d4a3bf25"},
-    {Name = "DataInspector", SHA256 = "a8e1de99da1252e9ed570af8f7db83a529cd3425ca1bbfd6d50cc05237c61b59"},
-    {Name = "Env", SHA256 = "f794678ae9611edc2085da24bc3a745f3ec97b4426e4063c42b2a3ee8299a332"},
-    {Name = "Explorer", SHA256 = "3dd8da62f960295d93cf8a3a180bedccd6f693f42f76522ad1a2f607fcb2b626"},
-    {Name = "Keybinds", SHA256 = "df878df3c17c52050e0dc5091c719f5d6367f881dc3f10e01bbb165cbc5b27e9"},
-    {Name = "Lib", SHA256 = "1e211348e5183f4568e86a65271656f0f4e215a65705f368a00459ccbd6ebe4f"},
-    {Name = "NetworkSpy", SHA256 = "7d02d04abcdd0af404e844a115f7037957f244fd19a842a0619ab08033b829d9"},
-    {Name = "Notifications", SHA256 = "5a0da8a43b35984c2caf97370be70d2b54d977bf2a9497b4db3217a81cf615af"},
-    {Name = "PluginAPI", SHA256 = "1953de1fcdbb301044ae08eb5f9b964fad8b86e9e90ba0e9400c22a9b76b27b8"},
-    {Name = "Properties", SHA256 = "f06701373dd65c884081e63583a00d286285266cd6363aee235bd05a1152f388"},
-    {Name = "RemoteSpy", SHA256 = "de3e2ebe5f9fcede033a1ec7d069bdcf7e50dc68c10d4b66e1dfccca18e6bad3"},
-    {Name = "SaveInstance", SHA256 = "fbce9d62962fc3bd778dc86de03c59f644a33d5fdd05fdb8a53569d29c758299"},
-    {Name = "ScriptEditor", SHA256 = "d4bd41a7a9420a77cc7a8e5aa97bc692898d9d6ea4a837556d1daa6af3bd93ae"},
-    {Name = "Settings", SHA256 = "d6922dd54cadeece16f7fa1181a2d9dddda43d0817d003e931e41cc753553256"},
-    {Name = "Store", SHA256 = "2231c009e9786f9b2b79b834fa492cddc43242ff5b0951473f375f35933d5813"},
-    {Name = "Terminal", SHA256 = "116038fa874fb1f1aec260ee4e48d7118a6428d3e1c7841027773e211ba7580f"},
-    {Name = "Theme", SHA256 = "75a65415cd049b220ce0f096a55de31fdc35138222aad5a8a3b590aeb1ec951d"},
-    {Name = "WorkspaceTools", SHA256 = "2022fb0b224652b178c502184a124635312d32f23bc9fc852aee2566461f54ef"}
+    {Name = "APIReference", SHA256 = "c7c6f23fff5d40f0e3ee28471d7f93843b639941ac0888db8976b7b0fbc68428"},
+    {Name = "Console", SHA256 = "768416edd9624983d3f37b5f622331ace834ca3ecce167a7d185dcae76873cdc"},
+    {Name = "DataInspector", SHA256 = "78c5b57db8d6e2f0b754514a0ae4a4f782f872311eb615c8d82de2a332528dc3"},
+    {Name = "Env", SHA256 = "655d14d8118c242e815bc44725f74924e63d50c2ea304b1c939faf697385055f"},
+    {Name = "Explorer", SHA256 = "971896151e49c97e501417bf58ae4e08f5cc51b30f6964d7e6587a23b90105cd"},
+    {Name = "Keybinds", SHA256 = "90dcae39b20dc9dad53ae686379281955d82381b4da83e86029494258233e1e6"},
+    {Name = "Lib", SHA256 = "46f8ab45d4af370bc679e1782ff467c83bd27ea37a2e732afa67219047cd2a95"},
+    {Name = "NetworkSpy", SHA256 = "ece6083cf00d28b25eea3025b706d6d34936a48a7086c5771dd1137f9a519251"},
+    {Name = "Notifications", SHA256 = "85fbc0f9a498debf7cdfa2c5b9d22e3a54be85610290e34039366ad3262242fd"},
+    {Name = "PluginAPI", SHA256 = "4a09f751f524a3a54f805cdc90b5ffdd3599b3c766ec9fdd6a7d0a7b3dc2b12d"},
+    {Name = "Properties", SHA256 = "fa0885fd5afdf27ded3549a304ae32f8fadc9896f3f80d5d43b0148e873a7fae"},
+    {Name = "RemoteSpy", SHA256 = "bb15e459274f133ea263cc7a208299f6c29abbe2534cbed804687e6c9b5e5256"},
+    {Name = "SaveInstance", SHA256 = "993790e047ea2eec20c7c9e47e33188a036dade40ee9986cfd5acad4f04c8740"},
+    {Name = "ScriptEditor", SHA256 = "32c18b60b8e482d2e38ae6dcd5450ebd82df3e2be1a0146d780acaefba5084ff"},
+    {Name = "Settings", SHA256 = "0734d3c944bf5fdf372fd300a2cea62b16d1d31018553ad4bd9265f8b51e0cd6"},
+    {Name = "Store", SHA256 = "3ac813ffe966dd16ab3b186412f5485074115a95322c3df0ce72f4ec2e9cc522"},
+    {Name = "Terminal", SHA256 = "c9cbcde2d527c643f715892c8ac55275a5eb36e76acd1e1b16f02f3db5b1c80b"},
+    {Name = "Theme", SHA256 = "eeab5c112c3c599f34296e1b9fd8b95511b458c25d089afd6f353e4c119abd50"},
+    {Name = "WorkspaceTools", SHA256 = "9bc8f290d852127586ac6de8134cbb86e939e1d9039c071265e535eedd75a050"}
       },
     }
   end
@@ -39,20 +39,7 @@ end
 local EmbeddedModules = {}
 
 EmbeddedModules["Env"] = function()
---[[
-	Deux Core :: Env
-	UNC/sUNC Environment Abstraction & Capability Detection
-	
-	Provides a unified interface to executor functions following the
-	Unified Naming Convention (UNC) standard. Falls back to legacy
-	aliases when UNC names are unavailable.
-	
-	Usage:
-		local Env = require("core/Env") -- loaded by main bundler
-		if Env.Capabilities.Decompile then
-			local src = Env.decompile(script)
-		end
-]]
+-- Env: executor function lookup with UNC-first fallbacks and capability flags.
 
 local Env = {}
 Env.Capabilities = {}
@@ -104,9 +91,7 @@ local function registerChain(envName, ...)
 	return false
 end
 
-------------------------------------------------------------------------
--- IDENTIFICATION
-------------------------------------------------------------------------
+-- Identification
 local identifyFn = resolveGlobal("identifyexecutor", "getexecutorname", "get_executor_name")
 if identifyFn then
 	local s, name, ver = pcall(identifyFn)
@@ -116,9 +101,7 @@ if identifyFn then
 	end
 end
 
-------------------------------------------------------------------------
--- FILESYSTEM (UNC Standard)
-------------------------------------------------------------------------
+-- Filesystem
 register("readfile", "readfile")
 register("writefile", "writefile")
 register("appendfile", "appendfile")
@@ -132,9 +115,7 @@ register("loadfile", "dofile") -- not the same semantics but closest fallback
 
 Env.Capabilities.Filesystem = (Env.readfile ~= nil and Env.writefile ~= nil and Env.makefolder ~= nil)
 
-------------------------------------------------------------------------
--- CLOSURES & HOOKING (UNC Standard)
-------------------------------------------------------------------------
+-- Closures & hooking
 register("hookfunction", "hookfunction", "hookfunc", "replaceclosure", "detour_function")
 register("hookmetamethod", "hookmetamethod", "hook_metamethod")
 register("newcclosure", "newcclosure", "new_cclosure")
@@ -146,9 +127,7 @@ register("setnamecallmethod", "setnamecallmethod", "set_namecall_method")
 
 Env.Capabilities.Hooking = (Env.hookfunction ~= nil or Env.hookmetamethod ~= nil)
 
-------------------------------------------------------------------------
--- DEBUG (UNC Standard)
-------------------------------------------------------------------------
+-- Debug
 registerChain("getupvalues", "debug.getupvalues", "getupvalues", "getupvals")
 registerChain("setupvalue", "debug.setupvalue", "setupvalue", "setupval")
 registerChain("getupvalue", "debug.getupvalue", "getupvalue", "getupval")
@@ -163,9 +142,7 @@ registerChain("getproto", "debug.getproto", "getproto")
 
 Env.Capabilities.Debug = (Env.getupvalues ~= nil and Env.getconstants ~= nil)
 
-------------------------------------------------------------------------
--- METATABLE (UNC Standard)
-------------------------------------------------------------------------
+-- Metatables
 register("getrawmetatable", "getrawmetatable", "get_raw_metatable")
 register("setrawmetatable", "setrawmetatable", "set_raw_metatable")
 register("setreadonly", "setreadonly", "set_readonly", "make_readonly")
@@ -173,9 +150,7 @@ register("isreadonly", "isreadonly", "is_readonly")
 
 Env.Capabilities.Metatable = (Env.getrawmetatable ~= nil)
 
-------------------------------------------------------------------------
--- INSTANCES & REFERENCES (UNC Standard)
-------------------------------------------------------------------------
+-- Instances
 register("cloneref", "cloneref", "clone_ref")
 register("gethui", "gethui", "get_hidden_ui")
 register("protectgui", "protectgui", "protect_gui")
@@ -193,9 +168,7 @@ register("gethiddenproperty", "gethiddenproperty", "get_hidden_property", "get_h
 Env.Capabilities.Instances = (Env.cloneref ~= nil)
 Env.Capabilities.Connections = (Env.getconnections ~= nil)
 
-------------------------------------------------------------------------
--- SCRIPTS (UNC Standard)
-------------------------------------------------------------------------
+-- Scripts
 register("decompile", "decompile", "decompile_script")
 register("getscriptbytecode", "getscriptbytecode", "get_script_bytecode", "dumpstring")
 register("getscripthash", "getscripthash", "get_script_hash")
@@ -208,9 +181,7 @@ register("getscriptfromthread", "getscriptfromthread", "get_script_from_thread")
 Env.Capabilities.Decompile = (Env.decompile ~= nil)
 Env.Capabilities.ScriptBytecode = (Env.getscriptbytecode ~= nil)
 
-------------------------------------------------------------------------
--- GC / REGISTRY (UNC Standard)
-------------------------------------------------------------------------
+-- GC / registry / threads
 register("getgc", "getgc", "get_gc_objects")
 register("getreg", "getreg", "get_registry")
 register("getthreads", "getthreads", "get_threads")
@@ -220,9 +191,7 @@ register("setthreadidentity", "setthreadidentity", "setidentity", "set_thread_id
 Env.Capabilities.GC = (Env.getgc ~= nil)
 Env.Capabilities.Registry = (Env.getreg ~= nil)
 
-------------------------------------------------------------------------
--- NETWORK / HTTP (UNC Standard)
-------------------------------------------------------------------------
+-- Network / clipboard
 register("request", "request", "http_request", "httpRequest")
 register("setclipboard", "setclipboard", "set_clipboard", "toclipboard")
 register("getexecutorname", "identifyexecutor", "getexecutorname")
@@ -239,9 +208,7 @@ end
 Env.Capabilities.HTTP = (Env.request ~= nil)
 Env.Capabilities.Clipboard = (Env.setclipboard ~= nil)
 
-------------------------------------------------------------------------
--- CRYPTO (UNC Standard)
-------------------------------------------------------------------------
+-- Crypt
 local cryptLib = resolveGlobal("crypt")
 if cryptLib then
 	Env.crypt = cryptLib
@@ -250,9 +217,7 @@ else
 	Env.Capabilities.Crypt = false
 end
 
-------------------------------------------------------------------------
--- DRAWING (UNC Standard)
-------------------------------------------------------------------------
+-- Drawing
 local drawingClass = resolveGlobal("Drawing")
 if drawingClass then
 	Env.Drawing = drawingClass
@@ -262,15 +227,11 @@ else
 end
 register("cleardrawcache", "cleardrawcache", "clear_draw_cache")
 
-------------------------------------------------------------------------
--- SAVE INSTANCE
-------------------------------------------------------------------------
+-- Save instance
 register("saveinstance", "saveinstance", "save_instance")
 Env.Capabilities.SaveInstance = (Env.saveinstance ~= nil)
 
-------------------------------------------------------------------------
--- MISC (UNC Standard)
-------------------------------------------------------------------------
+-- Misc
 register("getcustomasset", "getcustomasset", "getsynasset", "get_custom_asset")
 register("queue_on_teleport", "queue_on_teleport", "queueonteleport")
 register("checkcaller", "checkcaller", "check_caller")
@@ -286,9 +247,7 @@ register("rconsoleclear", "rconsoleclear")
 register("rconsoleclose", "rconsoleclose")
 register("rconsolecreate", "rconsolecreate")
 
-------------------------------------------------------------------------
--- ENVIRONMENT INTROSPECTION (UNC Standard)
-------------------------------------------------------------------------
+-- Environment introspection
 register("getrenv", "getrenv", "get_renv")
 register("getsenv", "getsenv", "get_senv")
 register("getgenv", "getgenv", "get_genv")
@@ -298,9 +257,7 @@ register("compareinstances", "compareinstances", "compare_instances")
 register("isscriptable", "isscriptable", "is_scriptable")
 register("setscriptable", "setscriptable", "set_scriptable")
 
-------------------------------------------------------------------------
--- WEBSOCKET (UNC Standard)
-------------------------------------------------------------------------
+-- WebSocket
 do
 	local ws = resolveGlobal("WebSocket")
 	if ws and (ws.connect or ws.Connect) then
@@ -312,17 +269,13 @@ do
 	end
 end
 
-------------------------------------------------------------------------
--- CRYPTO / HASHING (Optional, executor-dependent)
-------------------------------------------------------------------------
+-- Hashing / base64 (executor-dependent)
 registerChain("crypt_hash",     "crypt.hash",     "crypto.hash")
 registerChain("crypt_base64encode", "crypt.base64encode", "crypto.base64encode", "base64encode", "base64_encode")
 registerChain("crypt_base64decode", "crypt.base64decode", "crypto.base64decode", "base64decode", "base64_decode")
 Env.Capabilities.Crypt = (Env.crypt_base64encode ~= nil and Env.crypt_base64decode ~= nil)
 
-------------------------------------------------------------------------
--- SAFE SERVICE ACCESS (cloneref-wrapped)
-------------------------------------------------------------------------
+-- Service accessor (clonerefs once that's resolved)
 local game = game
 local cloneref = Env.cloneref
 
@@ -335,9 +288,7 @@ Env.getService = function(serviceName)
 	return serv
 end
 
-------------------------------------------------------------------------
--- SAFE GUI PARENTING
-------------------------------------------------------------------------
+-- Safe gui parenting
 Env.getGuiParent = function()
 	-- Priority: gethui > CoreGui (elevated) > PlayerGui
 	if Env.gethui then
@@ -363,18 +314,14 @@ Env.getGuiParent = function()
 	return nil
 end
 
-------------------------------------------------------------------------
--- GUI PROTECTION
-------------------------------------------------------------------------
+-- Gui protection
 Env.protectGui = function(gui)
 	if Env.protectgui then
 		pcall(Env.protectgui, gui)
 	end
 end
 
-------------------------------------------------------------------------
--- CAPABILITY SUMMARY
-------------------------------------------------------------------------
+-- Capability summary
 Env.getCapabilitySummary = function()
 	local summary = {}
 	for name, val in pairs(Env.Capabilities) do
@@ -388,9 +335,7 @@ Env.getMissingAPIs = function()
 	return Env.MissingAPIs
 end
 
-------------------------------------------------------------------------
--- sUNC TEST (optional, behind debug flag)
-------------------------------------------------------------------------
+-- Optional sUNC-style compatibility test, called from the Terminal `version` command.
 Env.runCompatibilityTest = function()
 	local results = {}
 	local total, passed = 0, 0
@@ -459,31 +404,10 @@ return Env
 end
 
 EmbeddedModules["Settings"] = function()
---[[
-	Deux Core :: Settings
-	Persistent JSON Settings with Deep-Merge & Versioned Migration
-	
-	Features:
-	- Schema-versioned settings with automatic migration
-	- Deep merge of user settings over defaults (preserves new keys on update)
-	- Persistent save/load via filesystem (UNC readfile/writefile)
-	- Hot-reload support (call .Load() at any time)
-	- Observable: subscribe to changes per-key or globally
-	- Per-place overrides (game.PlaceId scoped)
-	
-	Usage:
-		local Settings = require("core/Settings")
-		Settings.Init(Env, service) -- call once at boot
-		local val = Settings.Get("Explorer.Sorting")
-		Settings.Set("Explorer.Sorting", false)
-		Settings.Subscribe("Theme", function(key, newVal, oldVal) ... end)
-]]
+-- Settings: JSON-backed prefs, deep-merged over defaults, with per-place overrides.
 
 local Settings = {}
 
-------------------------------------------------------------------------
--- INTERNAL STATE
-------------------------------------------------------------------------
 local SCHEMA_VERSION = 2
 local FILE_PATH = "deux/settings.json"
 local PLACE_FILE_PATH -- set at Init based on PlaceId
@@ -495,9 +419,6 @@ local currentData = {} -- live merged settings
 local subscribers = {} -- key pattern -> {callback, ...}
 local globalSubscribers = {} -- any change
 
-------------------------------------------------------------------------
--- DEFAULT SETTINGS SCHEMA
-------------------------------------------------------------------------
 Settings.Defaults = {
 	_SchemaVersion = SCHEMA_VERSION,
 	
@@ -612,9 +533,6 @@ Settings.Defaults = {
 	},
 }
 
-------------------------------------------------------------------------
--- DEEP UTILITY FUNCTIONS
-------------------------------------------------------------------------
 local function deepCopy(t)
 	if type(t) ~= "table" then return t end
 	local copy = {}
@@ -664,9 +582,6 @@ local function setNestedValue(tbl, path, value)
 	return oldVal
 end
 
-------------------------------------------------------------------------
--- MIGRATION
-------------------------------------------------------------------------
 local migrations = {}
 
 -- Migration from v1 (original Dex settings) to v2
@@ -712,9 +627,6 @@ local function migrate(data)
 	return data
 end
 
-------------------------------------------------------------------------
--- NOTIFICATION SYSTEM
-------------------------------------------------------------------------
 local function notifyChange(path, newVal, oldVal)
 	-- Notify specific subscribers
 	for pattern, callbacks in pairs(subscribers) do
@@ -730,13 +642,7 @@ local function notifyChange(path, newVal, oldVal)
 	end
 end
 
-------------------------------------------------------------------------
--- PUBLIC API
-------------------------------------------------------------------------
-
---- Initialize the settings system
--- @param envRef: core/Env module reference
--- @param serviceTable: service metatable from main
+-- Init: pulls in core/Env and the service cache. Call once at boot.
 function Settings.Init(envRef, serviceTable)
 	Env = envRef
 	HttpService = serviceTable.HttpService or game:GetService("HttpService")
@@ -761,7 +667,7 @@ function Settings.Init(envRef, serviceTable)
 	Settings.Load()
 end
 
---- Load settings from disk, merge with defaults
+-- Load: defaults <- global file <- per-place file (deepest wins).
 function Settings.Load()
 	currentData = deepCopy(Settings.Defaults)
 	
@@ -791,7 +697,7 @@ function Settings.Load()
 	currentData._SchemaVersion = SCHEMA_VERSION
 end
 
---- Save current settings to disk
+-- Persist current state to disk.
 function Settings.Save()
 	if not Env or not Env.Capabilities.Filesystem then return false end
 	
@@ -802,7 +708,7 @@ function Settings.Save()
 	return s2
 end
 
---- Save place-specific overrides
+-- Place-scoped overrides written to deux/settings_<PlaceId>.json.
 function Settings.SavePlaceOverrides(overrides)
 	if not Env or not Env.Capabilities.Filesystem or not PLACE_FILE_PATH then return false end
 	
@@ -813,17 +719,12 @@ function Settings.SavePlaceOverrides(overrides)
 	return s2
 end
 
---- Get a setting value by dot-separated path
--- @param path: e.g. "Explorer.Sorting" or "Theme.Main1"
--- @return: the value, or nil if not found
+-- Read by dot path, e.g. Settings.Get("Explorer.Sorting").
 function Settings.Get(path)
 	return getNestedValue(currentData, path)
 end
 
---- Set a setting value by dot-separated path
--- @param path: e.g. "Explorer.Sorting"
--- @param value: the new value
--- @param noSave: if true, don't auto-persist (batch mode)
+-- Write by dot path. Pass noSave=true to defer the disk hit when bulk-updating.
 function Settings.Set(path, value, noSave)
 	local oldVal = getNestedValue(currentData, path)
 	if oldVal == value then return end -- no change
@@ -836,7 +737,7 @@ function Settings.Set(path, value, noSave)
 	end
 end
 
---- Set multiple settings at once (batch), saves once at the end
+-- Apply many keys, save once.
 function Settings.SetBatch(changes)
 	for path, value in pairs(changes) do
 		local oldVal = getNestedValue(currentData, path)
@@ -848,8 +749,7 @@ function Settings.SetBatch(changes)
 	Settings.Save()
 end
 
---- Reset a category or all settings to defaults
--- @param category: optional category name (e.g. "Explorer"), or nil for all
+-- Reset a single category or the whole table when category is nil.
 function Settings.Reset(category)
 	if category then
 		local defaultCat = Settings.Defaults[category]
@@ -866,10 +766,8 @@ function Settings.Reset(category)
 	Settings.Save()
 end
 
---- Subscribe to changes on a settings path prefix
--- @param pathPrefix: e.g. "Explorer" to catch all Explorer.* changes, or "Explorer.Sorting" for specific
--- @param callback: function(path, newVal, oldVal)
--- @return: unsubscribe function
+-- Watch a path or path prefix; callback gets (fullPath, newVal, oldVal). Returns an
+-- unsubscribe function.
 function Settings.Subscribe(pathPrefix, callback)
 	if not subscribers[pathPrefix] then
 		subscribers[pathPrefix] = {}
@@ -885,9 +783,7 @@ function Settings.Subscribe(pathPrefix, callback)
 	end
 end
 
---- Subscribe to all settings changes
--- @param callback: function(path, newVal, oldVal)
--- @return: unsubscribe function
+-- Watch every change. Returns an unsubscribe function.
 function Settings.SubscribeAll(callback)
 	table.insert(globalSubscribers, callback)
 	return function()
@@ -896,24 +792,24 @@ function Settings.SubscribeAll(callback)
 	end
 end
 
---- Get the full settings table (read-only reference)
+-- Read-only handle to the live table.
 function Settings.GetAll()
 	return currentData
 end
 
---- Get the raw defaults table
+-- Get the raw defaults table
 function Settings.GetDefaults()
 	return Settings.Defaults
 end
 
---- Export settings as JSON string
+-- Export settings as JSON string
 function Settings.Export()
 	if not HttpService then return nil end
 	local s, json = pcall(HttpService.JSONEncode, HttpService, currentData)
 	return s and json or nil
 end
 
---- Import settings from JSON string
+-- Import settings from JSON string
 function Settings.Import(jsonStr)
 	if not HttpService then return false end
 	local s, decoded = pcall(HttpService.JSONDecode, HttpService, jsonStr)
@@ -927,7 +823,7 @@ function Settings.Import(jsonStr)
 	return true
 end
 
---- Get schema version
+-- Get schema version
 function Settings.GetSchemaVersion()
 	return SCHEMA_VERSION
 end
@@ -937,39 +833,17 @@ return Settings
 end
 
 EmbeddedModules["Theme"] = function()
---[[
-	Deux Core :: Theme
-	Runtime Theme Engine with Presets & Subscriber Model
-	
-	Features:
-	- 3 built-in presets: Dark (default), Darker, Light
-	- User theme JSON import/export (deux/themes/*.json)
-	- Every UI element subscribes to theme changes via Theme.Subscribe
-	- Accent color customization
-	- Syntax highlighting colors integrated
-	
-	Usage:
-		local Theme = require("core/Theme")
-		Theme.Init(Env, Settings, service)
-		Theme.Apply("Darker")
-		Theme.Subscribe("Main1", function(color) frame.BackgroundColor3 = color end)
-		Theme.SetAccent(Color3.fromRGB(0, 150, 255))
-]]
+-- Theme: color presets + per-key subscribers so UI re-tints when the user swaps themes.
 
 local Theme = {}
 
-------------------------------------------------------------------------
--- INTERNAL STATE
-------------------------------------------------------------------------
 local Env, Settings, HttpService
 local currentTheme = {}
 local subscribers = {} -- key -> {callback, ...}
 local globalSubscribers = {}
 local currentPresetName = "Dark"
 
-------------------------------------------------------------------------
--- COLOR HELPER
-------------------------------------------------------------------------
+-- Color helper
 local rgb = Color3.fromRGB
 
 local function colorToTable(c)
@@ -983,9 +857,7 @@ local function tableToColor(t)
 	return rgb(255, 255, 255)
 end
 
-------------------------------------------------------------------------
--- BUILT-IN PRESETS
-------------------------------------------------------------------------
+-- Built-in presets
 Theme.Presets = {
 	Dark = {
 		Name = "Dark",
@@ -1159,9 +1031,7 @@ Theme.Presets = {
 	},
 }
 
-------------------------------------------------------------------------
--- NOTIFICATION
-------------------------------------------------------------------------
+-- Notification
 local function notifyKey(key, newVal, oldVal)
 	local keySubscribers = subscribers[key]
 	if keySubscribers then
@@ -1187,10 +1057,6 @@ local function notifyAll()
 	end
 end
 
-------------------------------------------------------------------------
--- PUBLIC API
-------------------------------------------------------------------------
-
 function Theme.Init(envRef, settingsRef, serviceTable)
 	Env = envRef
 	Settings = settingsRef
@@ -1205,7 +1071,7 @@ function Theme.Init(envRef, settingsRef, serviceTable)
 	end
 end
 
---- Apply a preset by name
+-- Apply a preset by name
 function Theme.Apply(presetName, silent)
 	local preset = Theme.Presets[presetName]
 	if not preset then return false end
@@ -1223,7 +1089,7 @@ function Theme.Apply(presetName, silent)
 	return true
 end
 
---- Apply a custom theme table (e.g. loaded from JSON)
+-- Apply a custom theme table (e.g. loaded from JSON)
 function Theme.ApplyCustom(themeTable, silent)
 	if type(themeTable) ~= "table" then return false end
 	
@@ -1250,7 +1116,7 @@ function Theme.ApplyCustom(themeTable, silent)
 	return true
 end
 
---- Get a theme color by key
+-- Get a theme color by key
 function Theme.Get(key)
 	if string.find(key, ".", 1, true) then
 		local parts = string.split(key, ".")
@@ -1263,27 +1129,23 @@ function Theme.Get(key)
 	return currentTheme[key]
 end
 
---- Get the full current theme table
+-- Get the full current theme table
 function Theme.GetCurrent()
 	return currentTheme
 end
 
---- Get current preset name
+-- Get current preset name
 function Theme.GetCurrentName()
 	return currentPresetName
 end
 
---- Set accent color (applies to Accent key and updates dependents)
 function Theme.SetAccent(color)
 	local old = currentTheme.Accent
 	currentTheme.Accent = color
 	notifyKey("Accent", color, old)
 end
 
---- Subscribe to a specific theme key change
--- @param key: e.g. "Main1", "Syntax.Keyword", "Accent"
--- @param callback: function(newColor, oldColor, key)
--- @return: unsubscribe function
+-- Watch one key (e.g. "Main1", "Syntax.Keyword", "Accent"). Returns unsubscribe.
 function Theme.Subscribe(key, callback)
 	if not subscribers[key] then
 		subscribers[key] = {}
@@ -1305,7 +1167,7 @@ function Theme.Subscribe(key, callback)
 	end
 end
 
---- Subscribe to all theme changes
+-- Subscribe to all theme changes
 function Theme.SubscribeAll(callback)
 	table.insert(globalSubscribers, callback)
 	return function()
@@ -1314,7 +1176,7 @@ function Theme.SubscribeAll(callback)
 	end
 end
 
---- List available presets
+-- List available presets
 function Theme.ListPresets()
 	local names = {}
 	for name in pairs(Theme.Presets) do
@@ -1324,7 +1186,7 @@ function Theme.ListPresets()
 	return names
 end
 
---- Export current theme as JSON
+-- Export current theme as JSON
 function Theme.Export()
 	if not HttpService then return nil end
 	
@@ -1348,7 +1210,7 @@ function Theme.Export()
 	return s and json or nil
 end
 
---- Import theme from JSON string
+-- Import theme from JSON string
 function Theme.Import(jsonStr)
 	if not HttpService then return false end
 	local s, decoded = pcall(HttpService.JSONDecode, HttpService, jsonStr)
@@ -1374,7 +1236,7 @@ function Theme.Import(jsonStr)
 	return Theme.ApplyCustom(themeTable)
 end
 
---- Save current theme to filesystem
+-- Save current theme to filesystem
 function Theme.SaveToFile(filename)
 	if not Env or not Env.Capabilities.Filesystem then return false end
 	local json = Theme.Export()
@@ -1384,7 +1246,7 @@ function Theme.SaveToFile(filename)
 	return s
 end
 
---- Load theme from filesystem
+-- Load theme from filesystem
 function Theme.LoadFromFile(filename)
 	if not Env or not Env.Capabilities.Filesystem then return false end
 	local path = "deux/themes/" .. filename .. ".json"
@@ -1393,7 +1255,7 @@ function Theme.LoadFromFile(filename)
 	return Theme.Import(raw)
 end
 
---- List saved theme files
+-- List saved theme files
 function Theme.ListSavedThemes()
 	if not Env or not Env.Capabilities.Filesystem then return {} end
 	local s, files = pcall(Env.listfiles, "deux/themes")
@@ -1414,33 +1276,10 @@ return Theme
 end
 
 EmbeddedModules["Keybinds"] = function()
---[[
-	Deux Core :: Keybinds
-	Central Keybind Registry with Conflict Detection
-	
-	Features:
-	- Register named actions with default keybinds
-	- Rebindable at runtime (persisted via Settings)
-	- Conflict detection and resolution
-	- Combo support (Ctrl+Shift+F, etc.)
-	- Category grouping for the settings UI
-	
-	Usage:
-		local Keybinds = require("core/Keybinds")
-		Keybinds.Init(Settings, service)
-		Keybinds.Register("Explorer.ToggleVisibility", {
-			Keys = {Enum.KeyCode.LeftControl, Enum.KeyCode.E},
-			Category = "Explorer",
-			Description = "Toggle Explorer window",
-			Callback = function() ... end
-		})
-]]
+-- Keybinds: named actions, modifier-aware combos, rebound through Settings.
 
 local Keybinds = {}
 
-------------------------------------------------------------------------
--- INTERNAL STATE
-------------------------------------------------------------------------
 local Settings
 local UserInputService
 local bindings = {} -- actionName -> {Keys, Category, Description, Callback, Enabled}
@@ -1448,9 +1287,6 @@ local keyState = {} -- KeyCode -> bool (currently held)
 local connections = {}
 local enabled = true
 
-------------------------------------------------------------------------
--- HELPERS
-------------------------------------------------------------------------
 local function keysMatch(required)
 	for _, key in ipairs(required) do
 		if not keyState[key] then return false end
@@ -1492,9 +1328,6 @@ local function keysToString(keys)
 	return table.concat(names, "+")
 end
 
-------------------------------------------------------------------------
--- INPUT HANDLING
-------------------------------------------------------------------------
 local function onInputBegan(input, gameProcessed)
 	if gameProcessed then return end
 	if not enabled then return end
@@ -1523,10 +1356,6 @@ local function onInputEnded(input, gameProcessed)
 	keyState[input.KeyCode] = false
 end
 
-------------------------------------------------------------------------
--- PUBLIC API
-------------------------------------------------------------------------
-
 function Keybinds.Init(settingsRef, serviceTable)
 	Settings = settingsRef
 	UserInputService = serviceTable.UserInputService or game:GetService("UserInputService")
@@ -1553,9 +1382,7 @@ function Keybinds.Init(settingsRef, serviceTable)
 	end
 end
 
---- Register a keybind action
--- @param name: unique action identifier (e.g. "Explorer.Toggle")
--- @param data: {Keys, Category, Description, Callback}
+-- Register a keybind action. `data` = {Keys, Category, Description, Callback}.
 function Keybinds.Register(name, data)
 	bindings[name] = {
 		Name = name,
@@ -1567,13 +1394,12 @@ function Keybinds.Register(name, data)
 	}
 end
 
---- Unregister a keybind
+-- Unregister a keybind
 function Keybinds.Unregister(name)
 	bindings[name] = nil
 end
 
---- Rebind an action to new keys
--- @return: true if successful, false + conflict name if conflict detected
+-- Rebind an action. Returns false + the conflicting action name if another binding already owns the combo.
 function Keybinds.Rebind(name, newKeys)
 	-- Check for conflicts
 	for otherName, other in pairs(bindings) do
@@ -1601,7 +1427,7 @@ function Keybinds.Rebind(name, newKeys)
 	return true
 end
 
---- Force rebind (override conflicts)
+-- Force rebind (override conflicts)
 function Keybinds.ForceRebind(name, newKeys)
 	local binding = bindings[name]
 	if not binding then return false end
@@ -1610,24 +1436,24 @@ function Keybinds.ForceRebind(name, newKeys)
 	return true
 end
 
---- Enable/disable a specific binding
+-- Enable/disable a specific binding
 function Keybinds.SetEnabled(name, state)
 	if bindings[name] then
 		bindings[name].Enabled = state
 	end
 end
 
---- Enable/disable entire keybind system
+-- Enable/disable entire keybind system
 function Keybinds.SetGlobalEnabled(state)
 	enabled = state
 end
 
---- Get binding info
+-- Get binding info
 function Keybinds.GetBinding(name)
 	return bindings[name]
 end
 
---- Get all bindings grouped by category
+-- Get all bindings grouped by category
 function Keybinds.GetAll()
 	local categories = {}
 	for name, binding in pairs(bindings) do
@@ -1648,14 +1474,14 @@ function Keybinds.GetAll()
 	return categories
 end
 
---- Get display string for a keybind
+-- Get display string for a keybind
 function Keybinds.GetKeyString(name)
 	local binding = bindings[name]
 	if not binding then return "" end
 	return keysToString(binding.Keys)
 end
 
---- Find conflicts for a set of keys
+-- Find conflicts for a set of keys
 function Keybinds.FindConflicts(keys, excludeName)
 	local conflicts = {}
 	for name, binding in pairs(bindings) do
@@ -1672,7 +1498,7 @@ function Keybinds.FindConflicts(keys, excludeName)
 	return conflicts
 end
 
---- Save all bindings to settings
+-- Save all bindings to settings
 function Keybinds.Save()
 	if not Settings then return end
 	local serialized = {}
@@ -1686,7 +1512,7 @@ function Keybinds.Save()
 	Settings.Set("Keybinds", serialized, false)
 end
 
---- Reset all bindings to defaults (requires re-registration)
+-- Reset all bindings to defaults (requires re-registration)
 function Keybinds.ResetAll()
 	-- Clear saved
 	if Settings then
@@ -1694,7 +1520,7 @@ function Keybinds.ResetAll()
 	end
 end
 
---- Cleanup
+-- Cleanup
 function Keybinds.Destroy()
 	for _, conn in ipairs(connections) do
 		conn:Disconnect()
@@ -1708,32 +1534,10 @@ return Keybinds
 end
 
 EmbeddedModules["Notifications"] = function()
---[[
-	Deux Core :: Notifications
-	Toast Notification System
-	
-	Features:
-	- Severity levels: Info, Success, Warning, Error
-	- Auto-dismiss with configurable duration
-	- Click-to-dismiss
-	- Stacking with smooth animations
-	- Queue system to prevent overflow
-	- Themed via core/Theme
-	
-	Usage:
-		local Notifications = require("core/Notifications")
-		Notifications.Init(Env, Theme, service)
-		Notifications.Info("Settings saved")
-		Notifications.Error("Decompile failed: timeout")
-		Notifications.Success("Hook applied to RemoteEvent.FireServer")
-		Notifications.Warning("Missing UNC API: hookmetamethod")
-]]
+-- Notifications: stacked toasts with severity colors, auto-dismiss, click to close.
 
 local Notifications = {}
 
-------------------------------------------------------------------------
--- INTERNAL STATE
-------------------------------------------------------------------------
 local Env, Theme
 local TweenService, RunService
 local guiParent
@@ -1749,9 +1553,6 @@ local NOTIFICATION_WIDTH = 320
 local NOTIFICATION_PADDING = 6
 local CORNER_RADIUS = 6
 
-------------------------------------------------------------------------
--- SEVERITY CONFIG
-------------------------------------------------------------------------
 local Severity = {
 	Info = {Icon = "ℹ", ColorKey = "Accent"},
 	Success = {Icon = "✓", ColorKey = "Success"},
@@ -1759,9 +1560,6 @@ local Severity = {
 	Error = {Icon = "✕", ColorKey = "Important"},
 }
 
-------------------------------------------------------------------------
--- UI CREATION
-------------------------------------------------------------------------
 local function createNotificationGui()
 	local screenGui = Instance.new("ScreenGui")
 	screenGui.Name = "DeuxNotifications"
@@ -1853,9 +1651,6 @@ local function createToast(message, severity, duration)
 	return toast
 end
 
-------------------------------------------------------------------------
--- LAYOUT & ANIMATION
-------------------------------------------------------------------------
 local function repositionAll()
 	for i, notif in ipairs(activeNotifications) do
 		local targetY = (i - 1) * (NOTIFICATION_HEIGHT + NOTIFICATION_PADDING)
@@ -1902,10 +1697,6 @@ local function dismiss(notifData)
 	end)
 end
 
-------------------------------------------------------------------------
--- PUBLIC API
-------------------------------------------------------------------------
-
 function Notifications.Init(envRef, themeRef, serviceTable)
 	Env = envRef
 	Theme = themeRef
@@ -1923,10 +1714,7 @@ function Notifications.Init(envRef, themeRef, serviceTable)
 	end
 end
 
---- Show a notification
--- @param message: text to display
--- @param severity: "Info" | "Success" | "Warning" | "Error"
--- @param duration: seconds before auto-dismiss (default 4)
+-- Show a toast. severity: "Info" | "Success" | "Warning" | "Error". duration in seconds.
 function Notifications.Show(message, severity, duration)
 	if not notificationFrame then return end
 	
@@ -1972,7 +1760,7 @@ function Notifications.Show(message, severity, duration)
 	end)
 end
 
---- Convenience methods
+-- Convenience methods
 function Notifications.Info(msg, duration)
 	Notifications.Show(msg, "Info", duration)
 end
@@ -1989,7 +1777,7 @@ function Notifications.Error(msg, duration)
 	Notifications.Show(msg, "Error", duration or 6)
 end
 
---- Clear all notifications
+-- Clear all notifications
 function Notifications.Clear()
 	for _, notif in ipairs(activeNotifications) do
 		notif.Frame:Destroy()
@@ -1998,7 +1786,7 @@ function Notifications.Clear()
 	queue = {}
 end
 
---- Get count of active + queued
+-- Get count of active + queued
 function Notifications.GetCount()
 	return #activeNotifications + #queue
 end
@@ -2008,30 +1796,10 @@ return Notifications
 end
 
 EmbeddedModules["Store"] = function()
---[[
-	Deux Core :: Store
-	Pub/Sub State Store for Cross-Module Communication
-	
-	Features:
-	- Central state container shared across all modules
-	- Publish/subscribe with key-pattern matching
-	- Selection bus (Explorer, Properties, ScriptEditor all share "currentSelection")
-	- Event system for one-off signals (e.g. "navigate_to_instance")
-	- State history for undo support
-	
-	Usage:
-		local Store = require("core/Store")
-		Store.Set("selection", {instance1, instance2})
-		Store.Subscribe("selection", function(newVal, oldVal) ... end)
-		Store.On("navigate", function(target) Explorer.ScrollTo(target) end)
-		Store.Emit("navigate", someInstance)
-]]
+-- Store: shared state + pub/sub bus that lets modules talk without depending on each other.
 
 local Store = {}
 
-------------------------------------------------------------------------
--- INTERNAL STATE
-------------------------------------------------------------------------
 local state = {}
 local stateSubscribers = {} -- key -> {callback, ...}
 local wildcardSubscribers = {} -- any state change
@@ -2039,14 +1807,7 @@ local eventHandlers = {} -- eventName -> {callback, ...}
 local history = {} -- {key, oldVal, newVal, timestamp}
 local MAX_HISTORY = 100
 
-------------------------------------------------------------------------
--- STATE MANAGEMENT
-------------------------------------------------------------------------
-
---- Set a state value
--- @param key: state key (e.g. "selection", "activeScript", "hoveredInstance")
--- @param value: any value
--- @param silent: if true, don't notify subscribers
+-- Set state. Pass silent=true to skip subscriber notification (initial sync, etc.).
 function Store.Set(key, value, silent)
 	local old = state[key]
 	if old == value then return end -- no change
@@ -2080,12 +1841,10 @@ function Store.Set(key, value, silent)
 	end
 end
 
---- Get a state value
 function Store.Get(key)
 	return state[key]
 end
 
---- Get multiple state values
 function Store.GetMany(...)
 	local results = {}
 	for _, key in ipairs({...}) do
@@ -2094,20 +1853,15 @@ function Store.GetMany(...)
 	return unpack(results)
 end
 
---- Check if a key exists
 function Store.Has(key)
 	return state[key] ~= nil
 end
 
---- Delete a state key
 function Store.Delete(key)
 	Store.Set(key, nil)
 end
 
---- Subscribe to state changes for a specific key
--- @param key: the state key to watch
--- @param callback: function(newValue, oldValue, key)
--- @return: unsubscribe function
+-- Watch a single key. Returns an unsubscribe function.
 function Store.Subscribe(key, callback)
 	if not stateSubscribers[key] then
 		stateSubscribers[key] = {}
@@ -2123,9 +1877,7 @@ function Store.Subscribe(key, callback)
 	end
 end
 
---- Subscribe to all state changes
--- @param callback: function(key, newValue, oldValue)
--- @return: unsubscribe function
+-- Watch every key.
 function Store.SubscribeAll(callback)
 	table.insert(wildcardSubscribers, callback)
 	return function()
@@ -2134,14 +1886,9 @@ function Store.SubscribeAll(callback)
 	end
 end
 
-------------------------------------------------------------------------
--- EVENT SYSTEM (fire-and-forget signals between modules)
-------------------------------------------------------------------------
+-- Events: fire-and-forget signals between modules.
 
---- Register a handler for a named event
--- @param event: event name (e.g. "navigate", "open_script", "show_properties")
--- @param callback: function(...args)
--- @return: unsubscribe function
+-- Listen for a named event. Returns an unsubscribe function.
 function Store.On(event, callback)
 	if not eventHandlers[event] then
 		eventHandlers[event] = {}
@@ -2157,9 +1904,7 @@ function Store.On(event, callback)
 	end
 end
 
---- Emit a named event to all handlers
--- @param event: event name
--- @param ...: arguments passed to all handlers
+-- Fire an event. Args go to every listener.
 function Store.Emit(event, ...)
 	local handlers = eventHandlers[event]
 	if not handlers then return end
@@ -2172,10 +1917,7 @@ function Store.Emit(event, ...)
 	end
 end
 
---- Emit and wait for first response (request-reply pattern)
--- @param event: event name
--- @param ...: arguments
--- @return: first non-nil return value from handlers
+-- Request/reply: returns the first non-nil value any handler produces.
 function Store.Request(event, ...)
 	local handlers = eventHandlers[event]
 	if not handlers then return nil end
@@ -2187,11 +1929,8 @@ function Store.Request(event, ...)
 	return nil
 end
 
-------------------------------------------------------------------------
--- SELECTION BUS (convenience for the most common cross-module state)
-------------------------------------------------------------------------
+-- Selection bus: shorthand for the most-shared piece of state.
 
---- Set the current selection (list of instances)
 function Store.SetSelection(instances)
 	if type(instances) ~= "table" then
 		instances = {instances}
@@ -2199,12 +1938,10 @@ function Store.SetSelection(instances)
 	Store.Set("selection", instances)
 end
 
---- Get current selection
 function Store.GetSelection()
 	return state.selection or {}
 end
 
---- Add to selection
 function Store.AddToSelection(instance)
 	local sel = Store.GetSelection()
 	if not table.find(sel, instance) then
@@ -2214,7 +1951,6 @@ function Store.AddToSelection(instance)
 	end
 end
 
---- Remove from selection
 function Store.RemoveFromSelection(instance)
 	local sel = Store.GetSelection()
 	local idx = table.find(sel, instance)
@@ -2225,12 +1961,10 @@ function Store.RemoveFromSelection(instance)
 	end
 end
 
---- Clear selection
 function Store.ClearSelection()
 	Store.Set("selection", {})
 end
 
---- Toggle instance in selection
 function Store.ToggleSelection(instance)
 	local sel = Store.GetSelection()
 	if table.find(sel, instance) then
@@ -2240,11 +1974,6 @@ function Store.ToggleSelection(instance)
 	end
 end
 
-------------------------------------------------------------------------
--- HISTORY / UNDO
-------------------------------------------------------------------------
-
---- Get state change history
 function Store.GetHistory(key, limit)
 	limit = limit or 20
 	local filtered = {}
@@ -2257,7 +1986,7 @@ function Store.GetHistory(key, limit)
 	return filtered
 end
 
---- Undo the last state change for a key
+-- Undo the last state change for a key
 function Store.Undo(key)
 	for i = #history, 1, -1 do
 		if history[i].Key == key then
@@ -2269,9 +1998,7 @@ function Store.Undo(key)
 	return false
 end
 
-------------------------------------------------------------------------
--- CLEANUP
-------------------------------------------------------------------------
+-- Cleanup
 
 function Store.Reset()
 	state = {}
@@ -8049,9 +7776,9 @@ local function main()
 		return {new = new}
 	end)()
 
-	--- Deferred-event-safe batch processing helper
-	--- Collects items added within a single frame and processes them together
-	--- Prevents ordering issues with Roblox's deferred event mode
+	-- Deferred-event-safe batch processing helper
+	-- Collects items added within a single frame and processes them together
+	-- Prevents ordering issues with Roblox's deferred event mode
 	Lib.BatchProcessor = (function()
 		local props = {
 			Queue = {},
@@ -8096,7 +7823,7 @@ local function main()
 		return {new = new}
 	end)()
 
-	--- Cloneref-safe instance comparison
+	-- Cloneref-safe instance comparison
 	Lib.InstancesEqual = function(a, b)
 		if a == b then return true end
 		-- When cloneref is in use, references may differ but point to same instance
@@ -8104,7 +7831,7 @@ local function main()
 		return s and result
 	end
 
-	--- Theme-aware color getter (falls back to Settings.Theme for backward compat)
+	-- Theme-aware color getter (falls back to Settings.Theme for backward compat)
 	Lib.GetThemeColor = function(key)
 		if Theme and Theme.Get then
 			return Theme.Get(key)
@@ -8123,22 +7850,7 @@ return {InitDeps = initDeps, InitAfterMain = initAfterMain, Main = main}
 end
 
 EmbeddedModules["Explorer"] = function()
---[[
-	Deux :: Explorer Module
-	
-	Full instance tree explorer with:
-	- Click-to-select (3D + GUI)
-	- Bookmarks / starred instances
-	- Advanced search with structured filters (class:, name:, tag:, prop:, nil:)
-	- Multi-select with Shift/Ctrl
-	- Nil instances tab
-	- Deferred-event-safe batch updates
-	- Right-click context menu (full)
-	- Drag-and-drop reparenting
-	- Selection history (back/forward)
-	
-	Credits: Original Explorer architecture by Moon, rewritten for Deux
-]]
+-- Explorer: instance tree, selection, search, bookmarks, right-click menu.
 
 -- Common Locals
 local Main, Lib, Apps, Settings, Theme, Store, Keybinds, Notifications, Env
@@ -8194,9 +7906,7 @@ local function main()
 	local descendantAddedBatch
 	local descendantRemovedBatch
 	
-	------------------------------------------------------------------------
-	-- NODE CLASS
-	------------------------------------------------------------------------
+	-- Node class
 	local Node = {}
 	Node.__index = Node
 	
@@ -8239,9 +7949,7 @@ local function main()
 		return nil
 	end
 	
-	------------------------------------------------------------------------
-	-- TREE MANAGEMENT
-	------------------------------------------------------------------------
+	-- Tree management
 	local function buildNode(instance, parentNode, depth)
 		if nodeMap[instance] then return nodeMap[instance] end
 		
@@ -8355,9 +8063,7 @@ local function main()
 		Explorer.Render()
 	end
 	
-	------------------------------------------------------------------------
-	-- FLAT LIST GENERATION (for virtualized rendering)
-	------------------------------------------------------------------------
+	-- Flatten the tree into the visible row list. Virtualised renderer reads from this.
 	local flatList = {}
 	
 	local function buildFlatList()
@@ -8383,9 +8089,7 @@ local function main()
 	end
 
 
-	------------------------------------------------------------------------
-	-- SELECTION
-	------------------------------------------------------------------------
+	-- Selection
 	local function clearSelection()
 		for _, inst in ipairs(selection) do
 			local node = nodeMap[inst]
@@ -8473,9 +8177,7 @@ local function main()
 		end
 	end
 	
-	------------------------------------------------------------------------
-	-- BOOKMARKS
-	------------------------------------------------------------------------
+	-- Bookmarks
 	local function addBookmark(instance)
 		if table.find(bookmarks, instance) then return end
 		bookmarks[#bookmarks + 1] = instance
@@ -8540,9 +8242,7 @@ local function main()
 		end
 	end
 	
-	------------------------------------------------------------------------
-	-- SEARCH ENGINE
-	------------------------------------------------------------------------
+	-- Search engine
 	local SearchFilters = {}
 	
 	SearchFilters.class = function(inst, value)
@@ -8647,9 +8347,7 @@ local function main()
 	end
 
 
-	------------------------------------------------------------------------
-	-- CLICK-TO-SELECT (3D World + GUI)
-	------------------------------------------------------------------------
+	-- Click-to-select for 3D parts (mouse hit) and GUI elements (screen-space hit-test).
 	local clickToSelectEnabled = true
 	local selectionBox = nil
 	local guiSelectionOutline = nil
@@ -8702,7 +8400,7 @@ local function main()
 			end
 		end)
 		
-		-- GUI Click-to-select (Screen space)
+		-- GUI click-to-select: Alt+LMB on a GUI object selects it.
 		connections[#connections + 1] = uis.InputBegan:Connect(function(input, processed)
 			if processed then return end
 			if not clickToSelectEnabled then return end
@@ -8722,9 +8420,7 @@ local function main()
 		end)
 	end
 	
-	------------------------------------------------------------------------
-	-- NIL INSTANCES
-	------------------------------------------------------------------------
+	-- Nil instances
 	local function refreshNilInstances()
 		if not Env or not Env.getnilinstances then
 			nilInstances = {}
@@ -8736,9 +8432,7 @@ local function main()
 		end
 	end
 	
-	------------------------------------------------------------------------
-	-- DEFERRED-EVENT-SAFE LISTENERS
-	------------------------------------------------------------------------
+	-- Deferred-event-safe listeners
 	local function setupDescendantListeners()
 		-- Use BatchProcessor for deferred-safe updates
 		descendantAddedBatch = Lib.BatchProcessor.new(function(batch)
@@ -8778,9 +8472,7 @@ local function main()
 		end)
 	end
 	
-	------------------------------------------------------------------------
-	-- CONTEXT MENU
-	------------------------------------------------------------------------
+	-- Context menu
 	local function createContextMenu(node)
 		if not Lib.ContextMenu then return end
 		
@@ -8887,9 +8579,7 @@ local function main()
 		return menu
 	end
 	
-	------------------------------------------------------------------------
-	-- RENDERING (Virtualized Row Pool)
-	------------------------------------------------------------------------
+	-- Virtualised rendering: keep a fixed pool of row frames, recycle into the visible window.
 	local scrollFrame
 	local rowPool = {}
 	local visibleRows = {}
@@ -9103,9 +8793,7 @@ local function main()
 	end
 
 
-	------------------------------------------------------------------------
-	-- WINDOW & UI SETUP
-	------------------------------------------------------------------------
+	-- Window & ui setup
 	Explorer.Init = function()
 		-- Create window
 		Explorer.Window = Lib.Window.new()
@@ -9298,9 +8986,6 @@ local function main()
 		Explorer.Render()
 	end
 	
-	------------------------------------------------------------------------
-	-- PUBLIC API
-	------------------------------------------------------------------------
 	Explorer.GetSelection = function() return selection end
 	Explorer.SetSelection = function(insts) 
 		clearSelection()
@@ -9337,23 +9022,7 @@ return {InitDeps = initDeps, InitAfterMain = initAfterMain, Main = main}
 end
 
 EmbeddedModules["Properties"] = function()
---[[
-	Deux :: Properties Module
-	
-	Full property editor with:
-	- Tag Editor (CollectionService) as side panel
-	- Attribute CRUD (all types, rename, delete)
-	- Copy value as Lua literal / display / JSON
-	- Multi-instance editing with conflict indicator
-	- Signal connections viewer (getconnections)
-	- Property search / filter
-	- Category grouping with collapsible sections
-	- Hidden/Deprecated toggles
-	- Inline editors for Color3, NumberSequence, ColorSequence, etc.
-	- Property change history (undo per-property)
-	
-	Credits: Original Properties architecture by Moon, rewritten for Deux
-]]
+-- Properties: property editor + tag editor + attribute CRUD + connections viewer.
 
 -- Common Locals
 local Main, Lib, Apps, Settings, Theme, Store, Keybinds, Notifications, Env
@@ -9383,9 +9052,7 @@ local function initAfterMain(appTable) end
 local function main()
 	local Properties = {}
 	
-	------------------------------------------------------------------------
-	-- STATE
-	------------------------------------------------------------------------
+	-- State
 	local currentInstances = {} -- list of selected instances (multi-edit)
 	local propertyRows = {} -- ordered display rows
 	local categoryStates = {} -- category -> expanded bool
@@ -9402,9 +9069,7 @@ local function main()
 	local scrollFrame
 	local changeListeners = {}
 	
-	------------------------------------------------------------------------
-	-- VALUE FORMATTING (Copy as Lua)
-	------------------------------------------------------------------------
+	-- typeof(value) -> Lua source string. Used for "Copy as Lua".
 	local function valueToLua(value)
 		local t = typeof(value)
 		if t == "string" then
@@ -9479,9 +9144,7 @@ local function main()
 	end
 
 
-	------------------------------------------------------------------------
-	-- PROPERTY READING
-	------------------------------------------------------------------------
+	-- Property reading
 	local function getProperties(instance)
 		if not instance or not API then return {} end
 		
@@ -9548,9 +9211,7 @@ local function main()
 		return s
 	end
 	
-	------------------------------------------------------------------------
-	-- MULTI-INSTANCE EDITING
-	------------------------------------------------------------------------
+	-- Multi-instance editing
 	local function getMultiValue(propName)
 		if #currentInstances == 0 then return nil, false, false end
 		if #currentInstances == 1 then
@@ -9583,9 +9244,7 @@ local function main()
 		Properties.Render()
 	end
 	
-	------------------------------------------------------------------------
-	-- ATTRIBUTES
-	------------------------------------------------------------------------
+	-- Attributes
 	local function getAttributes(instance)
 		local s, attrs = pcall(function() return instance:GetAttributes() end)
 		if not s then return {} end
@@ -9619,9 +9278,7 @@ local function main()
 		end
 	end
 	
-	------------------------------------------------------------------------
-	-- TAGS (CollectionService)
-	------------------------------------------------------------------------
+	-- Tags side-panel (CollectionService).
 	local CollectionService
 	
 	local function getTags(instance)
@@ -9651,9 +9308,7 @@ local function main()
 		pcall(function() CollectionService:RemoveTag(instance, tag) end)
 	end
 	
-	------------------------------------------------------------------------
-	-- CONNECTIONS VIEWER
-	------------------------------------------------------------------------
+	-- Connections viewer
 	local function getSignalConnections(instance, eventName)
 		if not Env or not Env.getconnections then return {} end
 		local s, signal = pcall(function() return instance[eventName] end)
@@ -9675,9 +9330,7 @@ local function main()
 	end
 
 
-	------------------------------------------------------------------------
-	-- PROPERTY HISTORY / UNDO
-	------------------------------------------------------------------------
+	-- Property history / undo
 	local function undoLast()
 		if #propertyHistory == 0 then return end
 		local entry = propertyHistory[#propertyHistory]
@@ -9687,9 +9340,7 @@ local function main()
 		if Notifications then Notifications.Info("Undid: " .. entry.Property) end
 	end
 	
-	------------------------------------------------------------------------
-	-- RENDERING
-	------------------------------------------------------------------------
+	-- Rendering
 	local rowPool = {}
 	local visibleRows = {}
 	local headerLabel, instanceCountLabel
@@ -10015,9 +9666,7 @@ local function main()
 	end
 
 
-	------------------------------------------------------------------------
-	-- CONTEXT MENU
-	------------------------------------------------------------------------
+	-- Context menu
 	Properties.ShowContextMenu = function(data)
 		if not Lib.ContextMenu then return end
 		local menu = Lib.ContextMenu.new()
@@ -10103,9 +9752,7 @@ local function main()
 		menu:Show()
 	end
 	
-	------------------------------------------------------------------------
-	-- SELECTION CHANGE LISTENER
-	------------------------------------------------------------------------
+	-- Selection change listener
 	local function onSelectionChanged(newSelection)
 		-- Disconnect old listeners
 		for _, conn in ipairs(changeListeners) do
@@ -10130,9 +9777,7 @@ local function main()
 		Properties.Render()
 	end
 	
-	------------------------------------------------------------------------
-	-- INIT
-	------------------------------------------------------------------------
+	-- Init
 	Properties.Init = function()
 		-- Create window
 		Properties.Window = Lib.Window.new()
@@ -10285,9 +9930,6 @@ local function main()
 		})
 	end
 	
-	------------------------------------------------------------------------
-	-- PUBLIC API
-	------------------------------------------------------------------------
 	Properties.GetCurrentInstances = function() return currentInstances end
 	Properties.SetPropertyValue = setPropertyValue
 	Properties.GetPropertyValue = getPropertyValue
@@ -10315,21 +9957,7 @@ return {InitDeps = initDeps, InitAfterMain = initAfterMain, Main = main}
 end
 
 EmbeddedModules["ScriptEditor"] = function()
---[[
-	Deux :: ScriptEditor Module
-	
-	Full Luau code editor with:
-	- Tabbed interface (multiple scripts open)
-	- Luau lexer with RichText syntax highlighting
-	- Find / Replace with regex support
-	- Status bar (line/col, error line, total lines, decompile info)
-	- Run buffer (loadstring in game context)
-	- Decompile UX (status pill, re-decompile, show bytecode)
-	- Goto line, goto definition (basic)
-	- Auto-indent on Enter
-	
-	Credits: Original ScriptViewer by Moon, fully rewritten for Deux
-]]
+-- ScriptEditor: tabs, Luau lexer, find/replace, F5 to run, decompile.
 
 -- Common Locals
 local Main, Lib, Apps, Settings, Theme, Store, Keybinds, Notifications, Env
@@ -10359,9 +9987,7 @@ local function initAfterMain(appTable) end
 local function main()
 	local ScriptEditor = {}
 	
-	------------------------------------------------------------------------
-	-- STATE
-	------------------------------------------------------------------------
+	-- State
 	local tabs = {} -- {script, source, name, modified, decompileTime, cursorLine, cursorCol}
 	local activeTabIdx = 0
 	local connections = {}
@@ -10370,9 +9996,8 @@ local function main()
 	local tabBar, codeFrame, statusBar, findBar
 	local lineNumbers, codeInput, codeDisplay
 	
-	------------------------------------------------------------------------
-	-- LUAU LEXER (Token-based for RichText highlighting)
-	------------------------------------------------------------------------
+	-- Tiny Luau lexer used to drive RichText syntax highlighting in the editor.
+	-- Returns a sequence of tokens; the renderer turns each token into a coloured span.
 	local Keywords = {
 		["and"] = true, ["break"] = true, ["do"] = true, ["else"] = true,
 		["elseif"] = true, ["end"] = true, ["false"] = true, ["for"] = true,
@@ -10547,9 +10172,7 @@ local function main()
 	end
 
 
-	------------------------------------------------------------------------
-	-- TAB MANAGEMENT
-	------------------------------------------------------------------------
+	-- Tab management
 	local function getActiveTab()
 		return tabs[activeTabIdx]
 	end
@@ -10604,9 +10227,7 @@ local function main()
 		ScriptEditor.RenderCode()
 	end
 	
-	------------------------------------------------------------------------
-	-- DECOMPILE
-	------------------------------------------------------------------------
+	-- Decompile
 	local function decompileScript(scriptInst)
 		if not Env or not Env.Capabilities.Decompile then
 			if Notifications then Notifications.Error("Decompile unavailable on " .. (Env and Env.ExecutorName or "this executor")) end
@@ -10635,9 +10256,7 @@ local function main()
 		return "-- Failed to get bytecode: " .. tostring(bc)
 	end
 	
-	------------------------------------------------------------------------
-	-- OPEN SCRIPT (called from Explorer or Store event)
-	------------------------------------------------------------------------
+	-- Open a script (called by Explorer right-click and the "open_script" Store event).
 	ScriptEditor.OpenScript = function(scriptInst)
 		if not scriptInst then return end
 		
@@ -10665,9 +10284,7 @@ local function main()
 		end
 	end
 	
-	------------------------------------------------------------------------
-	-- FIND / REPLACE
-	------------------------------------------------------------------------
+	-- Find / replace
 	local findState = {
 		Query = "",
 		Replace = "",
@@ -10743,9 +10360,7 @@ local function main()
 		end
 	end
 	
-	------------------------------------------------------------------------
-	-- RUN BUFFER
-	------------------------------------------------------------------------
+	-- Run buffer
 	local function runCurrentBuffer()
 		local tab = getActiveTab()
 		if not tab then return end
@@ -10775,9 +10390,7 @@ local function main()
 		end
 	end
 	
-	------------------------------------------------------------------------
-	-- CURSOR / LINE HELPERS
-	------------------------------------------------------------------------
+	-- Cursor / line helpers
 	ScriptEditor.GetCursorLine = function()
 		if not codeInput then return 1 end
 		local text = codeInput.Text
@@ -10798,9 +10411,7 @@ local function main()
 	end
 
 
-	------------------------------------------------------------------------
-	-- RENDERING
-	------------------------------------------------------------------------
+	-- Rendering
 	ScriptEditor.RenderTabs = function()
 		if not tabBar then return end
 		-- Clear existing tab buttons
@@ -10895,9 +10506,7 @@ local function main()
 		statusBar.Text = string.format("Ln %d, Col %d | %d lines%s%s", curLine, curCol, lineCount, decompInfo, modifiedInfo)
 	end
 	
-	------------------------------------------------------------------------
-	-- INIT
-	------------------------------------------------------------------------
+	-- Init
 	ScriptEditor.Init = function()
 		ScriptEditor.Window = Lib.Window.new()
 		ScriptEditor.Window:SetTitle("Script Editor")
@@ -11087,17 +10696,12 @@ local function main()
 		end)
 	end
 	
-	------------------------------------------------------------------------
-	-- FIND BAR
-	------------------------------------------------------------------------
+	-- Find bar
 	ScriptEditor.ToggleFindBar = function()
 		-- TODO: Implement find bar UI toggle
 		if Notifications then Notifications.Info("Find: Ctrl+F (coming in next patch)") end
 	end
 	
-	------------------------------------------------------------------------
-	-- PUBLIC API
-	------------------------------------------------------------------------
 	ScriptEditor.GetTabs = function() return tabs end
 	ScriptEditor.GetActiveTab = getActiveTab
 	ScriptEditor.AddTab = addTab
@@ -11121,19 +10725,7 @@ return {InitDeps = initDeps, InitAfterMain = initAfterMain, Main = main}
 end
 
 EmbeddedModules["Terminal"] = function()
---[[
-	Deux :: Terminal Module
-	
-	Command palette / terminal with:
-	- Command registry: {Name, Aliases, Args, Description, Category, Run, Complete}
-	- Input bar with tab-complete (fuzzy match on command names + instance paths)
-	- Command history (up/down arrows, persisted via Settings)
-	- RichText scrollable output pane
-	- Built-in commands: select, goto, find, tree, dump, hook, unhook, gc,
-	  loadstring, save, bookmark, theme, settings, clear, help, exec, cls, version
-	- Output supports clickable instance references (emits Store navigate event)
-	- Window with Lib.Window.new()
-]]
+-- Terminal: command bar with tab-complete, history, and a registry plugins can add to.
 
 -- Common Locals
 local Main, Lib, Apps, Settings, Theme, Store, Keybinds, Notifications, Env
@@ -11165,9 +10757,7 @@ end
 local function main()
 	local Terminal = {}
 
-	------------------------------------------------------------------------
-	-- STATE
-	------------------------------------------------------------------------
+	-- State
 	local commands = {} -- name -> commandDef
 	local commandList = {} -- ordered list for iteration
 	local history = {} -- command history strings
@@ -11182,10 +10772,6 @@ local function main()
 	-- UI refs
 	local window, inputBox, outputScroll, outputFrame
 	local autoScrollEnabled = true
-
-	------------------------------------------------------------------------
-	-- HELPERS
-	------------------------------------------------------------------------
 
 	local function fuzzyMatch(query, str)
 		query = query:lower()
@@ -11231,9 +10817,7 @@ local function main()
 		return s
 	end
 
-	------------------------------------------------------------------------
-	-- OUTPUT
-	------------------------------------------------------------------------
+	-- Output
 
 	local function appendOutput(text, color, clickData)
 		table.insert(outputLines, {
@@ -11277,9 +10861,7 @@ local function main()
 		})
 	end
 
-	------------------------------------------------------------------------
-	-- COMMAND REGISTRY
-	------------------------------------------------------------------------
+	-- Command registry
 
 	function Terminal:RegisterCommand(def)
 		-- def = {Name, Aliases, Args, Description, Category, Run, Complete}
@@ -11302,9 +10884,7 @@ local function main()
 		return commands[name:lower()]
 	end
 
-	------------------------------------------------------------------------
-	-- TAB COMPLETION
-	------------------------------------------------------------------------
+	-- Tab completion
 
 	local function getCompletions(text)
 		local results = {}
@@ -11347,9 +10927,7 @@ local function main()
 		return results
 	end
 
-	------------------------------------------------------------------------
-	-- COMMAND EXECUTION
-	------------------------------------------------------------------------
+	-- Command execution
 
 	local function executeCommand(raw)
 		if not raw or raw:match("^%s*$") then return end
@@ -11380,9 +10958,7 @@ local function main()
 		end
 	end
 
-	------------------------------------------------------------------------
-	-- BUILT-IN COMMANDS
-	------------------------------------------------------------------------
+	-- Built-in commands
 
 	local function registerBuiltIns()
 		-- select <path>
@@ -11836,9 +11412,7 @@ local function main()
 		})
 	end
 
-	------------------------------------------------------------------------
-	-- UI
-	------------------------------------------------------------------------
+	-- Ui
 
 	function Terminal:RenderOutput()
 		if not outputFrame then return end
@@ -11982,9 +11556,7 @@ local function main()
 		end)
 	end
 
-	------------------------------------------------------------------------
-	-- LIFECYCLE
-	------------------------------------------------------------------------
+	-- Lifecycle
 
 	function Terminal:Init()
 		registerBuiltIns()
@@ -12011,22 +11583,7 @@ return {InitDeps = initDeps, InitAfterMain = initAfterMain, Main = main}
 end
 
 EmbeddedModules["RemoteSpy"] = function()
---[[
-	Deux :: RemoteSpy Module
-	
-	Universal hook/debug engine with:
-	- Hook targets: RemoteEvent.FireServer, RemoteFunction.InvokeServer,
-	  BindableEvent.Fire, BindableFunction.Invoke, metamethods, arbitrary closures
-	- Uses Env.hookmetamethod / Env.hookfunction (capability gated)
-	- Per-hook: enable/disable, log args+returns, edit args, edit return, drop, replay
-	- Filter expressions: small Lua predicate sandbox
-	- Log entries: {Timestamp, Method, Instance, Args, Returns, Blocked, HookId}
-	- Default "Remote Spy" preset: auto-hooks FireServer + InvokeServer + __namecall
-	- Save/load hook profiles as JSON to deux/saved/hooks/
-	- UI: scrollable log list, filter bar, hook manager, "Copy as Script"
-	- Max log cap from Settings.RemoteSpy.MaxLogs
-	- Window with Lib.Window.new()
-]]
+-- RemoteSpy: hooks remotes (FireServer, InvokeServer, __namecall, ...) and logs each call.
 
 -- Common Locals
 local Main, Lib, Apps, Settings, Theme, Store, Keybinds, Notifications, Env
@@ -12058,9 +11615,7 @@ end
 local function main()
 	local RemoteSpy = {}
 
-	------------------------------------------------------------------------
-	-- STATE
-	------------------------------------------------------------------------
+	-- State
 	local hooks = {} -- hookId -> hookDef
 	local hookCounter = 0
 	local logs = {} -- ordered list of log entries
@@ -12075,10 +11630,6 @@ local function main()
 	-- UI refs
 	local window, logList, filterBar, hookPanel
 	local logEntryHeight = 22
-
-	------------------------------------------------------------------------
-	-- HELPERS
-	------------------------------------------------------------------------
 
 	local function generateId()
 		hookCounter = hookCounter + 1
@@ -12138,9 +11689,7 @@ local function main()
 		return ok and result
 	end
 
-	------------------------------------------------------------------------
-	-- LOGGING
-	------------------------------------------------------------------------
+	-- Logging
 
 	local function addLogEntry(entry)
 		if paused then return end
@@ -12156,9 +11705,7 @@ local function main()
 		RemoteSpy:RenderLogEntry(entry, #logs)
 	end
 
-	------------------------------------------------------------------------
-	-- HOOKING ENGINE
-	------------------------------------------------------------------------
+	-- Hooking engine
 
 	function RemoteSpy:CreateHook(config)
 		-- config = {Type, Target, Method, Enabled, EditArgs, EditReturn, Block, OnFire}
@@ -12358,9 +11905,7 @@ local function main()
 		end)
 	end
 
-	------------------------------------------------------------------------
-	-- TERMINAL INTEGRATION
-	------------------------------------------------------------------------
+	-- Terminal integration
 
 	function RemoteSpy:HookFromTerminal(spec)
 		-- spec = "game.ReplicatedStorage.Remote.FireServer" or "__namecall"
@@ -12393,9 +11938,7 @@ local function main()
 		return nil
 	end
 
-	------------------------------------------------------------------------
-	-- PRESETS
-	------------------------------------------------------------------------
+	-- Presets
 
 	function RemoteSpy:ApplyPreset(name)
 		if name == "default" or name == "Remote Spy" then
@@ -12408,9 +11951,7 @@ local function main()
 		end
 	end
 
-	------------------------------------------------------------------------
-	-- PROFILES (Save/Load)
-	------------------------------------------------------------------------
+	-- Hook profile save/load (deux/saved/hooks/<name>.json).
 
 	function RemoteSpy:SaveProfile(name)
 		local profile = {}
@@ -12444,9 +11985,7 @@ local function main()
 		end
 	end
 
-	------------------------------------------------------------------------
-	-- COPY AS SCRIPT
-	------------------------------------------------------------------------
+	-- Copy as script
 
 	function RemoteSpy:CopyAsScript(logEntry)
 		if not logEntry then return end
@@ -12468,9 +12007,7 @@ local function main()
 		return script
 	end
 
-	------------------------------------------------------------------------
-	-- UI
-	------------------------------------------------------------------------
+	-- Ui
 
 	function RemoteSpy:RenderLogEntry(entry, index)
 		if not logList then return end
@@ -12687,9 +12224,7 @@ local function main()
 		})
 	end
 
-	------------------------------------------------------------------------
-	-- LIFECYCLE
-	------------------------------------------------------------------------
+	-- Lifecycle
 
 	function RemoteSpy:Init()
 		-- Load settings
@@ -12751,21 +12286,7 @@ return {InitDeps = initDeps, InitAfterMain = initAfterMain, Main = main}
 end
 
 EmbeddedModules["SaveInstance"] = function()
---[[
-	Deux :: SaveInstance Module
-	
-	Save instance UI with:
-	- Wraps Env.saveinstance (capability gated)
-	- Options dialog: scope, include script source, optimize meshes,
-	  scrub player data, file format (rbxlx/rbxl)
-	- Progress indicator ("Saving..." status)
-	- Right-click integration: listens for Store "save_instance" event
-	- Output path: deux/saved/places/<PlaceId>_<timestamp>.rbxlx
-	- Also supports "Save as Model" for subtrees (rbxmx)
-	- Notification on complete with file path
-	- Settings integration for defaults
-	- Window with Lib.Window.new()
-]]
+-- SaveInstance: thin UI on top of saveinstance() with scope and format options.
 
 -- Common Locals
 local Main, Lib, Apps, Settings, Theme, Store, Keybinds, Notifications, Env
@@ -12797,9 +12318,7 @@ end
 local function main()
 	local SaveInstance = {}
 
-	------------------------------------------------------------------------
-	-- STATE
-	------------------------------------------------------------------------
+	-- State
 	local isSaving = false
 	local connections = {}
 
@@ -12815,10 +12334,6 @@ local function main()
 
 	-- UI refs
 	local window, optionsFrame, statusLabel, saveButton
-
-	------------------------------------------------------------------------
-	-- HELPERS
-	------------------------------------------------------------------------
 
 	local function getTimestamp()
 		return os.date("%Y%m%d_%H%M%S")
@@ -12857,9 +12372,7 @@ local function main()
 		end
 	end
 
-	------------------------------------------------------------------------
-	-- SAVE LOGIC
-	------------------------------------------------------------------------
+	-- Save logic
 
 	function SaveInstance:SavePlace(overrideOptions)
 		if isSaving then
@@ -12964,9 +12477,7 @@ local function main()
 		end)
 	end
 
-	------------------------------------------------------------------------
-	-- UI
-	------------------------------------------------------------------------
+	-- Ui
 
 	function SaveInstance:BuildUI()
 		window = Lib.Window.new()
@@ -13107,9 +12618,7 @@ local function main()
 		end)
 	end
 
-	------------------------------------------------------------------------
-	-- LIFECYCLE
-	------------------------------------------------------------------------
+	-- Lifecycle
 
 	function SaveInstance:Init()
 		-- Load defaults from settings
@@ -13166,20 +12675,7 @@ return {InitDeps = initDeps, InitAfterMain = initAfterMain, Main = main}
 end
 
 EmbeddedModules["DataInspector"] = function()
---[[
-	Deux :: DataInspector Module
-	
-	Data viewer with:
-	- GC Explorer: filter getgc(true) by type, source script, name pattern, upvalue contents
-	- Function detail view: env, constants, upvalues, decompiled source, script path, references
-	- Reference explorer: find every gc-reachable holder with clickable path
-	- Constant-signature builder: select function, pick stable consts/upvals, generate findfunc snippet
-	- Thread browser: list coroutines, status, traceback
-	- All capability-gated (Env.Capabilities.GC, .Debug, etc.)
-	- Virtualized list rendering like Explorer
-	- Window with Lib.Window.new()
-	- Listens for Store "explore_data" event
-]]
+-- DataInspector: GC walker, function detail (env / consts / upvals / decompile), threads.
 
 -- Common Locals
 local Main, Lib, Apps, Settings, Theme, Store, Keybinds, Notifications, Env
@@ -13209,9 +12705,7 @@ local function initAfterMain(appTable) end
 local function main()
 	local DataInspector = {}
 
-	------------------------------------------------------------------------
-	-- STATE
-	------------------------------------------------------------------------
+	-- State
 	local connections = {}
 	local gcCache = {} -- cached getgc results
 	local gcLastRefresh = 0
@@ -13238,9 +12732,7 @@ local function main()
 	local window, contentFrame, listFrame, detailFrame
 	local tabBar, filterFrame, statusLabel
 
-	------------------------------------------------------------------------
-	-- CAPABILITY CHECKS
-	------------------------------------------------------------------------
+	-- Capability checks
 
 	local function hasGC()
 		return Env.Capabilities and Env.Capabilities.GC and Env.getgc
@@ -13254,9 +12746,7 @@ local function main()
 		return Env.decompile ~= nil
 	end
 
-	------------------------------------------------------------------------
-	-- GC EXPLORER
-	------------------------------------------------------------------------
+	-- Gc explorer
 
 	function DataInspector:RefreshGC()
 		if not hasGC() then
@@ -13330,9 +12820,7 @@ local function main()
 	end
 
 
-	------------------------------------------------------------------------
-	-- FUNCTION DETAIL VIEW
-	------------------------------------------------------------------------
+	-- Function detail view
 
 	function DataInspector:ShowFunctionDetail(fn)
 		if type(fn) ~= "function" then return end
@@ -13387,9 +12875,7 @@ local function main()
 		DataInspector:RenderDetail(detail)
 	end
 
-	------------------------------------------------------------------------
-	-- REFERENCE EXPLORER
-	------------------------------------------------------------------------
+	-- Reference explorer
 
 	function DataInspector:FindReferences(value)
 		if not hasGC() then return {} end
@@ -13446,9 +12932,7 @@ local function main()
 		DataInspector:RenderReferenceTabs()
 	end
 
-	------------------------------------------------------------------------
-	-- CONSTANT-SIGNATURE BUILDER
-	------------------------------------------------------------------------
+	-- Constant-signature builder
 
 	function DataInspector:BuildSignature(fn)
 		if type(fn) ~= "function" then return nil end
@@ -13498,9 +12982,7 @@ local function main()
 		return table.concat(lines, "\n")
 	end
 
-	------------------------------------------------------------------------
-	-- THREAD BROWSER
-	------------------------------------------------------------------------
+	-- Thread browser
 
 	function DataInspector:GetThreads()
 		if not Env.getthreads then return {} end
@@ -13530,9 +13012,7 @@ local function main()
 	end
 
 
-	------------------------------------------------------------------------
-	-- UI: VIRTUALIZED LIST
-	------------------------------------------------------------------------
+	-- Ui: virtualized list
 
 	function DataInspector:RenderList()
 		if not listFrame then return end
@@ -13793,9 +13273,7 @@ local function main()
 	end
 
 
-	------------------------------------------------------------------------
-	-- UI: BUILD
-	------------------------------------------------------------------------
+	-- Ui: build
 
 	function DataInspector:BuildUI()
 		window = Lib.Window.new()
@@ -13972,9 +13450,7 @@ local function main()
 		})
 	end
 
-	------------------------------------------------------------------------
-	-- TAB SWITCHING
-	------------------------------------------------------------------------
+	-- Tab switching
 
 	function DataInspector:SwitchTab(key)
 		activeTab = key
@@ -14022,9 +13498,7 @@ local function main()
 		listFrame.CanvasSize = UDim2.new(0, 0, 0, y)
 	end
 
-	------------------------------------------------------------------------
-	-- LIFECYCLE
-	------------------------------------------------------------------------
+	-- Lifecycle
 
 	function DataInspector:Init()
 		DataInspector:BuildUI()
@@ -14071,10 +13545,7 @@ return {InitDeps = initDeps, InitAfterMain = initAfterMain, Main = main}
 end
 
 EmbeddedModules["NetworkSpy"] = function()
---[[
-	Deux :: NetworkSpy Module
-	Inbound network viewer + HTTP spy + WebSocket panel
-]]
+-- NetworkSpy: inbound remotes, http(s) traffic, and websocket frames.
 
 local Main, Lib, Apps, Settings, Theme, Store, Keybinds, Notifications, Env
 local API, RMD, env, service, plr, create, createSimple
@@ -14170,7 +13641,7 @@ local function main()
 		end)
 	end
 
-	-- HTTP hooks
+	-- HTTP request hook (request, HttpGet, RequestAsync).
 	local function hookHTTP()
 		if not Env.hookfunction then return end
 		pcall(function()
@@ -14306,10 +13777,7 @@ return {InitDeps = initDeps, InitAfterMain = initAfterMain, Main = main}
 end
 
 EmbeddedModules["APIReference"] = function()
---[[
-	Deux :: APIReference Module
-	Searchable interactive API docs built from API and RMD tables
-]]
+-- APIReference: searchable docs from the Roblox API dump and ReflectionMetadata.
 
 local Main, Lib, Apps, Settings, Theme, Store, Keybinds, Notifications, Env
 local API, RMD, env, service, plr, create, createSimple
@@ -14633,10 +14101,7 @@ return {InitDeps = initDeps, InitAfterMain = initAfterMain, Main = main}
 end
 
 EmbeddedModules["PluginAPI"] = function()
---[[
-	Deux :: PluginAPI Module
-	Plugin system with loader, sandbox, manifest, manager UI, and hot-reload
-]]
+-- PluginAPI: loads user plugins from deux/plugins/ behind a sandboxed Dex.* surface.
 
 local Main, Lib, Apps, Settings, Theme, Store, Keybinds, Notifications, Env
 local API, RMD, env, service, plr, create, createSimple
@@ -14948,10 +14413,7 @@ return {InitDeps = initDeps, InitAfterMain = initAfterMain, Main = main}
 end
 
 EmbeddedModules["WorkspaceTools"] = function()
---[[
-	Deux :: WorkspaceTools Module
-	Camera & workspace utilities: freecam, noclip, highlight, quick toggles, animation viewer
-]]
+-- WorkspaceTools: freecam, noclip, selection highlight, anchor/transparent toggles.
 
 local Main, Lib, Apps, Settings, Theme, Store, Keybinds, Notifications, Env
 local API, RMD, env, service, plr, create, createSimple
@@ -15216,10 +14678,7 @@ return {InitDeps = initDeps, InitAfterMain = initAfterMain, Main = main}
 end
 
 EmbeddedModules["Console"] = function()
---[[
-	Deux :: Console Module
-	Output capture console with hooks for print/warn/error and LogService
-]]
+-- Console: catches print/warn/error and LogService output, with a filter and search.
 
 local Main, Lib, Apps, Settings, Theme, Store, Keybinds, Notifications, Env
 local API, RMD, env, service, plr, create, createSimple
@@ -15445,30 +14904,21 @@ return {InitDeps = initDeps, InitAfterMain = initAfterMain, Main = main}
 end
 
 --[[
-	Deux - The Successor Explorer
-	Version 2.0.0
-	
-	Originally developed by Moon (New Dex)
-	Continued and rewritten as Deux by Spektronazam
-	
-	Deux is a full debugging suite: explorer, properties, script editor,
-	remote spy, data inspector, terminal, save instance, and more.
-	
-	Built on UNC/sUNC standards. No Synapse-specific code.
-	
-	Credits:
-		Moon/LorekeeperZinnia - Original New Dex architecture & Lib
-		iris                  - Successor co-conspirator & feature inspiration
-		Spektronazam          - Deux successor rewrite
+	Deux
+
+	Successor to New Dex. Same shape: Explorer + Properties + ScriptEditor +
+	the side tools, all glued together by main.lua. Built on UNC/sUNC, no
+	Synapse-specific calls.
+
+	Originally Moon's New Dex. Re-architected as Deux by Spektronazam,
+	with iris along for the ride.
 ]]
 
 -- Prevent double-execution
 if _G.DeuxLoaded then return end
 _G.DeuxLoaded = true
 
-------------------------------------------------------------------------
--- CORE BOOTSTRAP
-------------------------------------------------------------------------
+-- Core bootstrap
 local Env, Settings, Theme, Keybinds, Notifications, Store
 local Lib, API, RMD
 local Explorer, Properties, ScriptEditor, Terminal, RemoteSpy
@@ -15497,9 +14947,8 @@ local service = setmetatable({}, {
 
 local plr = service.Players.LocalPlayer or service.Players.PlayerAdded:Wait()
 
-------------------------------------------------------------------------
--- UTILITY: Instance creation (preserved from original for Lib compat)
-------------------------------------------------------------------------
+-- Instance creation helper preserved from the original Lib so the old
+-- `create({...})` build tables still work.
 local create = function(data)
 	local insts = {}
 	for i, v in pairs(data) do insts[v[1]] = Instance.new(v[2]) end
@@ -15523,9 +14972,7 @@ local createSimple = function(class, props)
 	return inst
 end
 
-------------------------------------------------------------------------
--- MAIN CONTROLLER
-------------------------------------------------------------------------
+-- Main controller
 local Main = {}
 Main.Version = "2.0.0"
 Main.CodeName = "Deux"
@@ -15546,9 +14993,8 @@ Main.DisplayOrders = {
 	Core = 101000
 }
 
-------------------------------------------------------------------------
--- ENV INITIALIZATION (UNC/sUNC)
-------------------------------------------------------------------------
+-- Boot Env: capability detection lives in core/Env, this just runs it
+-- and rewraps the service cache through cloneref once it's available.
 Main.InitEnv = function()
 	-- Load core/Env (embedded by build system)
 	if EmbeddedModules["Env"] then
@@ -15578,9 +15024,7 @@ Main.InitEnv = function()
 	Main.Executor = Env.ExecutorName
 end
 
-------------------------------------------------------------------------
--- CORE SYSTEMS INITIALIZATION
-------------------------------------------------------------------------
+-- Core systems initialization
 Main.InitCoreSystems = function()
 	-- Settings
 	if EmbeddedModules["Settings"] then
@@ -15622,9 +15066,7 @@ Main.InitCoreSystems = function()
 	Notifications.Init(Env, Theme, service)
 end
 
-------------------------------------------------------------------------
--- DEPS TABLE (passed to all modules for initialization)
-------------------------------------------------------------------------
+-- Build the deps table that every module gets through InitDeps.
 Main.GetInitDeps = function()
 	return {
 		Main = Main,
@@ -15647,9 +15089,7 @@ Main.GetInitDeps = function()
 end
 
 
-------------------------------------------------------------------------
--- MODULE LOADER
-------------------------------------------------------------------------
+-- Module loader
 Main.LoadModule = function(name)
 	local control
 	
@@ -15738,9 +15178,7 @@ Main.LoadModules = function()
 	end
 end
 
-------------------------------------------------------------------------
--- ERROR HANDLING
-------------------------------------------------------------------------
+-- Error handling
 Main.Error = function(str)
 	local msg = "[Deux] ERROR: " .. tostring(str)
 	if Env and Env.rconsoleprint then
@@ -15754,9 +15192,8 @@ Main.Warn = function(str)
 	warn(msg)
 end
 
-------------------------------------------------------------------------
--- SETTINGS (load from disk)
-------------------------------------------------------------------------
+-- Load Settings off disk if the module supports it. Settings.Init in
+-- core already does this; this is kept for backward compat.
 Main.LoadSettings = function()
 	-- Settings.Init already handles loading; this is for compat
 	if Settings and Settings.Load then
@@ -15764,9 +15201,7 @@ Main.LoadSettings = function()
 	end
 end
 
-------------------------------------------------------------------------
--- FILESYSTEM SETUP
-------------------------------------------------------------------------
+-- Filesystem setup
 Main.SetupFilesystem = function()
 	if not Env.Capabilities.Filesystem then return end
 	
@@ -15782,9 +15217,8 @@ Main.SetupFilesystem = function()
 end
 
 
-------------------------------------------------------------------------
--- API FETCH (Roblox API Dump + RMD)
-------------------------------------------------------------------------
+-- Fetch the Roblox API dump (cached after first hit). Falls back to an
+-- empty surface when we can't reach setup.roblox.com or aren't elevated.
 Main.FetchAPI = function()
 	local rawAPI
 	
@@ -16064,17 +15498,13 @@ Main.ParseRMD = function(rawXML)
 end
 
 
-------------------------------------------------------------------------
--- GUI: Show with protection
-------------------------------------------------------------------------
+-- Show a top-level Gui through whatever protection the executor offers.
 Main.ShowGui = function(gui)
 	Env.protectGui(gui)
 	gui.Parent = Main.GuiHolder
 end
 
-------------------------------------------------------------------------
--- GUI: Intro / Splash Screen
-------------------------------------------------------------------------
+-- Splash. Hangs around long enough for module init to feel intentional.
 Main.CreateIntro = function(initStatus)
 	local gui = create({
 		{1,"ScreenGui",{IgnoreGuiInset=true,Name="DeuxIntro",ZIndexBehavior=Enum.ZIndexBehavior.Sibling}},
@@ -16083,7 +15513,7 @@ Main.CreateIntro = function(initStatus)
 		{4,"Frame",{BackgroundColor3=Color3.fromRGB(20,20,20),BorderSizePixel=0,ClipsDescendants=true,Name="Holder",Parent={2},Size=UDim2.new(1,0,1,0)}},
 		{5,"UICorner",{CornerRadius=UDim.new(0,8),Parent={4}}},
 		{6,"TextLabel",{BackgroundTransparency=1,Font=Enum.Font.GothamBold,Name="Title",Parent={4},Position=UDim2.new(0,24,0,20),Size=UDim2.new(1,-48,0,40),Text="Deux",TextColor3=Color3.fromRGB(255,255,255),TextSize=36,TextXAlignment=Enum.TextXAlignment.Left}},
-		{7,"TextLabel",{BackgroundTransparency=1,Font=Enum.Font.Gotham,Name="Desc",Parent={4},Position=UDim2.new(0,24,0,58),Size=UDim2.new(1,-48,0,20),Text="The Successor Debugging Suite",TextColor3=Color3.fromRGB(180,180,180),TextSize=14,TextXAlignment=Enum.TextXAlignment.Left}},
+		{7,"TextLabel",{BackgroundTransparency=1,Font=Enum.Font.Gotham,Name="Desc",Parent={4},Position=UDim2.new(0,24,0,58),Size=UDim2.new(1,-48,0,20),Text="successor to dex",TextColor3=Color3.fromRGB(180,180,180),TextSize=14,TextXAlignment=Enum.TextXAlignment.Left}},
 		{8,"TextLabel",{BackgroundTransparency=1,Font=Enum.Font.Gotham,Name="StatusText",Parent={4},Position=UDim2.new(0,24,0,120),Size=UDim2.new(1,-48,0,20),Text="Initializing...",TextColor3=Color3.fromRGB(150,150,150),TextSize=12,TextXAlignment=Enum.TextXAlignment.Left}},
 		{9,"Frame",{BackgroundColor3=Color3.fromRGB(40,40,40),BorderSizePixel=0,Name="ProgressBar",Parent={4},Position=UDim2.new(0,24,0,150),Size=UDim2.new(1,-48,0,4)}},
 		{10,"UICorner",{CornerRadius=UDim.new(0,2),Parent={9}}},
@@ -16124,9 +15554,7 @@ Main.CreateIntro = function(initStatus)
 	return {SetProgress = setProgress, Close = close}
 end
 
-------------------------------------------------------------------------
--- GUI: Main Menu (App Launcher)
-------------------------------------------------------------------------
+-- The little drop-down launcher; one tile per registered app.
 Main.CreateApp = function(data)
 	if Main.MenuApps[data.Name] then return end
 	local control = {}
@@ -16351,26 +15779,20 @@ Main.CreateMainGui = function()
 	Main.ShowGui(gui)
 end
 
-------------------------------------------------------------------------
--- MAIN INIT (Entry Point)
-------------------------------------------------------------------------
+-- Boot. Order: env -> core systems -> Lib -> icons -> API/RMD ->
+-- modules -> Init() per module -> main GUI -> plugins.
 Main.Init = function()
-	-- Phase 1: Environment
 	Main.InitEnv()
-	
-	-- Phase 2: Core systems
+
 	Main.InitCoreSystems()
 	Main.SetupFilesystem()
-	
-	-- Phase 3: Splash
+
 	local intro = Main.CreateIntro("Initializing Library")
-	
-	-- Phase 4: Load Lib (foundation UI library)
+
 	intro.SetProgress("Loading Library", 0.1)
 	Lib = Main.LoadModule("Lib")
 	if Lib and Lib.FastWait then Lib.FastWait() end
-	
-	-- Phase 5: Icons
+
 	intro.SetProgress("Loading Icons", 0.2)
 	if Lib and Lib.IconMap then
 		Main.MiscIcons = Lib.IconMap.new("rbxassetid://6511490623", 256, 256, 16, 16)
@@ -16387,40 +15809,35 @@ Main.Init = function()
 			Explorer = 0, Properties = 1, Script_Viewer = 2,
 		})
 	end
-	
-	-- Phase 6: Fetch Roblox version
+
 	intro.SetProgress("Fetching Roblox Version", 0.25)
 	if Main.Elevated then
 		pcall(function()
 			Main.RobloxVersion = game:HttpGet("http://setup.roblox.com/versionQTStudio")
 		end)
 	end
-	
-	-- Phase 7: Fetch API + RMD
+
 	intro.SetProgress("Fetching API", 0.35)
 	API = Main.FetchAPI()
 	if Lib and Lib.FastWait then Lib.FastWait() end
-	
+
 	intro.SetProgress("Fetching RMD", 0.45)
 	RMD = Main.FetchRMD()
-	-- If RMD was deferred, parse now that Lib is available
+	-- RMD parsing depends on Lib.ParseXML, so it may have been deferred.
 	if Main.RawRMDPending and Lib and Lib.ParseXML then
 		RMD = Main.ParseRMD(Main.RawRMDPending)
 		Main.RawRMDPending = nil
 	end
 	if Lib and Lib.FastWait then Lib.FastWait() end
-	
-	-- Phase 8: Update deps in Lib
+
 	intro.SetProgress("Loading Modules", 0.55)
 	if Main.AppControls.Lib and Main.AppControls.Lib.InitDeps then
 		Main.AppControls.Lib.InitDeps(Main.GetInitDeps())
 	end
-	
-	-- Phase 9: Load all other modules
+
 	Main.LoadModules()
 	if Lib and Lib.FastWait then Lib.FastWait() end
-	
-	-- Phase 10: Initialize modules
+
 	intro.SetProgress("Initializing Modules", 0.8)
 	local initOrder = {"Explorer", "Properties", "ScriptEditor", "Terminal", "RemoteSpy", "SaveInstance", "DataInspector", "NetworkSpy", "APIReference", "PluginAPI", "WorkspaceTools", "Console"}
 	for _, name in ipairs(initOrder) do
@@ -16430,18 +15847,16 @@ Main.Init = function()
 		end
 	end
 	if Lib and Lib.FastWait then Lib.FastWait() end
-	
-	-- Phase 11: Done
+
 	intro.SetProgress("Complete", 1)
 	task.delay(1, function() intro.Close() end)
-	
-	-- Phase 12: Window system + main GUI
+
 	if Lib and Lib.Window and Lib.Window.Init then
 		Lib.Window.Init()
 	end
 	Main.CreateMainGui()
-	
-	-- Show default windows
+
+	-- Pin Explorer + Properties to the right side by default.
 	if Explorer and Explorer.Window then
 		Explorer.Window:Show({Align = "right", Pos = 1, Size = 0.5, Silent = true})
 	end
@@ -16451,22 +15866,18 @@ Main.Init = function()
 	if Lib and Lib.DeferFunc and Lib.Window and Lib.Window.ToggleSide then
 		Lib.DeferFunc(function() Lib.Window.ToggleSide("right") end)
 	end
-	
-	-- Phase 13: Load plugins
+
 	if PluginAPI and PluginAPI.LoadAll then
 		pcall(PluginAPI.LoadAll)
 	end
-	
-	-- Capability notification
+
 	local missing = Env.getMissingAPIs()
 	if #missing > 3 then
 		Notifications.Warning(#missing .. " UNC APIs unavailable on " .. Env.ExecutorName)
 	end
-	
+
 	Notifications.Success("Deux v" .. Main.Version .. " loaded")
 end
 
-------------------------------------------------------------------------
--- START
-------------------------------------------------------------------------
+-- Go.
 Main.Init()

@@ -1,16 +1,4 @@
---[[
-	Deux :: Terminal Module
-	
-	Command palette / terminal with:
-	- Command registry: {Name, Aliases, Args, Description, Category, Run, Complete}
-	- Input bar with tab-complete (fuzzy match on command names + instance paths)
-	- Command history (up/down arrows, persisted via Settings)
-	- RichText scrollable output pane
-	- Built-in commands: select, goto, find, tree, dump, hook, unhook, gc,
-	  loadstring, save, bookmark, theme, settings, clear, help, exec, cls, version
-	- Output supports clickable instance references (emits Store navigate event)
-	- Window with Lib.Window.new()
-]]
+-- Terminal: command bar with tab-complete, history, and a registry plugins can add to.
 
 -- Common Locals
 local Main, Lib, Apps, Settings, Theme, Store, Keybinds, Notifications, Env
@@ -42,9 +30,7 @@ end
 local function main()
 	local Terminal = {}
 
-	------------------------------------------------------------------------
-	-- STATE
-	------------------------------------------------------------------------
+	-- State
 	local commands = {} -- name -> commandDef
 	local commandList = {} -- ordered list for iteration
 	local history = {} -- command history strings
@@ -59,10 +45,6 @@ local function main()
 	-- UI refs
 	local window, inputBox, outputScroll, outputFrame
 	local autoScrollEnabled = true
-
-	------------------------------------------------------------------------
-	-- HELPERS
-	------------------------------------------------------------------------
 
 	local function fuzzyMatch(query, str)
 		query = query:lower()
@@ -108,9 +90,7 @@ local function main()
 		return s
 	end
 
-	------------------------------------------------------------------------
-	-- OUTPUT
-	------------------------------------------------------------------------
+	-- Output
 
 	local function appendOutput(text, color, clickData)
 		table.insert(outputLines, {
@@ -154,9 +134,7 @@ local function main()
 		})
 	end
 
-	------------------------------------------------------------------------
-	-- COMMAND REGISTRY
-	------------------------------------------------------------------------
+	-- Command registry
 
 	function Terminal:RegisterCommand(def)
 		-- def = {Name, Aliases, Args, Description, Category, Run, Complete}
@@ -179,9 +157,7 @@ local function main()
 		return commands[name:lower()]
 	end
 
-	------------------------------------------------------------------------
-	-- TAB COMPLETION
-	------------------------------------------------------------------------
+	-- Tab completion
 
 	local function getCompletions(text)
 		local results = {}
@@ -224,9 +200,7 @@ local function main()
 		return results
 	end
 
-	------------------------------------------------------------------------
-	-- COMMAND EXECUTION
-	------------------------------------------------------------------------
+	-- Command execution
 
 	local function executeCommand(raw)
 		if not raw or raw:match("^%s*$") then return end
@@ -257,9 +231,7 @@ local function main()
 		end
 	end
 
-	------------------------------------------------------------------------
-	-- BUILT-IN COMMANDS
-	------------------------------------------------------------------------
+	-- Built-in commands
 
 	local function registerBuiltIns()
 		-- select <path>
@@ -713,9 +685,7 @@ local function main()
 		})
 	end
 
-	------------------------------------------------------------------------
-	-- UI
-	------------------------------------------------------------------------
+	-- Ui
 
 	function Terminal:RenderOutput()
 		if not outputFrame then return end
@@ -859,9 +829,7 @@ local function main()
 		end)
 	end
 
-	------------------------------------------------------------------------
-	-- LIFECYCLE
-	------------------------------------------------------------------------
+	-- Lifecycle
 
 	function Terminal:Init()
 		registerBuiltIns()

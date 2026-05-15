@@ -1,8 +1,10 @@
-# Deux - The Successor Debugging Suite
+# Deux
 
 ![Deux Logo](/logo.png)
 
-**Deux** is a complete rewrite and spiritual successor to New Dex — the most powerful debugging suite for Roblox. Built on the UNC/sUNC standard with zero Synapse-specific code, it runs on any modern executor.
+Successor to New Dex. Same idea, same shape: an in-game Explorer / Properties /
+Script Editor with a few extra tools sitting next to them. Built against UNC /
+sUNC, no Synapse-specific calls.
 
 ## Install
 
@@ -10,154 +12,72 @@
 loadstring(game:HttpGet("https://raw.githubusercontent.com/Spektronazam/Deux/master/out.lua"))()
 ```
 
-For the minified build (~10% smaller, same behavior):
+There's also a stripped build (~10% smaller, same behaviour):
 
 ```lua
 loadstring(game:HttpGet("https://raw.githubusercontent.com/Spektronazam/Deux/master/out.min.lua"))()
 ```
 
-## Features
-
-| Category | Feature | Status |
-|----------|---------|--------|
-| **Core** | UNC/sUNC environment abstraction | ✅ |
-| **Core** | Cloneref hardening + gethui-first parenting | ✅ |
-| **Core** | Persistent JSON settings (versioned, per-place) | ✅ |
-| **Core** | Theme engine (Dark / Darker / Light + custom JSON) | ✅ |
-| **Core** | Central keybind system (rebindable, no conflicts) | ✅ |
-| **Core** | Toast notification system | ✅ |
-| **Core** | Pub/sub state store (selection bus, events) | ✅ |
-| **Explorer** | Click-to-select (3D parts + GUI objects) | ✅ |
-| **Explorer** | Bookmarks / starred instances (per-place) | ✅ |
-| **Explorer** | Advanced search (`class:` `name:` `tag:` `prop:` `nil:` `service:`) | ✅ |
-| **Explorer** | Multi-select (Ctrl+Click, Shift+Click) | ✅ |
-| **Explorer** | Nil instances tab | ✅ |
-| **Explorer** | Deferred-event-safe batch updates | ✅ |
-| **Explorer** | Full right-click context menu | ✅ |
-| **Properties** | Tag Editor (CollectionService) | ✅ |
-| **Properties** | Attribute CRUD (all types, rename, delete) | ✅ |
-| **Properties** | Copy value as Lua / display / JSON | ✅ |
-| **Properties** | Multi-instance editing with conflict detection | ✅ |
-| **Properties** | Signal connections viewer (getconnections) | ✅ |
-| **Properties** | Property search & category collapse | ✅ |
-| **Properties** | Property change history (undo) | ✅ |
-| **Script Editor** | Luau lexer with RichText syntax highlighting | ✅ |
-| **Script Editor** | Tabbed interface | ✅ |
-| **Script Editor** | Find / Replace (regex) | ✅ |
-| **Script Editor** | Run buffer (F5, sandboxed) | ✅ |
-| **Script Editor** | Decompile with timing + re-decompile + bytecode | ✅ |
-| **Script Editor** | Status bar (line/col/total/modified) | ✅ |
-| **Terminal** | 18 built-in commands | ✅ |
-| **Terminal** | Tab-complete (commands + instance paths) | ✅ |
-| **Terminal** | Command history (up/down, persisted) | ✅ |
-| **Terminal** | Plugin-extensible command registry | ✅ |
-| **Remote Spy** | Universal hook engine (metamethod + function + GC) | ✅ |
-| **Remote Spy** | Default preset (FireServer/InvokeServer/__namecall) | ✅ |
-| **Remote Spy** | Filter expressions (sandboxed Lua predicates) | ✅ |
-| **Remote Spy** | Replay / Copy as Script | ✅ |
-| **Remote Spy** | Save/load hook profiles | ✅ |
-| **Save Instance** | Wraps saveinstance with options UI | ✅ |
-| **Save Instance** | Scope: whole game / selection / nil | ✅ |
-| **Save Instance** | Save as Model (subtree, rbxmx) | ✅ |
-| **Data Inspector** | GC Explorer (filter by type/source/name/upvalue) | ✅ |
-| **Data Inspector** | Function detail (env, consts, upvals, decompile) | ✅ |
-| **Data Inspector** | Reference explorer (find all holders) | ✅ |
-| **Data Inspector** | Constant-signature builder | ✅ |
-| **Data Inspector** | Thread browser | ✅ |
-| **Network Spy** | Inbound RemoteEvent/Function listener | ✅ |
-| **Network Spy** | HTTP spy (RequestAsync, HttpGet) | ✅ |
-| **Network Spy** | WebSocket monitor | ✅ |
-| **API Reference** | Searchable class/member/enum docs | ✅ |
-| **API Reference** | RMD descriptions, tags, security levels | ✅ |
-| **Plugin System** | Plugin loader with sandboxed Dex API | ✅ |
-| **Plugin System** | Manifest (plugin.json), manager UI | ✅ |
-| **Plugin System** | Hot-reload on file change | ✅ |
-| **Workspace Tools** | Freecam (WASD+QE+RMB) | ✅ |
-| **Workspace Tools** | Noclip | ✅ |
-| **Workspace Tools** | Selection highlight (Highlight instance) | ✅ |
-| **Workspace Tools** | Quick toggles (Anchor, Transparent, Reset) | ✅ |
-| **Workspace Tools** | Animation viewer | ✅ |
-| **Console** | Captures print/warn/error + LogService | ✅ |
-| **Console** | Filter by level, text search | ✅ |
-| **Console** | Copy all / copy selection | ✅ |
-
-## Architecture
+## Layout
 
 ```
-Deux/
-├── core/                   # Core systems (loaded first)
-│   ├── Env.lua            # UNC/sUNC abstraction + capability detection
-│   ├── Settings.lua       # Persistent JSON settings engine
-│   ├── Theme.lua          # Theme engine (3 presets + custom)
-│   ├── Keybinds.lua       # Central keybind registry
-│   ├── Notifications.lua  # Toast notification system
-│   └── Store.lua          # Pub/sub state store
-├── modules/               # App modules
-│   ├── Lib.lua            # UI primitives (Window, Signal, ScrollBar, etc.)
-│   ├── Explorer.lua       # Instance tree explorer
-│   ├── Properties.lua     # Property editor + tags + attributes
-│   ├── ScriptEditor.lua   # Code editor with Luau highlighting
-│   ├── Terminal.lua        # Command palette / terminal
-│   ├── RemoteSpy.lua      # Universal hook/debug engine
-│   ├── SaveInstance.lua   # Save place/model UI
-│   ├── DataInspector.lua  # GC/function/reference explorer
-│   ├── NetworkSpy.lua     # Inbound + HTTP + WebSocket viewer
-│   ├── APIReference.lua   # Interactive API docs
-│   ├── PluginAPI.lua      # Plugin system + manager
-│   ├── WorkspaceTools.lua # Camera, highlight, toggles
-│   └── Console.lua        # Output capture console
-├── plugins/               # User plugins (loaded at runtime)
-│   └── samples/           # Example plugins
-├── main.lua               # Entry point + boot orchestrator
-├── build.py               # Build system (bundle + hash + manifest)
-├── VERSION                # Version string
-└── out.lua                # Built output (single file)
+core/        env, settings, theme, keybinds, notifications, store
+modules/     Lib (UI primitives) + the apps you click in the menu
+main.lua     boot orchestrator
+build.py     bundles everything into out.lua / out.min.lua
+plugins/     drop-in user plugins (loaded at runtime from deux/plugins/)
 ```
+
+Everything except `Lib` is loaded the same way: each module returns
+`{InitDeps, InitAfterMain, Main}`, `main.lua` walks the list, threads the deps
+through, and lights it all up in one shot.
 
 ## Building
 
 ```bash
-python3 build.py              # Standard build -> out.lua
-python3 build.py --minify     # + out.min.lua (stripped comments/whitespace)
-python3 build.py --watch      # Rebuild on file changes
+python3 build.py            # out.lua
+python3 build.py --minify   # + out.min.lua
+python3 build.py --watch    # rebuild on change
+python3 build.py --check    # verify on-disk hashes vs ModuleHashs.dat
 ```
 
-## Executor Compatibility
+## Executor compatibility
 
-Deux runs on any executor supporting the UNC/sUNC standard. At boot it probes for capabilities and gracefully disables features that require missing APIs.
+Anything that ships UNC works. At boot, `core/Env` probes for every API and
+flips capability flags; modules that need a missing one just sit out instead
+of crashing. The bare minimum is filesystem (`readfile`/`writefile`/`makefolder`),
+`cloneref`, and `gethui`. Run `version` in the Terminal to see your score.
 
-**Minimum requirements:** `readfile`, `writefile`, `makefolder`, `cloneref`, `gethui`
+Things that *really* want to be there for the full experience:
+`hookfunction`, `hookmetamethod`, `getgc`, `getreg`, `getconnections`,
+`decompile`, `getscriptbytecode`, `saveinstance`, `request`, `WebSocket`.
 
-**Full features require:** `hookfunction`, `hookmetamethod`, `getgc`, `getreg`, `getconnections`, `decompile`, `saveinstance`, `getscriptbytecode`, `getthreads`, `request`, `WebSocket`
-
-Run `version` in the Terminal to see your executor's compatibility score.
-
-## Keybinds (Defaults)
+## Default keybinds
 
 | Key | Action |
 |-----|--------|
-| `RCtrl+D` | Toggle Deux menu |
-| `Alt+Click` | Click-to-select (3D/GUI) |
-| `Ctrl+C` | Copy instance path |
-| `Ctrl+B` | Toggle bookmark |
-| `Delete` | Delete selected |
-| `F5` | Run script buffer |
-| `Ctrl+D` | Re-decompile |
-| `Ctrl+F` | Find in script |
-| `Ctrl+S` | Save script |
-| `Ctrl+W` | Close tab |
-| `Ctrl+Z` | Undo property change |
+| `RCtrl+D` | toggle the menu |
+| `Alt+Click` | click-to-select (3D and GUI) |
+| `Ctrl+C` | copy instance path |
+| `Ctrl+B` | toggle bookmark |
+| `Delete` | delete selected |
+| `F5` | run buffer |
+| `Ctrl+D` | re-decompile |
+| `Ctrl+F` | find |
+| `Ctrl+S` | save script |
+| `Ctrl+W` | close tab |
+| `Ctrl+Z` | undo property change |
 
-All keybinds are rebindable via Settings.
+All of them are rebindable in Settings.
 
-## Plugin Development
+## Plugins
 
-Place plugins in `deux/plugins/<name>/`:
+Drop a folder into `deux/plugins/<name>/`:
 
 ```
 deux/plugins/my-plugin/
-├── plugin.json    # {name, version, author, permissions}
-└── init.lua       # Entry point
+  plugin.json
+  init.lua
 ```
 
 ```lua
@@ -175,13 +95,19 @@ Dex.Explorer.AddRightClick("My Action", function(instance)
 end)
 ```
 
+The sandbox is the `Dex.*` table; anything not on it isn't reachable.
+
 ## Credits
 
-- **Moon / LorekeeperZinnia** — Original New Dex architecture, Lib module, and UI system
-- **iris** — Successor co-conspirator and feature inspiration
-- **Spektronazam** — Deux successor rewrite (v2.0.0)
-- **UNC Community** — Unified Naming Convention standard
+Original New Dex by Moon / LorekeeperZinnia. The Lib module here is largely
+descended from theirs.
+
+iris helped shape the successor plan.
+
+Rewrite + extra modules by Spektronazam.
+
+UNC / sUNC standard by the executor community.
 
 ## License
 
-MIT — See [LICENSE](LICENSE)
+MIT. See [LICENSE](LICENSE).

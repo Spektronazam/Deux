@@ -1,7 +1,4 @@
---[[
-	Deux :: NetworkSpy Module
-	Inbound network viewer + HTTP spy + WebSocket panel
-]]
+-- NetworkSpy: inbound remotes, http(s) traffic, and websocket frames.
 
 local Main, Lib, Apps, Settings, Theme, Store, Keybinds, Notifications, Env
 local API, RMD, env, service, plr, create, createSimple
@@ -97,7 +94,7 @@ local function main()
 		end)
 	end
 
-	-- HTTP hooks
+	-- HTTP request hook (request, HttpGet, RequestAsync).
 	local function hookHTTP()
 		if not Env.hookfunction then return end
 		pcall(function()

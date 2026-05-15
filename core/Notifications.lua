@@ -1,29 +1,7 @@
---[[
-	Deux Core :: Notifications
-	Toast Notification System
-	
-	Features:
-	- Severity levels: Info, Success, Warning, Error
-	- Auto-dismiss with configurable duration
-	- Click-to-dismiss
-	- Stacking with smooth animations
-	- Queue system to prevent overflow
-	- Themed via core/Theme
-	
-	Usage:
-		local Notifications = require("core/Notifications")
-		Notifications.Init(Env, Theme, service)
-		Notifications.Info("Settings saved")
-		Notifications.Error("Decompile failed: timeout")
-		Notifications.Success("Hook applied to RemoteEvent.FireServer")
-		Notifications.Warning("Missing UNC API: hookmetamethod")
-]]
+-- Notifications: stacked toasts with severity colors, auto-dismiss, click to close.
 
 local Notifications = {}
 
-------------------------------------------------------------------------
--- INTERNAL STATE
-------------------------------------------------------------------------
 local Env, Theme
 local TweenService, RunService
 local guiParent
@@ -39,9 +17,6 @@ local NOTIFICATION_WIDTH = 320
 local NOTIFICATION_PADDING = 6
 local CORNER_RADIUS = 6
 
-------------------------------------------------------------------------
--- SEVERITY CONFIG
-------------------------------------------------------------------------
 local Severity = {
 	Info = {Icon = "ℹ", ColorKey = "Accent"},
 	Success = {Icon = "✓", ColorKey = "Success"},
@@ -49,9 +24,6 @@ local Severity = {
 	Error = {Icon = "✕", ColorKey = "Important"},
 }
 
-------------------------------------------------------------------------
--- UI CREATION
-------------------------------------------------------------------------
 local function createNotificationGui()
 	local screenGui = Instance.new("ScreenGui")
 	screenGui.Name = "DeuxNotifications"
@@ -143,9 +115,6 @@ local function createToast(message, severity, duration)
 	return toast
 end
 
-------------------------------------------------------------------------
--- LAYOUT & ANIMATION
-------------------------------------------------------------------------
 local function repositionAll()
 	for i, notif in ipairs(activeNotifications) do
 		local targetY = (i - 1) * (NOTIFICATION_HEIGHT + NOTIFICATION_PADDING)
@@ -192,10 +161,6 @@ local function dismiss(notifData)
 	end)
 end
 
-------------------------------------------------------------------------
--- PUBLIC API
-------------------------------------------------------------------------
-
 function Notifications.Init(envRef, themeRef, serviceTable)
 	Env = envRef
 	Theme = themeRef
@@ -213,10 +178,7 @@ function Notifications.Init(envRef, themeRef, serviceTable)
 	end
 end
 
---- Show a notification
--- @param message: text to display
--- @param severity: "Info" | "Success" | "Warning" | "Error"
--- @param duration: seconds before auto-dismiss (default 4)
+-- Show a toast. severity: "Info" | "Success" | "Warning" | "Error". duration in seconds.
 function Notifications.Show(message, severity, duration)
 	if not notificationFrame then return end
 	
@@ -262,7 +224,7 @@ function Notifications.Show(message, severity, duration)
 	end)
 end
 
---- Convenience methods
+-- Convenience methods
 function Notifications.Info(msg, duration)
 	Notifications.Show(msg, "Info", duration)
 end
@@ -279,7 +241,7 @@ function Notifications.Error(msg, duration)
 	Notifications.Show(msg, "Error", duration or 6)
 end
 
---- Clear all notifications
+-- Clear all notifications
 function Notifications.Clear()
 	for _, notif in ipairs(activeNotifications) do
 		notif.Frame:Destroy()
@@ -288,7 +250,7 @@ function Notifications.Clear()
 	queue = {}
 end
 
---- Get count of active + queued
+-- Get count of active + queued
 function Notifications.GetCount()
 	return #activeNotifications + #queue
 end

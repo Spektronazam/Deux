@@ -1,7 +1,4 @@
---[[
-	Deux :: Console Module
-	Output capture console with hooks for print/warn/error and LogService
-]]
+-- Console: catches print/warn/error and LogService output, with a filter and search.
 
 local Main, Lib, Apps, Settings, Theme, Store, Keybinds, Notifications, Env
 local API, RMD, env, service, plr, create, createSimple

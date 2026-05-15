@@ -1,19 +1,4 @@
---[[
-	Deux :: Explorer Module
-	
-	Full instance tree explorer with:
-	- Click-to-select (3D + GUI)
-	- Bookmarks / starred instances
-	- Advanced search with structured filters (class:, name:, tag:, prop:, nil:)
-	- Multi-select with Shift/Ctrl
-	- Nil instances tab
-	- Deferred-event-safe batch updates
-	- Right-click context menu (full)
-	- Drag-and-drop reparenting
-	- Selection history (back/forward)
-	
-	Credits: Original Explorer architecture by Moon, rewritten for Deux
-]]
+-- Explorer: instance tree, selection, search, bookmarks, right-click menu.
 
 -- Common Locals
 local Main, Lib, Apps, Settings, Theme, Store, Keybinds, Notifications, Env
@@ -69,9 +54,7 @@ local function main()
 	local descendantAddedBatch
 	local descendantRemovedBatch
 	
-	------------------------------------------------------------------------
-	-- NODE CLASS
-	------------------------------------------------------------------------
+	-- Node class
 	local Node = {}
 	Node.__index = Node
 	
@@ -114,9 +97,7 @@ local function main()
 		return nil
 	end
 	
-	------------------------------------------------------------------------
-	-- TREE MANAGEMENT
-	------------------------------------------------------------------------
+	-- Tree management
 	local function buildNode(instance, parentNode, depth)
 		if nodeMap[instance] then return nodeMap[instance] end
 		
@@ -230,9 +211,7 @@ local function main()
 		Explorer.Render()
 	end
 	
-	------------------------------------------------------------------------
-	-- FLAT LIST GENERATION (for virtualized rendering)
-	------------------------------------------------------------------------
+	-- Flatten the tree into the visible row list. Virtualised renderer reads from this.
 	local flatList = {}
 	
 	local function buildFlatList()
@@ -258,9 +237,7 @@ local function main()
 	end
 
 
-	------------------------------------------------------------------------
-	-- SELECTION
-	------------------------------------------------------------------------
+	-- Selection
 	local function clearSelection()
 		for _, inst in ipairs(selection) do
 			local node = nodeMap[inst]
@@ -348,9 +325,7 @@ local function main()
 		end
 	end
 	
-	------------------------------------------------------------------------
-	-- BOOKMARKS
-	------------------------------------------------------------------------
+	-- Bookmarks
 	local function addBookmark(instance)
 		if table.find(bookmarks, instance) then return end
 		bookmarks[#bookmarks + 1] = instance
@@ -415,9 +390,7 @@ local function main()
 		end
 	end
 	
-	------------------------------------------------------------------------
-	-- SEARCH ENGINE
-	------------------------------------------------------------------------
+	-- Search engine
 	local SearchFilters = {}
 	
 	SearchFilters.class = function(inst, value)
@@ -522,9 +495,7 @@ local function main()
 	end
 
 
-	------------------------------------------------------------------------
-	-- CLICK-TO-SELECT (3D World + GUI)
-	------------------------------------------------------------------------
+	-- Click-to-select for 3D parts (mouse hit) and GUI elements (screen-space hit-test).
 	local clickToSelectEnabled = true
 	local selectionBox = nil
 	local guiSelectionOutline = nil
@@ -577,7 +548,7 @@ local function main()
 			end
 		end)
 		
-		-- GUI Click-to-select (Screen space)
+		-- GUI click-to-select: Alt+LMB on a GUI object selects it.
 		connections[#connections + 1] = uis.InputBegan:Connect(function(input, processed)
 			if processed then return end
 			if not clickToSelectEnabled then return end
@@ -597,9 +568,7 @@ local function main()
 		end)
 	end
 	
-	------------------------------------------------------------------------
-	-- NIL INSTANCES
-	------------------------------------------------------------------------
+	-- Nil instances
 	local function refreshNilInstances()
 		if not Env or not Env.getnilinstances then
 			nilInstances = {}
@@ -611,9 +580,7 @@ local function main()
 		end
 	end
 	
-	------------------------------------------------------------------------
-	-- DEFERRED-EVENT-SAFE LISTENERS
-	------------------------------------------------------------------------
+	-- Deferred-event-safe listeners
 	local function setupDescendantListeners()
 		-- Use BatchProcessor for deferred-safe updates
 		descendantAddedBatch = Lib.BatchProcessor.new(function(batch)
@@ -653,9 +620,7 @@ local function main()
 		end)
 	end
 	
-	------------------------------------------------------------------------
-	-- CONTEXT MENU
-	------------------------------------------------------------------------
+	-- Context menu
 	local function createContextMenu(node)
 		if not Lib.ContextMenu then return end
 		
@@ -762,9 +727,7 @@ local function main()
 		return menu
 	end
 	
-	------------------------------------------------------------------------
-	-- RENDERING (Virtualized Row Pool)
-	------------------------------------------------------------------------
+	-- Virtualised rendering: keep a fixed pool of row frames, recycle into the visible window.
 	local scrollFrame
 	local rowPool = {}
 	local visibleRows = {}
@@ -978,9 +941,7 @@ local function main()
 	end
 
 
-	------------------------------------------------------------------------
-	-- WINDOW & UI SETUP
-	------------------------------------------------------------------------
+	-- Window & ui setup
 	Explorer.Init = function()
 		-- Create window
 		Explorer.Window = Lib.Window.new()
@@ -1173,9 +1134,6 @@ local function main()
 		Explorer.Render()
 	end
 	
-	------------------------------------------------------------------------
-	-- PUBLIC API
-	------------------------------------------------------------------------
 	Explorer.GetSelection = function() return selection end
 	Explorer.SetSelection = function(insts) 
 		clearSelection()

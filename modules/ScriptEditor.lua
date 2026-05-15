@@ -1,18 +1,4 @@
---[[
-	Deux :: ScriptEditor Module
-	
-	Full Luau code editor with:
-	- Tabbed interface (multiple scripts open)
-	- Luau lexer with RichText syntax highlighting
-	- Find / Replace with regex support
-	- Status bar (line/col, error line, total lines, decompile info)
-	- Run buffer (loadstring in game context)
-	- Decompile UX (status pill, re-decompile, show bytecode)
-	- Goto line, goto definition (basic)
-	- Auto-indent on Enter
-	
-	Credits: Original ScriptViewer by Moon, fully rewritten for Deux
-]]
+-- ScriptEditor: tabs, Luau lexer, find/replace, F5 to run, decompile.
 
 -- Common Locals
 local Main, Lib, Apps, Settings, Theme, Store, Keybinds, Notifications, Env
@@ -42,9 +28,7 @@ local function initAfterMain(appTable) end
 local function main()
 	local ScriptEditor = {}
 	
-	------------------------------------------------------------------------
-	-- STATE
-	------------------------------------------------------------------------
+	-- State
 	local tabs = {} -- {script, source, name, modified, decompileTime, cursorLine, cursorCol}
 	local activeTabIdx = 0
 	local connections = {}
@@ -53,9 +37,8 @@ local function main()
 	local tabBar, codeFrame, statusBar, findBar
 	local lineNumbers, codeInput, codeDisplay
 	
-	------------------------------------------------------------------------
-	-- LUAU LEXER (Token-based for RichText highlighting)
-	------------------------------------------------------------------------
+	-- Tiny Luau lexer used to drive RichText syntax highlighting in the editor.
+	-- Returns a sequence of tokens; the renderer turns each token into a coloured span.
 	local Keywords = {
 		["and"] = true, ["break"] = true, ["do"] = true, ["else"] = true,
 		["elseif"] = true, ["end"] = true, ["false"] = true, ["for"] = true,
@@ -230,9 +213,7 @@ local function main()
 	end
 
 
-	------------------------------------------------------------------------
-	-- TAB MANAGEMENT
-	------------------------------------------------------------------------
+	-- Tab management
 	local function getActiveTab()
 		return tabs[activeTabIdx]
 	end
@@ -287,9 +268,7 @@ local function main()
 		ScriptEditor.RenderCode()
 	end
 	
-	------------------------------------------------------------------------
-	-- DECOMPILE
-	------------------------------------------------------------------------
+	-- Decompile
 	local function decompileScript(scriptInst)
 		if not Env or not Env.Capabilities.Decompile then
 			if Notifications then Notifications.Error("Decompile unavailable on " .. (Env and Env.ExecutorName or "this executor")) end
@@ -318,9 +297,7 @@ local function main()
 		return "-- Failed to get bytecode: " .. tostring(bc)
 	end
 	
-	------------------------------------------------------------------------
-	-- OPEN SCRIPT (called from Explorer or Store event)
-	------------------------------------------------------------------------
+	-- Open a script (called by Explorer right-click and the "open_script" Store event).
 	ScriptEditor.OpenScript = function(scriptInst)
 		if not scriptInst then return end
 		
@@ -348,9 +325,7 @@ local function main()
 		end
 	end
 	
-	------------------------------------------------------------------------
-	-- FIND / REPLACE
-	------------------------------------------------------------------------
+	-- Find / replace
 	local findState = {
 		Query = "",
 		Replace = "",
@@ -426,9 +401,7 @@ local function main()
 		end
 	end
 	
-	------------------------------------------------------------------------
-	-- RUN BUFFER
-	------------------------------------------------------------------------
+	-- Run buffer
 	local function runCurrentBuffer()
 		local tab = getActiveTab()
 		if not tab then return end
@@ -458,9 +431,7 @@ local function main()
 		end
 	end
 	
-	------------------------------------------------------------------------
-	-- CURSOR / LINE HELPERS
-	------------------------------------------------------------------------
+	-- Cursor / line helpers
 	ScriptEditor.GetCursorLine = function()
 		if not codeInput then return 1 end
 		local text = codeInput.Text
@@ -481,9 +452,7 @@ local function main()
 	end
 
 
-	------------------------------------------------------------------------
-	-- RENDERING
-	------------------------------------------------------------------------
+	-- Rendering
 	ScriptEditor.RenderTabs = function()
 		if not tabBar then return end
 		-- Clear existing tab buttons
@@ -578,9 +547,7 @@ local function main()
 		statusBar.Text = string.format("Ln %d, Col %d | %d lines%s%s", curLine, curCol, lineCount, decompInfo, modifiedInfo)
 	end
 	
-	------------------------------------------------------------------------
-	-- INIT
-	------------------------------------------------------------------------
+	-- Init
 	ScriptEditor.Init = function()
 		ScriptEditor.Window = Lib.Window.new()
 		ScriptEditor.Window:SetTitle("Script Editor")
@@ -770,17 +737,12 @@ local function main()
 		end)
 	end
 	
-	------------------------------------------------------------------------
-	-- FIND BAR
-	------------------------------------------------------------------------
+	-- Find bar
 	ScriptEditor.ToggleFindBar = function()
 		-- TODO: Implement find bar UI toggle
 		if Notifications then Notifications.Info("Find: Ctrl+F (coming in next patch)") end
 	end
 	
-	------------------------------------------------------------------------
-	-- PUBLIC API
-	------------------------------------------------------------------------
 	ScriptEditor.GetTabs = function() return tabs end
 	ScriptEditor.GetActiveTab = getActiveTab
 	ScriptEditor.AddTab = addTab

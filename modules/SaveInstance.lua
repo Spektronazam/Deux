@@ -1,18 +1,4 @@
---[[
-	Deux :: SaveInstance Module
-	
-	Save instance UI with:
-	- Wraps Env.saveinstance (capability gated)
-	- Options dialog: scope, include script source, optimize meshes,
-	  scrub player data, file format (rbxlx/rbxl)
-	- Progress indicator ("Saving..." status)
-	- Right-click integration: listens for Store "save_instance" event
-	- Output path: deux/saved/places/<PlaceId>_<timestamp>.rbxlx
-	- Also supports "Save as Model" for subtrees (rbxmx)
-	- Notification on complete with file path
-	- Settings integration for defaults
-	- Window with Lib.Window.new()
-]]
+-- SaveInstance: thin UI on top of saveinstance() with scope and format options.
 
 -- Common Locals
 local Main, Lib, Apps, Settings, Theme, Store, Keybinds, Notifications, Env
@@ -44,9 +30,7 @@ end
 local function main()
 	local SaveInstance = {}
 
-	------------------------------------------------------------------------
-	-- STATE
-	------------------------------------------------------------------------
+	-- State
 	local isSaving = false
 	local connections = {}
 
@@ -62,10 +46,6 @@ local function main()
 
 	-- UI refs
 	local window, optionsFrame, statusLabel, saveButton
-
-	------------------------------------------------------------------------
-	-- HELPERS
-	------------------------------------------------------------------------
 
 	local function getTimestamp()
 		return os.date("%Y%m%d_%H%M%S")
@@ -104,9 +84,7 @@ local function main()
 		end
 	end
 
-	------------------------------------------------------------------------
-	-- SAVE LOGIC
-	------------------------------------------------------------------------
+	-- Save logic
 
 	function SaveInstance:SavePlace(overrideOptions)
 		if isSaving then
@@ -211,9 +189,7 @@ local function main()
 		end)
 	end
 
-	------------------------------------------------------------------------
-	-- UI
-	------------------------------------------------------------------------
+	-- Ui
 
 	function SaveInstance:BuildUI()
 		window = Lib.Window.new()
@@ -354,9 +330,7 @@ local function main()
 		end)
 	end
 
-	------------------------------------------------------------------------
-	-- LIFECYCLE
-	------------------------------------------------------------------------
+	-- Lifecycle
 
 	function SaveInstance:Init()
 		-- Load defaults from settings

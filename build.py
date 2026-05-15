@@ -1,33 +1,22 @@
 #!/usr/bin/env python3
 """
-Deux Build System
-=================
-Bundles core/ and modules/ into a single out.lua with:
-- Deterministic module ordering
-- SHA-256 hash generation (ModuleHashs.dat)
-- Optional minification (--minify)
-- Release manifest (manifest.json)
-- Version + git commit embedding (runtime-readable as _G.DeuxBuild)
-- --check mode (verify on-disk modules against ModuleHashs.dat)
-- --watch mode (poll-based, rebuild on change)
+Bundle core/ and modules/ into a single out.lua, in the order main.lua wants.
+Also writes ModuleHashs.dat, manifest.json, and (with --minify) out.min.lua.
 
 Usage:
-    python build.py              # Standard build
-    python build.py --minify     # + minified out.min.lua
-    python build.py --watch      # Watch mode (rebuild on change)
-    python build.py --check      # Verify hashes match without building
-    python build.py --version X  # Override version string
+    python build.py
+    python build.py --minify
+    python build.py --watch
+    python build.py --check
+    python build.py --version <string>
 """
 
-import os
 import sys
 import json
 import hashlib
 import time
 import subprocess
 from pathlib import Path
-
-# --- Configuration -----------------------------------------------------------
 
 ROOT = Path(__file__).parent
 CORE_DIR = ROOT / "core"
@@ -39,102 +28,78 @@ HASH_FILE = ROOT / "ModuleHashs.dat"
 MANIFEST_FILE = ROOT / "manifest.json"
 VERSION_FILE = ROOT / "VERSION"
 
-# Order matters: core modules loaded first, then Lib (foundation), then app modules
+# Order matters: core systems load first, then Lib (everything else builds on it),
+# then the apps in the order main.lua expects.
 CORE_ORDER = [
-    "Env",
-    "Settings",
-    "Theme",
-    "Keybinds",
-    "Notifications",
-    "Store",
+    "Env", "Settings", "Theme", "Keybinds", "Notifications", "Store",
 ]
-
 MODULE_ORDER = [
     "Lib",
-    "Explorer",
-    "Properties",
-    "ScriptEditor",
-    "Terminal",
-    "RemoteSpy",
-    "SaveInstance",
-    "DataInspector",
-    "NetworkSpy",
-    "APIReference",
-    "PluginAPI",
-    "WorkspaceTools",
-    "Console",
+    "Explorer", "Properties", "ScriptEditor", "Terminal", "RemoteSpy",
+    "SaveInstance", "DataInspector", "NetworkSpy", "APIReference",
+    "PluginAPI", "WorkspaceTools", "Console",
 ]
 
 
-# --- Helpers -----------------------------------------------------------------
-
-def read_file(path: Path) -> str:
+def read_file(path):
     with open(path, "r", encoding="utf-8") as f:
         return f.read()
 
 
-def write_file(path: Path, content: str):
+def write_file(path, content):
     with open(path, "w", encoding="utf-8") as f:
         f.write(content)
 
 
-def sha256(content: str) -> str:
+def sha256(content):
     return hashlib.sha256(content.encode("utf-8")).hexdigest()
 
 
-def get_version(override=None) -> str:
+def get_version(override=None):
     if override:
         return override
     if VERSION_FILE.exists():
         return read_file(VERSION_FILE).strip()
     try:
-        result = subprocess.run(
-            ["git", "describe", "--tags", "--always"],
-            capture_output=True, text=True, cwd=ROOT, check=False,
-        )
-        if result.returncode == 0 and result.stdout.strip():
-            return result.stdout.strip()
+        r = subprocess.run(["git", "describe", "--tags", "--always"],
+                           capture_output=True, text=True, cwd=ROOT, check=False)
+        if r.returncode == 0 and r.stdout.strip():
+            return r.stdout.strip()
     except Exception:
         pass
     return "2.0.0"
 
 
-def get_git_commit() -> str:
+def get_git_commit():
     try:
-        result = subprocess.run(
-            ["git", "rev-parse", "--short", "HEAD"],
-            capture_output=True, text=True, cwd=ROOT, check=False,
-        )
-        if result.returncode == 0 and result.stdout.strip():
-            return result.stdout.strip()
+        r = subprocess.run(["git", "rev-parse", "--short", "HEAD"],
+                           capture_output=True, text=True, cwd=ROOT, check=False)
+        if r.returncode == 0 and r.stdout.strip():
+            return r.stdout.strip()
     except Exception:
         pass
     return "unknown"
 
 
-def lua_escape(s: str) -> str:
-    """Escape a string for safe inclusion inside Lua double-quoted literals."""
+def lua_escape(s):
     return (s.replace("\\", "\\\\")
              .replace('"', '\\"')
              .replace("\n", "\\n")
              .replace("\r", "\\r"))
 
 
-# --- Minifier ----------------------------------------------------------------
-# Strips comments and trailing whitespace while correctly skipping string and
-# long-bracket spans. The previous implementation could mangle `--` and `]]`
-# that appeared inside string literals.
-
-def minify_lua(source: str) -> str:
+# Strips comments and trailing whitespace. Walks the source as a stream so it
+# correctly skips over string contents and long brackets - the previous
+# version tripped on `--` and `]]` that lived inside string literals.
+def minify_lua(source):
     out = []
     i = 0
     n = len(source)
-
     while i < n:
         c = source[i]
         nxt = source[i + 1] if i + 1 < n else ""
 
-        # Long bracket open: [[, [=[, [==[, ...
+        # Long bracket: [[ ... ]], [=[ ... ]=], etc.
         if c == "[" and (nxt == "[" or nxt == "="):
             j = i + 1
             level = 0
@@ -151,7 +116,6 @@ def minify_lua(source: str) -> str:
                 i = end + len(close)
                 continue
 
-        # Comment
         if c == "-" and nxt == "-":
             # Long comment?
             k = i + 2
@@ -165,15 +129,13 @@ def minify_lua(source: str) -> str:
                     close = "]" + ("=" * level) + "]"
                     end = source.find(close, kk + 1)
                     if end == -1:
-                        break  # malformed, drop the rest
+                        break
                     i = end + len(close)
                     continue
-            # Line comment - skip to end of line
             while i < n and source[i] != "\n":
                 i += 1
             continue
 
-        # String literal
         if c == '"' or c == "'":
             quote = c
             out.append(c)
@@ -186,49 +148,40 @@ def minify_lua(source: str) -> str:
                     continue
                 out.append(ch)
                 i += 1
-                if ch == quote:
-                    break
-                if ch == "\n":
+                if ch == quote or ch == "\n":
                     break
             continue
 
         out.append(c)
         i += 1
 
-    # Now collapse trailing whitespace and empty lines.
     text = "".join(out)
-    lines = []
-    for line in text.split("\n"):
-        stripped = line.rstrip()
-        if stripped.strip():
-            lines.append(stripped)
-    return "\n".join(lines)
+    return "\n".join(line.rstrip() for line in text.split("\n") if line.strip())
 
 
-# --- Build core --------------------------------------------------------------
-
-def collect_modules() -> dict:
-    """Return {name: source} for every core+app module."""
-    result = {}
+def collect_modules():
+    out = {}
     for name in CORE_ORDER:
         path = CORE_DIR / f"{name}.lua"
         if path.exists():
-            result[name] = read_file(path)
+            out[name] = read_file(path)
         else:
-            print(f"  WARNING: Core module not found: {path}")
+            print(f"  WARNING: missing core module: {path}")
     for name in MODULE_ORDER:
         path = MODULES_DIR / f"{name}.lua"
         if path.exists():
-            result[name] = read_file(path)
+            out[name] = read_file(path)
         else:
-            print(f"  WARNING: Module not found: {path}")
-    return result
+            print(f"  WARNING: missing module: {path}")
+    return out
 
 
-def build_runtime_meta(version: str, commit: str, modules_hashes: dict) -> str:
-    """Lua snippet that exposes _G.DeuxBuild for runtime introspection."""
+# Embed _G.DeuxBuild so version + credits + per-module hashes are reachable
+# from inside the running script (and survive the minifier, which strips
+# comments).
+def build_runtime_meta(version, commit, hashes):
     items = [f'    {{Name = "{name}", SHA256 = "{h}"}}'
-             for name, h in sorted(modules_hashes.items())]
+             for name, h in sorted(hashes.items())]
     credits = [
         "Moon/LorekeeperZinnia (New Dex original)",
         "iris (successor co-conspirator)",
@@ -236,6 +189,7 @@ def build_runtime_meta(version: str, commit: str, modules_hashes: dict) -> str:
         "UNC Community",
     ]
     cred_lua = ", ".join(f'"{lua_escape(c)}"' for c in credits)
+    build_time = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
     return (
         "do\n"
         "  -- Auto-generated by build.py - do not edit\n"
@@ -244,7 +198,7 @@ def build_runtime_meta(version: str, commit: str, modules_hashes: dict) -> str:
         "    _G.DeuxBuild = {\n"
         f'      Version    = "{lua_escape(version)}",\n'
         f'      Commit     = "{lua_escape(commit)}",\n'
-        f'      BuildTime  = "{lua_escape(time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()))}",\n'
+        f'      BuildTime  = "{lua_escape(build_time)}",\n'
         f"      Credits    = {{{cred_lua}}},\n"
         "      Modules    = {\n"
         + ",\n".join(items) + "\n"
@@ -255,7 +209,7 @@ def build_runtime_meta(version: str, commit: str, modules_hashes: dict) -> str:
     )
 
 
-def build(minify=False, version_override=None) -> bool:
+def build(minify=False, version_override=None):
     version = get_version(version_override)
     commit = get_git_commit()
     print(f"[Deux Build] Version: {version}")
@@ -263,19 +217,19 @@ def build(minify=False, version_override=None) -> bool:
     print(f"[Deux Build] Minify:  {minify}")
 
     sources = collect_modules()
-    hashs = {name: sha256(src) for name, src in sources.items()}
+    hashes = {name: sha256(src) for name, src in sources.items()}
 
-    parts = []
-    parts.append(f"-- Deux v{version} ({commit}) | Built {time.strftime('%Y-%m-%d %H:%M:%S')} UTC")
-    parts.append("-- https://github.com/Spektronazam/Deux")
-    parts.append("-- Credits: Moon/LorekeeperZinnia, iris, Spektronazam, UNC Community")
-    parts.append("")
-    parts.append(build_runtime_meta(version, commit, hashs))
-    parts.append("local EmbeddedModules = {}")
-    parts.append("")
+    parts = [
+        f"-- Deux v{version} ({commit}) | Built {time.strftime('%Y-%m-%d %H:%M:%S')} UTC",
+        "-- https://github.com/Spektronazam/Deux",
+        "-- Credits: Moon/LorekeeperZinnia, iris, Spektronazam, UNC Community",
+        "",
+        build_runtime_meta(version, commit, hashes),
+        "local EmbeddedModules = {}",
+        "",
+    ]
 
-    print(f"[Deux Build] Embedding {len(CORE_ORDER)} core modules...")
-    for name in CORE_ORDER:
+    for name in CORE_ORDER + MODULE_ORDER:
         if name not in sources:
             continue
         src = sources[name]
@@ -285,20 +239,7 @@ def build(minify=False, version_override=None) -> bool:
         parts.append("")
         print(f"  + {name} ({len(src)} bytes)")
 
-    print(f"[Deux Build] Embedding {len(MODULE_ORDER)} app modules...")
-    for name in MODULE_ORDER:
-        if name not in sources:
-            continue
-        src = sources[name]
-        parts.append(f'EmbeddedModules["{name}"] = function()')
-        parts.append(src)
-        parts.append("end")
-        parts.append("")
-        print(f"  + {name} ({len(src)} bytes)")
-
-    print("[Deux Build] Appending main.lua...")
     parts.append(read_file(MAIN_FILE))
-
     full_source = "\n".join(parts)
 
     write_file(OUTPUT_FILE, full_source)
@@ -310,10 +251,11 @@ def build(minify=False, version_override=None) -> bool:
         write_file(OUTPUT_MIN_FILE, minified)
         minified_size = len(minified)
         ratio = (1 - minified_size / max(len(full_source), 1)) * 100
-        print(f"[Deux Build] Written: {OUTPUT_MIN_FILE} ({minified_size:,} bytes, {ratio:.1f}% smaller)")
+        print(f"[Deux Build] Written: {OUTPUT_MIN_FILE} "
+              f"({minified_size:,} bytes, {ratio:.1f}% smaller)")
 
-    hash_lines = [f"{name}:{h}" for name, h in sorted(hashs.items())]
-    write_file(HASH_FILE, "\n".join(hash_lines) + "\n")
+    write_file(HASH_FILE,
+               "\n".join(f"{name}:{h}" for name, h in sorted(hashes.items())) + "\n")
     print(f"[Deux Build] Written: {HASH_FILE}")
 
     manifest = {
@@ -327,19 +269,17 @@ def build(minify=False, version_override=None) -> bool:
         "total_size": len(full_source),
         "minified_size": minified_size,
         "sha256": sha256(full_source),
-        "hashs": hashs,
+        "hashs": hashes,
     }
     write_file(MANIFEST_FILE, json.dumps(manifest, indent=2) + "\n")
     print(f"[Deux Build] Written: {MANIFEST_FILE}")
-
-    print(f"\n[Deux Build] Done! Total: {len(full_source):,} bytes across {len(hashs)} modules.")
+    print(f"\n[Deux Build] Done! {len(full_source):,} bytes across {len(hashes)} modules.")
     return True
 
 
-# --- Check mode --------------------------------------------------------------
-
-def check() -> bool:
-    """Compare on-disk modules against ModuleHashs.dat. Exit non-zero on drift."""
+# Compares on-disk modules to ModuleHashs.dat. CI calls this so a forgotten
+# rebuild can't sneak past code review.
+def check():
     if not HASH_FILE.exists():
         print(f"[Deux Check] {HASH_FILE} not present. Run a build first.")
         return False
@@ -347,29 +287,19 @@ def check() -> bool:
     expected = {}
     for line in read_file(HASH_FILE).splitlines():
         line = line.strip()
-        if not line:
-            continue
-        if ":" not in line:
+        if not line or ":" not in line:
             continue
         name, h = line.split(":", 1)
         expected[name.strip()] = h.strip()
 
     actual = {name: sha256(src) for name, src in collect_modules().items()}
-
-    drifted, missing, extra = [], [], []
-    for name, h in expected.items():
-        if name not in actual:
-            missing.append(name)
-        elif actual[name] != h:
-            drifted.append(name)
-    for name in actual:
-        if name not in expected:
-            extra.append(name)
+    drifted = [n for n, h in expected.items() if n in actual and actual[n] != h]
+    missing = [n for n in expected if n not in actual]
+    extra = [n for n in actual if n not in expected]
 
     if not (drifted or missing or extra):
         print(f"[Deux Check] OK - {len(actual)} modules match {HASH_FILE.name}.")
         return True
-
     if drifted:
         print(f"[Deux Check] DRIFT ({len(drifted)}): {', '.join(drifted)}")
     if missing:
@@ -379,56 +309,41 @@ def check() -> bool:
     return False
 
 
-# --- Watch mode --------------------------------------------------------------
-
 def watch():
-    print("[Deux Build] Watch mode active. Press Ctrl+C to stop.")
-    last_mtime = 0.0
-
+    print("[Deux Build] Watch mode active. Ctrl+C to stop.")
+    last = 0.0
     try:
         while True:
-            current_mtime = 0.0
+            current = 0.0
             paths = (list(CORE_DIR.glob("*.lua"))
                      + list(MODULES_DIR.glob("*.lua"))
                      + [MAIN_FILE])
-            for path in paths:
-                if path.exists():
-                    mt = path.stat().st_mtime
-                    if mt > current_mtime:
-                        current_mtime = mt
-
-            if current_mtime > last_mtime:
-                if last_mtime > 0:
+            for p in paths:
+                if p.exists():
+                    mt = p.stat().st_mtime
+                    if mt > current:
+                        current = mt
+            if current > last:
+                if last > 0:
                     print("\n[Deux Build] Change detected, rebuilding...")
                 build()
-                last_mtime = current_mtime
-
+                last = current
             time.sleep(1)
     except KeyboardInterrupt:
         print("\n[Deux Build] Watch stopped.")
 
 
-# --- CLI ---------------------------------------------------------------------
-
 if __name__ == "__main__":
     args = sys.argv[1:]
-
-    do_minify = "--minify" in args
-    do_watch = "--watch" in args
-    do_check = "--check" in args
-
-    version_override = None
-    if "--version" in args:
-        idx = args.index("--version")
-        if idx + 1 < len(args):
-            version_override = args[idx + 1]
-
-    if do_check:
-        ok = check()
-        sys.exit(0 if ok else 1)
-
-    if do_watch:
+    if "--check" in args:
+        sys.exit(0 if check() else 1)
+    if "--watch" in args:
         watch()
     else:
-        ok = build(minify=do_minify, version_override=version_override)
+        version_override = None
+        if "--version" in args:
+            idx = args.index("--version")
+            if idx + 1 < len(args):
+                version_override = args[idx + 1]
+        ok = build(minify="--minify" in args, version_override=version_override)
         sys.exit(0 if ok else 1)

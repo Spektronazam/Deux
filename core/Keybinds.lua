@@ -1,30 +1,7 @@
---[[
-	Deux Core :: Keybinds
-	Central Keybind Registry with Conflict Detection
-	
-	Features:
-	- Register named actions with default keybinds
-	- Rebindable at runtime (persisted via Settings)
-	- Conflict detection and resolution
-	- Combo support (Ctrl+Shift+F, etc.)
-	- Category grouping for the settings UI
-	
-	Usage:
-		local Keybinds = require("core/Keybinds")
-		Keybinds.Init(Settings, service)
-		Keybinds.Register("Explorer.ToggleVisibility", {
-			Keys = {Enum.KeyCode.LeftControl, Enum.KeyCode.E},
-			Category = "Explorer",
-			Description = "Toggle Explorer window",
-			Callback = function() ... end
-		})
-]]
+-- Keybinds: named actions, modifier-aware combos, rebound through Settings.
 
 local Keybinds = {}
 
-------------------------------------------------------------------------
--- INTERNAL STATE
-------------------------------------------------------------------------
 local Settings
 local UserInputService
 local bindings = {} -- actionName -> {Keys, Category, Description, Callback, Enabled}
@@ -32,9 +9,6 @@ local keyState = {} -- KeyCode -> bool (currently held)
 local connections = {}
 local enabled = true
 
-------------------------------------------------------------------------
--- HELPERS
-------------------------------------------------------------------------
 local function keysMatch(required)
 	for _, key in ipairs(required) do
 		if not keyState[key] then return false end
@@ -76,9 +50,6 @@ local function keysToString(keys)
 	return table.concat(names, "+")
 end
 
-------------------------------------------------------------------------
--- INPUT HANDLING
-------------------------------------------------------------------------
 local function onInputBegan(input, gameProcessed)
 	if gameProcessed then return end
 	if not enabled then return end
@@ -107,10 +78,6 @@ local function onInputEnded(input, gameProcessed)
 	keyState[input.KeyCode] = false
 end
 
-------------------------------------------------------------------------
--- PUBLIC API
-------------------------------------------------------------------------
-
 function Keybinds.Init(settingsRef, serviceTable)
 	Settings = settingsRef
 	UserInputService = serviceTable.UserInputService or game:GetService("UserInputService")
@@ -137,9 +104,7 @@ function Keybinds.Init(settingsRef, serviceTable)
 	end
 end
 
---- Register a keybind action
--- @param name: unique action identifier (e.g. "Explorer.Toggle")
--- @param data: {Keys, Category, Description, Callback}
+-- Register a keybind action. `data` = {Keys, Category, Description, Callback}.
 function Keybinds.Register(name, data)
 	bindings[name] = {
 		Name = name,
@@ -151,13 +116,12 @@ function Keybinds.Register(name, data)
 	}
 end
 
---- Unregister a keybind
+-- Unregister a keybind
 function Keybinds.Unregister(name)
 	bindings[name] = nil
 end
 
---- Rebind an action to new keys
--- @return: true if successful, false + conflict name if conflict detected
+-- Rebind an action. Returns false + the conflicting action name if another binding already owns the combo.
 function Keybinds.Rebind(name, newKeys)
 	-- Check for conflicts
 	for otherName, other in pairs(bindings) do
@@ -185,7 +149,7 @@ function Keybinds.Rebind(name, newKeys)
 	return true
 end
 
---- Force rebind (override conflicts)
+-- Force rebind (override conflicts)
 function Keybinds.ForceRebind(name, newKeys)
 	local binding = bindings[name]
 	if not binding then return false end
@@ -194,24 +158,24 @@ function Keybinds.ForceRebind(name, newKeys)
 	return true
 end
 
---- Enable/disable a specific binding
+-- Enable/disable a specific binding
 function Keybinds.SetEnabled(name, state)
 	if bindings[name] then
 		bindings[name].Enabled = state
 	end
 end
 
---- Enable/disable entire keybind system
+-- Enable/disable entire keybind system
 function Keybinds.SetGlobalEnabled(state)
 	enabled = state
 end
 
---- Get binding info
+-- Get binding info
 function Keybinds.GetBinding(name)
 	return bindings[name]
 end
 
---- Get all bindings grouped by category
+-- Get all bindings grouped by category
 function Keybinds.GetAll()
 	local categories = {}
 	for name, binding in pairs(bindings) do
@@ -232,14 +196,14 @@ function Keybinds.GetAll()
 	return categories
 end
 
---- Get display string for a keybind
+-- Get display string for a keybind
 function Keybinds.GetKeyString(name)
 	local binding = bindings[name]
 	if not binding then return "" end
 	return keysToString(binding.Keys)
 end
 
---- Find conflicts for a set of keys
+-- Find conflicts for a set of keys
 function Keybinds.FindConflicts(keys, excludeName)
 	local conflicts = {}
 	for name, binding in pairs(bindings) do
@@ -256,7 +220,7 @@ function Keybinds.FindConflicts(keys, excludeName)
 	return conflicts
 end
 
---- Save all bindings to settings
+-- Save all bindings to settings
 function Keybinds.Save()
 	if not Settings then return end
 	local serialized = {}
@@ -270,7 +234,7 @@ function Keybinds.Save()
 	Settings.Set("Keybinds", serialized, false)
 end
 
---- Reset all bindings to defaults (requires re-registration)
+-- Reset all bindings to defaults (requires re-registration)
 function Keybinds.ResetAll()
 	-- Clear saved
 	if Settings then
@@ -278,7 +242,7 @@ function Keybinds.ResetAll()
 	end
 end
 
---- Cleanup
+-- Cleanup
 function Keybinds.Destroy()
 	for _, conn in ipairs(connections) do
 		conn:Disconnect()

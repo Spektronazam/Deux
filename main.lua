@@ -1,28 +1,19 @@
 --[[
-	Deux - The Successor Explorer
-	Version 2.0.0
-	
-	Originally developed by Moon (New Dex)
-	Continued and rewritten as Deux by Spektronazam
-	
-	Deux is a full debugging suite: explorer, properties, script editor,
-	remote spy, data inspector, terminal, save instance, and more.
-	
-	Built on UNC/sUNC standards. No Synapse-specific code.
-	
-	Credits:
-		Moon/LorekeeperZinnia - Original New Dex architecture & Lib
-		iris                  - Successor co-conspirator & feature inspiration
-		Spektronazam          - Deux successor rewrite
+	Deux
+
+	Successor to New Dex. Same shape: Explorer + Properties + ScriptEditor +
+	the side tools, all glued together by main.lua. Built on UNC/sUNC, no
+	Synapse-specific calls.
+
+	Originally Moon's New Dex. Re-architected as Deux by Spektronazam,
+	with iris along for the ride.
 ]]
 
 -- Prevent double-execution
 if _G.DeuxLoaded then return end
 _G.DeuxLoaded = true
 
-------------------------------------------------------------------------
--- CORE BOOTSTRAP
-------------------------------------------------------------------------
+-- Core bootstrap
 local Env, Settings, Theme, Keybinds, Notifications, Store
 local Lib, API, RMD
 local Explorer, Properties, ScriptEditor, Terminal, RemoteSpy
@@ -51,9 +42,8 @@ local service = setmetatable({}, {
 
 local plr = service.Players.LocalPlayer or service.Players.PlayerAdded:Wait()
 
-------------------------------------------------------------------------
--- UTILITY: Instance creation (preserved from original for Lib compat)
-------------------------------------------------------------------------
+-- Instance creation helper preserved from the original Lib so the old
+-- `create({...})` build tables still work.
 local create = function(data)
 	local insts = {}
 	for i, v in pairs(data) do insts[v[1]] = Instance.new(v[2]) end
@@ -77,9 +67,7 @@ local createSimple = function(class, props)
 	return inst
 end
 
-------------------------------------------------------------------------
--- MAIN CONTROLLER
-------------------------------------------------------------------------
+-- Main controller
 local Main = {}
 Main.Version = "2.0.0"
 Main.CodeName = "Deux"
@@ -100,9 +88,8 @@ Main.DisplayOrders = {
 	Core = 101000
 }
 
-------------------------------------------------------------------------
--- ENV INITIALIZATION (UNC/sUNC)
-------------------------------------------------------------------------
+-- Boot Env: capability detection lives in core/Env, this just runs it
+-- and rewraps the service cache through cloneref once it's available.
 Main.InitEnv = function()
 	-- Load core/Env (embedded by build system)
 	if EmbeddedModules["Env"] then
@@ -132,9 +119,7 @@ Main.InitEnv = function()
 	Main.Executor = Env.ExecutorName
 end
 
-------------------------------------------------------------------------
--- CORE SYSTEMS INITIALIZATION
-------------------------------------------------------------------------
+-- Core systems initialization
 Main.InitCoreSystems = function()
 	-- Settings
 	if EmbeddedModules["Settings"] then
@@ -176,9 +161,7 @@ Main.InitCoreSystems = function()
 	Notifications.Init(Env, Theme, service)
 end
 
-------------------------------------------------------------------------
--- DEPS TABLE (passed to all modules for initialization)
-------------------------------------------------------------------------
+-- Build the deps table that every module gets through InitDeps.
 Main.GetInitDeps = function()
 	return {
 		Main = Main,
@@ -201,9 +184,7 @@ Main.GetInitDeps = function()
 end
 
 
-------------------------------------------------------------------------
--- MODULE LOADER
-------------------------------------------------------------------------
+-- Module loader
 Main.LoadModule = function(name)
 	local control
 	
@@ -292,9 +273,7 @@ Main.LoadModules = function()
 	end
 end
 
-------------------------------------------------------------------------
--- ERROR HANDLING
-------------------------------------------------------------------------
+-- Error handling
 Main.Error = function(str)
 	local msg = "[Deux] ERROR: " .. tostring(str)
 	if Env and Env.rconsoleprint then
@@ -308,9 +287,8 @@ Main.Warn = function(str)
 	warn(msg)
 end
 
-------------------------------------------------------------------------
--- SETTINGS (load from disk)
-------------------------------------------------------------------------
+-- Load Settings off disk if the module supports it. Settings.Init in
+-- core already does this; this is kept for backward compat.
 Main.LoadSettings = function()
 	-- Settings.Init already handles loading; this is for compat
 	if Settings and Settings.Load then
@@ -318,9 +296,7 @@ Main.LoadSettings = function()
 	end
 end
 
-------------------------------------------------------------------------
--- FILESYSTEM SETUP
-------------------------------------------------------------------------
+-- Filesystem setup
 Main.SetupFilesystem = function()
 	if not Env.Capabilities.Filesystem then return end
 	
@@ -336,9 +312,8 @@ Main.SetupFilesystem = function()
 end
 
 
-------------------------------------------------------------------------
--- API FETCH (Roblox API Dump + RMD)
-------------------------------------------------------------------------
+-- Fetch the Roblox API dump (cached after first hit). Falls back to an
+-- empty surface when we can't reach setup.roblox.com or aren't elevated.
 Main.FetchAPI = function()
 	local rawAPI
 	
@@ -618,17 +593,13 @@ Main.ParseRMD = function(rawXML)
 end
 
 
-------------------------------------------------------------------------
--- GUI: Show with protection
-------------------------------------------------------------------------
+-- Show a top-level Gui through whatever protection the executor offers.
 Main.ShowGui = function(gui)
 	Env.protectGui(gui)
 	gui.Parent = Main.GuiHolder
 end
 
-------------------------------------------------------------------------
--- GUI: Intro / Splash Screen
-------------------------------------------------------------------------
+-- Splash. Hangs around long enough for module init to feel intentional.
 Main.CreateIntro = function(initStatus)
 	local gui = create({
 		{1,"ScreenGui",{IgnoreGuiInset=true,Name="DeuxIntro",ZIndexBehavior=Enum.ZIndexBehavior.Sibling}},
@@ -637,7 +608,7 @@ Main.CreateIntro = function(initStatus)
 		{4,"Frame",{BackgroundColor3=Color3.fromRGB(20,20,20),BorderSizePixel=0,ClipsDescendants=true,Name="Holder",Parent={2},Size=UDim2.new(1,0,1,0)}},
 		{5,"UICorner",{CornerRadius=UDim.new(0,8),Parent={4}}},
 		{6,"TextLabel",{BackgroundTransparency=1,Font=Enum.Font.GothamBold,Name="Title",Parent={4},Position=UDim2.new(0,24,0,20),Size=UDim2.new(1,-48,0,40),Text="Deux",TextColor3=Color3.fromRGB(255,255,255),TextSize=36,TextXAlignment=Enum.TextXAlignment.Left}},
-		{7,"TextLabel",{BackgroundTransparency=1,Font=Enum.Font.Gotham,Name="Desc",Parent={4},Position=UDim2.new(0,24,0,58),Size=UDim2.new(1,-48,0,20),Text="The Successor Debugging Suite",TextColor3=Color3.fromRGB(180,180,180),TextSize=14,TextXAlignment=Enum.TextXAlignment.Left}},
+		{7,"TextLabel",{BackgroundTransparency=1,Font=Enum.Font.Gotham,Name="Desc",Parent={4},Position=UDim2.new(0,24,0,58),Size=UDim2.new(1,-48,0,20),Text="successor to dex",TextColor3=Color3.fromRGB(180,180,180),TextSize=14,TextXAlignment=Enum.TextXAlignment.Left}},
 		{8,"TextLabel",{BackgroundTransparency=1,Font=Enum.Font.Gotham,Name="StatusText",Parent={4},Position=UDim2.new(0,24,0,120),Size=UDim2.new(1,-48,0,20),Text="Initializing...",TextColor3=Color3.fromRGB(150,150,150),TextSize=12,TextXAlignment=Enum.TextXAlignment.Left}},
 		{9,"Frame",{BackgroundColor3=Color3.fromRGB(40,40,40),BorderSizePixel=0,Name="ProgressBar",Parent={4},Position=UDim2.new(0,24,0,150),Size=UDim2.new(1,-48,0,4)}},
 		{10,"UICorner",{CornerRadius=UDim.new(0,2),Parent={9}}},
@@ -678,9 +649,7 @@ Main.CreateIntro = function(initStatus)
 	return {SetProgress = setProgress, Close = close}
 end
 
-------------------------------------------------------------------------
--- GUI: Main Menu (App Launcher)
-------------------------------------------------------------------------
+-- The little drop-down launcher; one tile per registered app.
 Main.CreateApp = function(data)
 	if Main.MenuApps[data.Name] then return end
 	local control = {}
@@ -905,26 +874,20 @@ Main.CreateMainGui = function()
 	Main.ShowGui(gui)
 end
 
-------------------------------------------------------------------------
--- MAIN INIT (Entry Point)
-------------------------------------------------------------------------
+-- Boot. Order: env -> core systems -> Lib -> icons -> API/RMD ->
+-- modules -> Init() per module -> main GUI -> plugins.
 Main.Init = function()
-	-- Phase 1: Environment
 	Main.InitEnv()
-	
-	-- Phase 2: Core systems
+
 	Main.InitCoreSystems()
 	Main.SetupFilesystem()
-	
-	-- Phase 3: Splash
+
 	local intro = Main.CreateIntro("Initializing Library")
-	
-	-- Phase 4: Load Lib (foundation UI library)
+
 	intro.SetProgress("Loading Library", 0.1)
 	Lib = Main.LoadModule("Lib")
 	if Lib and Lib.FastWait then Lib.FastWait() end
-	
-	-- Phase 5: Icons
+
 	intro.SetProgress("Loading Icons", 0.2)
 	if Lib and Lib.IconMap then
 		Main.MiscIcons = Lib.IconMap.new("rbxassetid://6511490623", 256, 256, 16, 16)
@@ -941,40 +904,35 @@ Main.Init = function()
 			Explorer = 0, Properties = 1, Script_Viewer = 2,
 		})
 	end
-	
-	-- Phase 6: Fetch Roblox version
+
 	intro.SetProgress("Fetching Roblox Version", 0.25)
 	if Main.Elevated then
 		pcall(function()
 			Main.RobloxVersion = game:HttpGet("http://setup.roblox.com/versionQTStudio")
 		end)
 	end
-	
-	-- Phase 7: Fetch API + RMD
+
 	intro.SetProgress("Fetching API", 0.35)
 	API = Main.FetchAPI()
 	if Lib and Lib.FastWait then Lib.FastWait() end
-	
+
 	intro.SetProgress("Fetching RMD", 0.45)
 	RMD = Main.FetchRMD()
-	-- If RMD was deferred, parse now that Lib is available
+	-- RMD parsing depends on Lib.ParseXML, so it may have been deferred.
 	if Main.RawRMDPending and Lib and Lib.ParseXML then
 		RMD = Main.ParseRMD(Main.RawRMDPending)
 		Main.RawRMDPending = nil
 	end
 	if Lib and Lib.FastWait then Lib.FastWait() end
-	
-	-- Phase 8: Update deps in Lib
+
 	intro.SetProgress("Loading Modules", 0.55)
 	if Main.AppControls.Lib and Main.AppControls.Lib.InitDeps then
 		Main.AppControls.Lib.InitDeps(Main.GetInitDeps())
 	end
-	
-	-- Phase 9: Load all other modules
+
 	Main.LoadModules()
 	if Lib and Lib.FastWait then Lib.FastWait() end
-	
-	-- Phase 10: Initialize modules
+
 	intro.SetProgress("Initializing Modules", 0.8)
 	local initOrder = {"Explorer", "Properties", "ScriptEditor", "Terminal", "RemoteSpy", "SaveInstance", "DataInspector", "NetworkSpy", "APIReference", "PluginAPI", "WorkspaceTools", "Console"}
 	for _, name in ipairs(initOrder) do
@@ -984,18 +942,16 @@ Main.Init = function()
 		end
 	end
 	if Lib and Lib.FastWait then Lib.FastWait() end
-	
-	-- Phase 11: Done
+
 	intro.SetProgress("Complete", 1)
 	task.delay(1, function() intro.Close() end)
-	
-	-- Phase 12: Window system + main GUI
+
 	if Lib and Lib.Window and Lib.Window.Init then
 		Lib.Window.Init()
 	end
 	Main.CreateMainGui()
-	
-	-- Show default windows
+
+	-- Pin Explorer + Properties to the right side by default.
 	if Explorer and Explorer.Window then
 		Explorer.Window:Show({Align = "right", Pos = 1, Size = 0.5, Silent = true})
 	end
@@ -1005,22 +961,18 @@ Main.Init = function()
 	if Lib and Lib.DeferFunc and Lib.Window and Lib.Window.ToggleSide then
 		Lib.DeferFunc(function() Lib.Window.ToggleSide("right") end)
 	end
-	
-	-- Phase 13: Load plugins
+
 	if PluginAPI and PluginAPI.LoadAll then
 		pcall(PluginAPI.LoadAll)
 	end
-	
-	-- Capability notification
+
 	local missing = Env.getMissingAPIs()
 	if #missing > 3 then
 		Notifications.Warning(#missing .. " UNC APIs unavailable on " .. Env.ExecutorName)
 	end
-	
+
 	Notifications.Success("Deux v" .. Main.Version .. " loaded")
 end
 
-------------------------------------------------------------------------
--- START
-------------------------------------------------------------------------
+-- Go.
 Main.Init()

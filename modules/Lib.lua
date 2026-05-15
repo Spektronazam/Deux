@@ -5756,9 +5756,9 @@ local function main()
 		return {new = new}
 	end)()
 
-	--- Deferred-event-safe batch processing helper
-	--- Collects items added within a single frame and processes them together
-	--- Prevents ordering issues with Roblox's deferred event mode
+	-- Deferred-event-safe batch processing helper
+	-- Collects items added within a single frame and processes them together
+	-- Prevents ordering issues with Roblox's deferred event mode
 	Lib.BatchProcessor = (function()
 		local props = {
 			Queue = {},
@@ -5803,7 +5803,7 @@ local function main()
 		return {new = new}
 	end)()
 
-	--- Cloneref-safe instance comparison
+	-- Cloneref-safe instance comparison
 	Lib.InstancesEqual = function(a, b)
 		if a == b then return true end
 		-- When cloneref is in use, references may differ but point to same instance
@@ -5811,7 +5811,7 @@ local function main()
 		return s and result
 	end
 
-	--- Theme-aware color getter (falls back to Settings.Theme for backward compat)
+	-- Theme-aware color getter (falls back to Settings.Theme for backward compat)
 	Lib.GetThemeColor = function(key)
 		if Theme and Theme.Get then
 			return Theme.Get(key)

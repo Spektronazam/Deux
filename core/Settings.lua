@@ -1,28 +1,7 @@
---[[
-	Deux Core :: Settings
-	Persistent JSON Settings with Deep-Merge & Versioned Migration
-	
-	Features:
-	- Schema-versioned settings with automatic migration
-	- Deep merge of user settings over defaults (preserves new keys on update)
-	- Persistent save/load via filesystem (UNC readfile/writefile)
-	- Hot-reload support (call .Load() at any time)
-	- Observable: subscribe to changes per-key or globally
-	- Per-place overrides (game.PlaceId scoped)
-	
-	Usage:
-		local Settings = require("core/Settings")
-		Settings.Init(Env, service) -- call once at boot
-		local val = Settings.Get("Explorer.Sorting")
-		Settings.Set("Explorer.Sorting", false)
-		Settings.Subscribe("Theme", function(key, newVal, oldVal) ... end)
-]]
+-- Settings: JSON-backed prefs, deep-merged over defaults, with per-place overrides.
 
 local Settings = {}
 
-------------------------------------------------------------------------
--- INTERNAL STATE
-------------------------------------------------------------------------
 local SCHEMA_VERSION = 2
 local FILE_PATH = "deux/settings.json"
 local PLACE_FILE_PATH -- set at Init based on PlaceId
@@ -34,9 +13,6 @@ local currentData = {} -- live merged settings
 local subscribers = {} -- key pattern -> {callback, ...}
 local globalSubscribers = {} -- any change
 
-------------------------------------------------------------------------
--- DEFAULT SETTINGS SCHEMA
-------------------------------------------------------------------------
 Settings.Defaults = {
 	_SchemaVersion = SCHEMA_VERSION,
 	
@@ -151,9 +127,6 @@ Settings.Defaults = {
 	},
 }
 
-------------------------------------------------------------------------
--- DEEP UTILITY FUNCTIONS
-------------------------------------------------------------------------
 local function deepCopy(t)
 	if type(t) ~= "table" then return t end
 	local copy = {}
@@ -203,9 +176,6 @@ local function setNestedValue(tbl, path, value)
 	return oldVal
 end
 
-------------------------------------------------------------------------
--- MIGRATION
-------------------------------------------------------------------------
 local migrations = {}
 
 -- Migration from v1 (original Dex settings) to v2
@@ -251,9 +221,6 @@ local function migrate(data)
 	return data
 end
 
-------------------------------------------------------------------------
--- NOTIFICATION SYSTEM
-------------------------------------------------------------------------
 local function notifyChange(path, newVal, oldVal)
 	-- Notify specific subscribers
 	for pattern, callbacks in pairs(subscribers) do
@@ -269,13 +236,7 @@ local function notifyChange(path, newVal, oldVal)
 	end
 end
 
-------------------------------------------------------------------------
--- PUBLIC API
-------------------------------------------------------------------------
-
---- Initialize the settings system
--- @param envRef: core/Env module reference
--- @param serviceTable: service metatable from main
+-- Init: pulls in core/Env and the service cache. Call once at boot.
 function Settings.Init(envRef, serviceTable)
 	Env = envRef
 	HttpService = serviceTable.HttpService or game:GetService("HttpService")
@@ -300,7 +261,7 @@ function Settings.Init(envRef, serviceTable)
 	Settings.Load()
 end
 
---- Load settings from disk, merge with defaults
+-- Load: defaults <- global file <- per-place file (deepest wins).
 function Settings.Load()
 	currentData = deepCopy(Settings.Defaults)
 	
@@ -330,7 +291,7 @@ function Settings.Load()
 	currentData._SchemaVersion = SCHEMA_VERSION
 end
 
---- Save current settings to disk
+-- Persist current state to disk.
 function Settings.Save()
 	if not Env or not Env.Capabilities.Filesystem then return false end
 	
@@ -341,7 +302,7 @@ function Settings.Save()
 	return s2
 end
 
---- Save place-specific overrides
+-- Place-scoped overrides written to deux/settings_<PlaceId>.json.
 function Settings.SavePlaceOverrides(overrides)
 	if not Env or not Env.Capabilities.Filesystem or not PLACE_FILE_PATH then return false end
 	
@@ -352,17 +313,12 @@ function Settings.SavePlaceOverrides(overrides)
 	return s2
 end
 
---- Get a setting value by dot-separated path
--- @param path: e.g. "Explorer.Sorting" or "Theme.Main1"
--- @return: the value, or nil if not found
+-- Read by dot path, e.g. Settings.Get("Explorer.Sorting").
 function Settings.Get(path)
 	return getNestedValue(currentData, path)
 end
 
---- Set a setting value by dot-separated path
--- @param path: e.g. "Explorer.Sorting"
--- @param value: the new value
--- @param noSave: if true, don't auto-persist (batch mode)
+-- Write by dot path. Pass noSave=true to defer the disk hit when bulk-updating.
 function Settings.Set(path, value, noSave)
 	local oldVal = getNestedValue(currentData, path)
 	if oldVal == value then return end -- no change
@@ -375,7 +331,7 @@ function Settings.Set(path, value, noSave)
 	end
 end
 
---- Set multiple settings at once (batch), saves once at the end
+-- Apply many keys, save once.
 function Settings.SetBatch(changes)
 	for path, value in pairs(changes) do
 		local oldVal = getNestedValue(currentData, path)
@@ -387,8 +343,7 @@ function Settings.SetBatch(changes)
 	Settings.Save()
 end
 
---- Reset a category or all settings to defaults
--- @param category: optional category name (e.g. "Explorer"), or nil for all
+-- Reset a single category or the whole table when category is nil.
 function Settings.Reset(category)
 	if category then
 		local defaultCat = Settings.Defaults[category]
@@ -405,10 +360,8 @@ function Settings.Reset(category)
 	Settings.Save()
 end
 
---- Subscribe to changes on a settings path prefix
--- @param pathPrefix: e.g. "Explorer" to catch all Explorer.* changes, or "Explorer.Sorting" for specific
--- @param callback: function(path, newVal, oldVal)
--- @return: unsubscribe function
+-- Watch a path or path prefix; callback gets (fullPath, newVal, oldVal). Returns an
+-- unsubscribe function.
 function Settings.Subscribe(pathPrefix, callback)
 	if not subscribers[pathPrefix] then
 		subscribers[pathPrefix] = {}
@@ -424,9 +377,7 @@ function Settings.Subscribe(pathPrefix, callback)
 	end
 end
 
---- Subscribe to all settings changes
--- @param callback: function(path, newVal, oldVal)
--- @return: unsubscribe function
+-- Watch every change. Returns an unsubscribe function.
 function Settings.SubscribeAll(callback)
 	table.insert(globalSubscribers, callback)
 	return function()
@@ -435,24 +386,24 @@ function Settings.SubscribeAll(callback)
 	end
 end
 
---- Get the full settings table (read-only reference)
+-- Read-only handle to the live table.
 function Settings.GetAll()
 	return currentData
 end
 
---- Get the raw defaults table
+-- Get the raw defaults table
 function Settings.GetDefaults()
 	return Settings.Defaults
 end
 
---- Export settings as JSON string
+-- Export settings as JSON string
 function Settings.Export()
 	if not HttpService then return nil end
 	local s, json = pcall(HttpService.JSONEncode, HttpService, currentData)
 	return s and json or nil
 end
 
---- Import settings from JSON string
+-- Import settings from JSON string
 function Settings.Import(jsonStr)
 	if not HttpService then return false end
 	local s, decoded = pcall(HttpService.JSONDecode, HttpService, jsonStr)
@@ -466,7 +417,7 @@ function Settings.Import(jsonStr)
 	return true
 end
 
---- Get schema version
+-- Get schema version
 function Settings.GetSchemaVersion()
 	return SCHEMA_VERSION
 end

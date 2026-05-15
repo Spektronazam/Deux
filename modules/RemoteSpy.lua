@@ -1,19 +1,4 @@
---[[
-	Deux :: RemoteSpy Module
-	
-	Universal hook/debug engine with:
-	- Hook targets: RemoteEvent.FireServer, RemoteFunction.InvokeServer,
-	  BindableEvent.Fire, BindableFunction.Invoke, metamethods, arbitrary closures
-	- Uses Env.hookmetamethod / Env.hookfunction (capability gated)
-	- Per-hook: enable/disable, log args+returns, edit args, edit return, drop, replay
-	- Filter expressions: small Lua predicate sandbox
-	- Log entries: {Timestamp, Method, Instance, Args, Returns, Blocked, HookId}
-	- Default "Remote Spy" preset: auto-hooks FireServer + InvokeServer + __namecall
-	- Save/load hook profiles as JSON to deux/saved/hooks/
-	- UI: scrollable log list, filter bar, hook manager, "Copy as Script"
-	- Max log cap from Settings.RemoteSpy.MaxLogs
-	- Window with Lib.Window.new()
-]]
+-- RemoteSpy: hooks remotes (FireServer, InvokeServer, __namecall, ...) and logs each call.
 
 -- Common Locals
 local Main, Lib, Apps, Settings, Theme, Store, Keybinds, Notifications, Env
@@ -45,9 +30,7 @@ end
 local function main()
 	local RemoteSpy = {}
 
-	------------------------------------------------------------------------
-	-- STATE
-	------------------------------------------------------------------------
+	-- State
 	local hooks = {} -- hookId -> hookDef
 	local hookCounter = 0
 	local logs = {} -- ordered list of log entries
@@ -62,10 +45,6 @@ local function main()
 	-- UI refs
 	local window, logList, filterBar, hookPanel
 	local logEntryHeight = 22
-
-	------------------------------------------------------------------------
-	-- HELPERS
-	------------------------------------------------------------------------
 
 	local function generateId()
 		hookCounter = hookCounter + 1
@@ -125,9 +104,7 @@ local function main()
 		return ok and result
 	end
 
-	------------------------------------------------------------------------
-	-- LOGGING
-	------------------------------------------------------------------------
+	-- Logging
 
 	local function addLogEntry(entry)
 		if paused then return end
@@ -143,9 +120,7 @@ local function main()
 		RemoteSpy:RenderLogEntry(entry, #logs)
 	end
 
-	------------------------------------------------------------------------
-	-- HOOKING ENGINE
-	------------------------------------------------------------------------
+	-- Hooking engine
 
 	function RemoteSpy:CreateHook(config)
 		-- config = {Type, Target, Method, Enabled, EditArgs, EditReturn, Block, OnFire}
@@ -345,9 +320,7 @@ local function main()
 		end)
 	end
 
-	------------------------------------------------------------------------
-	-- TERMINAL INTEGRATION
-	------------------------------------------------------------------------
+	-- Terminal integration
 
 	function RemoteSpy:HookFromTerminal(spec)
 		-- spec = "game.ReplicatedStorage.Remote.FireServer" or "__namecall"
@@ -380,9 +353,7 @@ local function main()
 		return nil
 	end
 
-	------------------------------------------------------------------------
-	-- PRESETS
-	------------------------------------------------------------------------
+	-- Presets
 
 	function RemoteSpy:ApplyPreset(name)
 		if name == "default" or name == "Remote Spy" then
@@ -395,9 +366,7 @@ local function main()
 		end
 	end
 
-	------------------------------------------------------------------------
-	-- PROFILES (Save/Load)
-	------------------------------------------------------------------------
+	-- Hook profile save/load (deux/saved/hooks/<name>.json).
 
 	function RemoteSpy:SaveProfile(name)
 		local profile = {}
@@ -431,9 +400,7 @@ local function main()
 		end
 	end
 
-	------------------------------------------------------------------------
-	-- COPY AS SCRIPT
-	------------------------------------------------------------------------
+	-- Copy as script
 
 	function RemoteSpy:CopyAsScript(logEntry)
 		if not logEntry then return end
@@ -455,9 +422,7 @@ local function main()
 		return script
 	end
 
-	------------------------------------------------------------------------
-	-- UI
-	------------------------------------------------------------------------
+	-- Ui
 
 	function RemoteSpy:RenderLogEntry(entry, index)
 		if not logList then return end
@@ -674,9 +639,7 @@ local function main()
 		})
 	end
 
-	------------------------------------------------------------------------
-	-- LIFECYCLE
-	------------------------------------------------------------------------
+	-- Lifecycle
 
 	function RemoteSpy:Init()
 		-- Load settings

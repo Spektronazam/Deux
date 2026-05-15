@@ -1,7 +1,4 @@
---[[
-	Deux :: WorkspaceTools Module
-	Camera & workspace utilities: freecam, noclip, highlight, quick toggles, animation viewer
-]]
+-- WorkspaceTools: freecam, noclip, selection highlight, anchor/transparent toggles.
 
 local Main, Lib, Apps, Settings, Theme, Store, Keybinds, Notifications, Env
 local API, RMD, env, service, plr, create, createSimple

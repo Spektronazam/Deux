@@ -1,36 +1,14 @@
---[[
-	Deux Core :: Theme
-	Runtime Theme Engine with Presets & Subscriber Model
-	
-	Features:
-	- 3 built-in presets: Dark (default), Darker, Light
-	- User theme JSON import/export (deux/themes/*.json)
-	- Every UI element subscribes to theme changes via Theme.Subscribe
-	- Accent color customization
-	- Syntax highlighting colors integrated
-	
-	Usage:
-		local Theme = require("core/Theme")
-		Theme.Init(Env, Settings, service)
-		Theme.Apply("Darker")
-		Theme.Subscribe("Main1", function(color) frame.BackgroundColor3 = color end)
-		Theme.SetAccent(Color3.fromRGB(0, 150, 255))
-]]
+-- Theme: color presets + per-key subscribers so UI re-tints when the user swaps themes.
 
 local Theme = {}
 
-------------------------------------------------------------------------
--- INTERNAL STATE
-------------------------------------------------------------------------
 local Env, Settings, HttpService
 local currentTheme = {}
 local subscribers = {} -- key -> {callback, ...}
 local globalSubscribers = {}
 local currentPresetName = "Dark"
 
-------------------------------------------------------------------------
--- COLOR HELPER
-------------------------------------------------------------------------
+-- Color helper
 local rgb = Color3.fromRGB
 
 local function colorToTable(c)
@@ -44,9 +22,7 @@ local function tableToColor(t)
 	return rgb(255, 255, 255)
 end
 
-------------------------------------------------------------------------
--- BUILT-IN PRESETS
-------------------------------------------------------------------------
+-- Built-in presets
 Theme.Presets = {
 	Dark = {
 		Name = "Dark",
@@ -220,9 +196,7 @@ Theme.Presets = {
 	},
 }
 
-------------------------------------------------------------------------
--- NOTIFICATION
-------------------------------------------------------------------------
+-- Notification
 local function notifyKey(key, newVal, oldVal)
 	local keySubscribers = subscribers[key]
 	if keySubscribers then
@@ -248,10 +222,6 @@ local function notifyAll()
 	end
 end
 
-------------------------------------------------------------------------
--- PUBLIC API
-------------------------------------------------------------------------
-
 function Theme.Init(envRef, settingsRef, serviceTable)
 	Env = envRef
 	Settings = settingsRef
@@ -266,7 +236,7 @@ function Theme.Init(envRef, settingsRef, serviceTable)
 	end
 end
 
---- Apply a preset by name
+-- Apply a preset by name
 function Theme.Apply(presetName, silent)
 	local preset = Theme.Presets[presetName]
 	if not preset then return false end
@@ -284,7 +254,7 @@ function Theme.Apply(presetName, silent)
 	return true
 end
 
---- Apply a custom theme table (e.g. loaded from JSON)
+-- Apply a custom theme table (e.g. loaded from JSON)
 function Theme.ApplyCustom(themeTable, silent)
 	if type(themeTable) ~= "table" then return false end
 	
@@ -311,7 +281,7 @@ function Theme.ApplyCustom(themeTable, silent)
 	return true
 end
 
---- Get a theme color by key
+-- Get a theme color by key
 function Theme.Get(key)
 	if string.find(key, ".", 1, true) then
 		local parts = string.split(key, ".")
@@ -324,27 +294,23 @@ function Theme.Get(key)
 	return currentTheme[key]
 end
 
---- Get the full current theme table
+-- Get the full current theme table
 function Theme.GetCurrent()
 	return currentTheme
 end
 
---- Get current preset name
+-- Get current preset name
 function Theme.GetCurrentName()
 	return currentPresetName
 end
 
---- Set accent color (applies to Accent key and updates dependents)
 function Theme.SetAccent(color)
 	local old = currentTheme.Accent
 	currentTheme.Accent = color
 	notifyKey("Accent", color, old)
 end
 
---- Subscribe to a specific theme key change
--- @param key: e.g. "Main1", "Syntax.Keyword", "Accent"
--- @param callback: function(newColor, oldColor, key)
--- @return: unsubscribe function
+-- Watch one key (e.g. "Main1", "Syntax.Keyword", "Accent"). Returns unsubscribe.
 function Theme.Subscribe(key, callback)
 	if not subscribers[key] then
 		subscribers[key] = {}
@@ -366,7 +332,7 @@ function Theme.Subscribe(key, callback)
 	end
 end
 
---- Subscribe to all theme changes
+-- Subscribe to all theme changes
 function Theme.SubscribeAll(callback)
 	table.insert(globalSubscribers, callback)
 	return function()
@@ -375,7 +341,7 @@ function Theme.SubscribeAll(callback)
 	end
 end
 
---- List available presets
+-- List available presets
 function Theme.ListPresets()
 	local names = {}
 	for name in pairs(Theme.Presets) do
@@ -385,7 +351,7 @@ function Theme.ListPresets()
 	return names
 end
 
---- Export current theme as JSON
+-- Export current theme as JSON
 function Theme.Export()
 	if not HttpService then return nil end
 	
@@ -409,7 +375,7 @@ function Theme.Export()
 	return s and json or nil
 end
 
---- Import theme from JSON string
+-- Import theme from JSON string
 function Theme.Import(jsonStr)
 	if not HttpService then return false end
 	local s, decoded = pcall(HttpService.JSONDecode, HttpService, jsonStr)
@@ -435,7 +401,7 @@ function Theme.Import(jsonStr)
 	return Theme.ApplyCustom(themeTable)
 end
 
---- Save current theme to filesystem
+-- Save current theme to filesystem
 function Theme.SaveToFile(filename)
 	if not Env or not Env.Capabilities.Filesystem then return false end
 	local json = Theme.Export()
@@ -445,7 +411,7 @@ function Theme.SaveToFile(filename)
 	return s
 end
 
---- Load theme from filesystem
+-- Load theme from filesystem
 function Theme.LoadFromFile(filename)
 	if not Env or not Env.Capabilities.Filesystem then return false end
 	local path = "deux/themes/" .. filename .. ".json"
@@ -454,7 +420,7 @@ function Theme.LoadFromFile(filename)
 	return Theme.Import(raw)
 end
 
---- List saved theme files
+-- List saved theme files
 function Theme.ListSavedThemes()
 	if not Env or not Env.Capabilities.Filesystem then return {} end
 	local s, files = pcall(Env.listfiles, "deux/themes")

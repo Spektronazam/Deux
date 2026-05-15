@@ -1,17 +1,4 @@
---[[
-	Deux Core :: Env
-	UNC/sUNC Environment Abstraction & Capability Detection
-	
-	Provides a unified interface to executor functions following the
-	Unified Naming Convention (UNC) standard. Falls back to legacy
-	aliases when UNC names are unavailable.
-	
-	Usage:
-		local Env = require("core/Env") -- loaded by main bundler
-		if Env.Capabilities.Decompile then
-			local src = Env.decompile(script)
-		end
-]]
+-- Env: executor function lookup with UNC-first fallbacks and capability flags.
 
 local Env = {}
 Env.Capabilities = {}
@@ -63,9 +50,7 @@ local function registerChain(envName, ...)
 	return false
 end
 
-------------------------------------------------------------------------
--- IDENTIFICATION
-------------------------------------------------------------------------
+-- Identification
 local identifyFn = resolveGlobal("identifyexecutor", "getexecutorname", "get_executor_name")
 if identifyFn then
 	local s, name, ver = pcall(identifyFn)
@@ -75,9 +60,7 @@ if identifyFn then
 	end
 end
 
-------------------------------------------------------------------------
--- FILESYSTEM (UNC Standard)
-------------------------------------------------------------------------
+-- Filesystem
 register("readfile", "readfile")
 register("writefile", "writefile")
 register("appendfile", "appendfile")
@@ -91,9 +74,7 @@ register("loadfile", "dofile") -- not the same semantics but closest fallback
 
 Env.Capabilities.Filesystem = (Env.readfile ~= nil and Env.writefile ~= nil and Env.makefolder ~= nil)
 
-------------------------------------------------------------------------
--- CLOSURES & HOOKING (UNC Standard)
-------------------------------------------------------------------------
+-- Closures & hooking
 register("hookfunction", "hookfunction", "hookfunc", "replaceclosure", "detour_function")
 register("hookmetamethod", "hookmetamethod", "hook_metamethod")
 register("newcclosure", "newcclosure", "new_cclosure")
@@ -105,9 +86,7 @@ register("setnamecallmethod", "setnamecallmethod", "set_namecall_method")
 
 Env.Capabilities.Hooking = (Env.hookfunction ~= nil or Env.hookmetamethod ~= nil)
 
-------------------------------------------------------------------------
--- DEBUG (UNC Standard)
-------------------------------------------------------------------------
+-- Debug
 registerChain("getupvalues", "debug.getupvalues", "getupvalues", "getupvals")
 registerChain("setupvalue", "debug.setupvalue", "setupvalue", "setupval")
 registerChain("getupvalue", "debug.getupvalue", "getupvalue", "getupval")
@@ -122,9 +101,7 @@ registerChain("getproto", "debug.getproto", "getproto")
 
 Env.Capabilities.Debug = (Env.getupvalues ~= nil and Env.getconstants ~= nil)
 
-------------------------------------------------------------------------
--- METATABLE (UNC Standard)
-------------------------------------------------------------------------
+-- Metatables
 register("getrawmetatable", "getrawmetatable", "get_raw_metatable")
 register("setrawmetatable", "setrawmetatable", "set_raw_metatable")
 register("setreadonly", "setreadonly", "set_readonly", "make_readonly")
@@ -132,9 +109,7 @@ register("isreadonly", "isreadonly", "is_readonly")
 
 Env.Capabilities.Metatable = (Env.getrawmetatable ~= nil)
 
-------------------------------------------------------------------------
--- INSTANCES & REFERENCES (UNC Standard)
-------------------------------------------------------------------------
+-- Instances
 register("cloneref", "cloneref", "clone_ref")
 register("gethui", "gethui", "get_hidden_ui")
 register("protectgui", "protectgui", "protect_gui")
@@ -152,9 +127,7 @@ register("gethiddenproperty", "gethiddenproperty", "get_hidden_property", "get_h
 Env.Capabilities.Instances = (Env.cloneref ~= nil)
 Env.Capabilities.Connections = (Env.getconnections ~= nil)
 
-------------------------------------------------------------------------
--- SCRIPTS (UNC Standard)
-------------------------------------------------------------------------
+-- Scripts
 register("decompile", "decompile", "decompile_script")
 register("getscriptbytecode", "getscriptbytecode", "get_script_bytecode", "dumpstring")
 register("getscripthash", "getscripthash", "get_script_hash")
@@ -167,9 +140,7 @@ register("getscriptfromthread", "getscriptfromthread", "get_script_from_thread")
 Env.Capabilities.Decompile = (Env.decompile ~= nil)
 Env.Capabilities.ScriptBytecode = (Env.getscriptbytecode ~= nil)
 
-------------------------------------------------------------------------
--- GC / REGISTRY (UNC Standard)
-------------------------------------------------------------------------
+-- GC / registry / threads
 register("getgc", "getgc", "get_gc_objects")
 register("getreg", "getreg", "get_registry")
 register("getthreads", "getthreads", "get_threads")
@@ -179,9 +150,7 @@ register("setthreadidentity", "setthreadidentity", "setidentity", "set_thread_id
 Env.Capabilities.GC = (Env.getgc ~= nil)
 Env.Capabilities.Registry = (Env.getreg ~= nil)
 
-------------------------------------------------------------------------
--- NETWORK / HTTP (UNC Standard)
-------------------------------------------------------------------------
+-- Network / clipboard
 register("request", "request", "http_request", "httpRequest")
 register("setclipboard", "setclipboard", "set_clipboard", "toclipboard")
 register("getexecutorname", "identifyexecutor", "getexecutorname")
@@ -198,9 +167,7 @@ end
 Env.Capabilities.HTTP = (Env.request ~= nil)
 Env.Capabilities.Clipboard = (Env.setclipboard ~= nil)
 
-------------------------------------------------------------------------
--- CRYPTO (UNC Standard)
-------------------------------------------------------------------------
+-- Crypt
 local cryptLib = resolveGlobal("crypt")
 if cryptLib then
 	Env.crypt = cryptLib
@@ -209,9 +176,7 @@ else
 	Env.Capabilities.Crypt = false
 end
 
-------------------------------------------------------------------------
--- DRAWING (UNC Standard)
-------------------------------------------------------------------------
+-- Drawing
 local drawingClass = resolveGlobal("Drawing")
 if drawingClass then
 	Env.Drawing = drawingClass
@@ -221,15 +186,11 @@ else
 end
 register("cleardrawcache", "cleardrawcache", "clear_draw_cache")
 
-------------------------------------------------------------------------
--- SAVE INSTANCE
-------------------------------------------------------------------------
+-- Save instance
 register("saveinstance", "saveinstance", "save_instance")
 Env.Capabilities.SaveInstance = (Env.saveinstance ~= nil)
 
-------------------------------------------------------------------------
--- MISC (UNC Standard)
-------------------------------------------------------------------------
+-- Misc
 register("getcustomasset", "getcustomasset", "getsynasset", "get_custom_asset")
 register("queue_on_teleport", "queue_on_teleport", "queueonteleport")
 register("checkcaller", "checkcaller", "check_caller")
@@ -245,9 +206,7 @@ register("rconsoleclear", "rconsoleclear")
 register("rconsoleclose", "rconsoleclose")
 register("rconsolecreate", "rconsolecreate")
 
-------------------------------------------------------------------------
--- ENVIRONMENT INTROSPECTION (UNC Standard)
-------------------------------------------------------------------------
+-- Environment introspection
 register("getrenv", "getrenv", "get_renv")
 register("getsenv", "getsenv", "get_senv")
 register("getgenv", "getgenv", "get_genv")
@@ -257,9 +216,7 @@ register("compareinstances", "compareinstances", "compare_instances")
 register("isscriptable", "isscriptable", "is_scriptable")
 register("setscriptable", "setscriptable", "set_scriptable")
 
-------------------------------------------------------------------------
--- WEBSOCKET (UNC Standard)
-------------------------------------------------------------------------
+-- WebSocket
 do
 	local ws = resolveGlobal("WebSocket")
 	if ws and (ws.connect or ws.Connect) then
@@ -271,17 +228,13 @@ do
 	end
 end
 
-------------------------------------------------------------------------
--- CRYPTO / HASHING (Optional, executor-dependent)
-------------------------------------------------------------------------
+-- Hashing / base64 (executor-dependent)
 registerChain("crypt_hash",     "crypt.hash",     "crypto.hash")
 registerChain("crypt_base64encode", "crypt.base64encode", "crypto.base64encode", "base64encode", "base64_encode")
 registerChain("crypt_base64decode", "crypt.base64decode", "crypto.base64decode", "base64decode", "base64_decode")
 Env.Capabilities.Crypt = (Env.crypt_base64encode ~= nil and Env.crypt_base64decode ~= nil)
 
-------------------------------------------------------------------------
--- SAFE SERVICE ACCESS (cloneref-wrapped)
-------------------------------------------------------------------------
+-- Service accessor (clonerefs once that's resolved)
 local game = game
 local cloneref = Env.cloneref
 
@@ -294,9 +247,7 @@ Env.getService = function(serviceName)
 	return serv
 end
 
-------------------------------------------------------------------------
--- SAFE GUI PARENTING
-------------------------------------------------------------------------
+-- Safe gui parenting
 Env.getGuiParent = function()
 	-- Priority: gethui > CoreGui (elevated) > PlayerGui
 	if Env.gethui then
@@ -322,18 +273,14 @@ Env.getGuiParent = function()
 	return nil
 end
 
-------------------------------------------------------------------------
--- GUI PROTECTION
-------------------------------------------------------------------------
+-- Gui protection
 Env.protectGui = function(gui)
 	if Env.protectgui then
 		pcall(Env.protectgui, gui)
 	end
 end
 
-------------------------------------------------------------------------
--- CAPABILITY SUMMARY
-------------------------------------------------------------------------
+-- Capability summary
 Env.getCapabilitySummary = function()
 	local summary = {}
 	for name, val in pairs(Env.Capabilities) do
@@ -347,9 +294,7 @@ Env.getMissingAPIs = function()
 	return Env.MissingAPIs
 end
 
-------------------------------------------------------------------------
--- sUNC TEST (optional, behind debug flag)
-------------------------------------------------------------------------
+-- Optional sUNC-style compatibility test, called from the Terminal `version` command.
 Env.runCompatibilityTest = function()
 	local results = {}
 	local total, passed = 0, 0
