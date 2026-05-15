@@ -172,6 +172,7 @@ end)
 ## Credits
 
 - **Moon / LorekeeperZinnia** — Original New Dex architecture, Lib module, and UI system
+- **iris** — Successor co-conspirator and feature inspiration
 - **Spektronazam** — Deux successor rewrite (v2.0.0)
 - **UNC Community** — Unified Naming Convention standard
 

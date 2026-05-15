@@ -237,13 +237,47 @@ register("isexecutorclosure", "isexecutorclosure", "is_executor_closure", "check
 register("lz4compress", "lz4compress")
 register("lz4decompress", "lz4decompress")
 register("messagebox", "messagebox", "message_box")
-register("rconsoleprinт", "rconsoleprint", "rconsoleprinт")
+register("rconsoleprint", "rconsoleprint", "rconsole_print", "consoleprint")
 register("rconsoleinfo", "rconsoleinfo")
 register("rconsolewarn", "rconsolewarn")
 register("rconsoleerr", "rconsoleerr")
 register("rconsoleclear", "rconsoleclear")
 register("rconsoleclose", "rconsoleclose")
 register("rconsolecreate", "rconsolecreate")
+
+------------------------------------------------------------------------
+-- ENVIRONMENT INTROSPECTION (UNC Standard)
+------------------------------------------------------------------------
+register("getrenv", "getrenv", "get_renv")
+register("getsenv", "getsenv", "get_senv")
+register("getgenv", "getgenv", "get_genv")
+register("getfunctions", "getfunctions", "get_functions")
+register("getallthreads", "getallthreads", "get_all_threads")
+register("compareinstances", "compareinstances", "compare_instances")
+register("isscriptable", "isscriptable", "is_scriptable")
+register("setscriptable", "setscriptable", "set_scriptable")
+
+------------------------------------------------------------------------
+-- WEBSOCKET (UNC Standard)
+------------------------------------------------------------------------
+do
+	local ws = resolveGlobal("WebSocket")
+	if ws and (ws.connect or ws.Connect) then
+		Env.WebSocket = ws
+		Env.Capabilities.WebSocket = true
+	else
+		Env.MissingAPIs[#Env.MissingAPIs + 1] = "WebSocket"
+		Env.Capabilities.WebSocket = false
+	end
+end
+
+------------------------------------------------------------------------
+-- CRYPTO / HASHING (Optional, executor-dependent)
+------------------------------------------------------------------------
+registerChain("crypt_hash",     "crypt.hash",     "crypto.hash")
+registerChain("crypt_base64encode", "crypt.base64encode", "crypto.base64encode", "base64encode", "base64_encode")
+registerChain("crypt_base64decode", "crypt.base64decode", "crypto.base64decode", "base64decode", "base64_decode")
+Env.Capabilities.Crypt = (Env.crypt_base64encode ~= nil and Env.crypt_base64decode ~= nil)
 
 ------------------------------------------------------------------------
 -- SAFE SERVICE ACCESS (cloneref-wrapped)
@@ -350,6 +384,16 @@ Env.runCompatibilityTest = function()
 		{"firesignal", Env.firesignal},
 		{"saveinstance", Env.saveinstance},
 		{"checkcaller", Env.checkcaller},
+		{"getrenv", Env.getrenv},
+		{"getsenv", Env.getsenv},
+		{"getgenv", Env.getgenv},
+		{"compareinstances", Env.compareinstances},
+		{"setscriptable", Env.setscriptable},
+		{"WebSocket", Env.WebSocket},
+		{"firetouchinterest", Env.firetouchinterest},
+		{"fireproximityprompt", Env.fireproximityprompt},
+		{"fireclickdetector", Env.fireclickdetector},
+		{"crypt_base64encode", Env.crypt_base64encode},
 	}
 	
 	for _, test in ipairs(tests) do
