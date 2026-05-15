@@ -12,7 +12,8 @@
 	
 	Credits:
 		Moon/LorekeeperZinnia - Original New Dex architecture & Lib
-		Spektronazam - Deux successor rewrite
+		iris                  - Successor co-conspirator & feature inspiration
+		Spektronazam          - Deux successor rewrite
 ]]
 
 -- Prevent double-execution
@@ -296,8 +297,8 @@ end
 ------------------------------------------------------------------------
 Main.Error = function(str)
 	local msg = "[Deux] ERROR: " .. tostring(str)
-	if Env and Env.rconsoleprinт then
-		pcall(Env.rconsoleprinт, msg .. "\n")
+	if Env and Env.rconsoleprint then
+		pcall(Env.rconsoleprint, msg .. "\n")
 	end
 	warn(msg)
 end

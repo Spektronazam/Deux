@@ -697,6 +697,13 @@ local function main()
 			Category = "General",
 			Run = function()
 				appendOutput("Deux " .. (Main.Version or "unknown"))
+				local build = rawget(_G, "DeuxBuild")
+				if build then
+					appendOutput("Build: " .. tostring(build.Commit or "?") .. " @ " .. tostring(build.BuildTime or "?"))
+					if build.Credits then
+						appendOutput("Credits: " .. table.concat(build.Credits, ", "))
+					end
+				end
 				appendOutput("Executor: " .. (Env.Executor or "unknown"))
 				appendOutput("Lua: " .. (Env.LuaVersion or _VERSION or "unknown"))
 				if Env.getexecutorname then
