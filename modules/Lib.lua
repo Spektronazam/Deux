@@ -6,7 +6,10 @@
 
 -- Common Locals
 local Main,Lib,Apps,Settings -- Main Containers
-local Explorer, Properties, ScriptViewer, Notebook -- Major Apps
+local Theme,Store,Keybinds,Notifications,Env -- Core Systems
+local Explorer, Properties, ScriptEditor, Terminal -- Major Apps
+local RemoteSpy, SaveInstance, DataInspector, NetworkSpy -- Extended Apps
+local APIReference, PluginAPI, WorkspaceTools, Console -- More Apps
 local API,RMD,env,service,plr,create,createSimple -- Main Locals
 
 local function initDeps(data)
@@ -14,21 +17,34 @@ local function initDeps(data)
 	Lib = data.Lib
 	Apps = data.Apps
 	Settings = data.Settings
+	Theme = data.Theme
+	Store = data.Store
+	Keybinds = data.Keybinds
+	Notifications = data.Notifications
+	Env = data.Env
 
 	API = data.API
 	RMD = data.RMD
-	env = data.env
+	env = data.Env or data.env -- prefer Env (UNC shim), fall back to legacy
 	service = data.service
 	plr = data.plr
 	create = data.create
 	createSimple = data.createSimple
 end
 
-local function initAfterMain()
-	Explorer = Apps.Explorer
-	Properties = Apps.Properties
-	ScriptViewer = Apps.ScriptViewer
-	Notebook = Apps.Notebook
+local function initAfterMain(appTable)
+	Explorer = appTable and appTable.Explorer or (Apps and Apps.Explorer)
+	Properties = appTable and appTable.Properties or (Apps and Apps.Properties)
+	ScriptEditor = appTable and appTable.ScriptEditor or (Apps and Apps.ScriptEditor)
+	Terminal = appTable and appTable.Terminal or (Apps and Apps.Terminal)
+	RemoteSpy = appTable and appTable.RemoteSpy or (Apps and Apps.RemoteSpy)
+	SaveInstance = appTable and appTable.SaveInstance or (Apps and Apps.SaveInstance)
+	DataInspector = appTable and appTable.DataInspector or (Apps and Apps.DataInspector)
+	NetworkSpy = appTable and appTable.NetworkSpy or (Apps and Apps.NetworkSpy)
+	APIReference = appTable and appTable.APIReference or (Apps and Apps.APIReference)
+	PluginAPI = appTable and appTable.PluginAPI or (Apps and Apps.PluginAPI)
+	WorkspaceTools = appTable and appTable.WorkspaceTools or (Apps and Apps.WorkspaceTools)
+	Console = appTable and appTable.Console or (Apps and Apps.Console)
 end
 
 local function main()
@@ -417,8 +433,11 @@ local function main()
 	Lib.ProtectedGuis = {}
 
 	Lib.ShowGui = function(gui)
-		if env.protectgui then
-			env.protectgui(gui)
+		-- Use Env (UNC) protection: gethui-first, then protectgui, then fallback
+		if env and env.protectGui then
+			env.protectGui(gui)
+		elseif env and env.protectgui then
+			pcall(env.protectgui, gui)
 		end
 		gui.Parent = Main.GuiHolder
 	end
@@ -429,7 +448,7 @@ local function main()
 	end
 
 	Lib.ReadFile = function(filename)
-		if not env.readfile then return end
+		if not env or not env.readfile then return end
 
 		local s,contents = pcall(env.readfile,filename)
 		if s and contents then return contents end
@@ -441,18 +460,20 @@ local function main()
 	end
 	
 	Lib.LoadCustomAsset = function(filepath)
-		if not env.getcustomasset or not env.isfile or not env.isfile(filepath) then return end
+		if not env or not env.getcustomasset then return end
+		if env.isfile and not env.isfile(filepath) then return end
 
-		return env.getcustomasset(filepath)
+		local s, asset = pcall(env.getcustomasset, filepath)
+		if s then return asset end
 	end
 
 	Lib.FetchCustomAsset = function(url,filepath)
-		if not env.writefile then return end
+		if not env or not env.writefile then return end
 
 		local s,data = pcall(game.HttpGet,game,url)
 		if not s then return end
 
-		env.writefile(filepath,data)
+		pcall(env.writefile,filepath,data)
 		return Lib.LoadCustomAsset(filepath)
 	end
 
@@ -5735,12 +5756,74 @@ local function main()
 		return {new = new}
 	end)()
 
+	--- Deferred-event-safe batch processing helper
+	--- Collects items added within a single frame and processes them together
+	--- Prevents ordering issues with Roblox's deferred event mode
+	Lib.BatchProcessor = (function()
+		local props = {
+			Queue = {},
+			Processing = false,
+			Callback = nil,
+			OnProcess = SIGNAL,
+		}
+		local funcs = {}
+
+		funcs.Add = function(self, item)
+			self.Queue[#self.Queue + 1] = item
+			if not self.Processing then
+				self.Processing = true
+				task.defer(function()
+					local batch = self.Queue
+					self.Queue = {}
+					self.Processing = false
+					if self.Callback then
+						self.Callback(batch)
+					end
+					self["OnProcess"]:Fire(batch)
+				end)
+			end
+		end
+
+		funcs.SetCallback = function(self, cb)
+			self.Callback = cb
+		end
+
+		funcs.Clear = function(self)
+			self.Queue = {}
+		end
+
+		local mt = {__index = funcs}
+
+		local function new(callback)
+			local obj = initObj(props, mt)
+			obj.Callback = callback
+			return obj
+		end
+
+		return {new = new}
+	end)()
+
+	--- Cloneref-safe instance comparison
+	Lib.InstancesEqual = function(a, b)
+		if a == b then return true end
+		-- When cloneref is in use, references may differ but point to same instance
+		local s, result = pcall(function() return a == b end)
+		return s and result
+	end
+
+	--- Theme-aware color getter (falls back to Settings.Theme for backward compat)
+	Lib.GetThemeColor = function(key)
+		if Theme and Theme.Get then
+			return Theme.Get(key)
+		end
+		-- Legacy fallback
+		if Settings and Settings.Theme then
+			return Settings.Theme[key]
+		end
+		return Color3.fromRGB(50, 50, 50)
+	end
+
 	return Lib
 end
 
--- TODO: Remove when open source
-if gethsfuncs then
-	_G.moduleData = {InitDeps = initDeps, InitAfterMain = initAfterMain, Main = main}
-else
-	return {InitDeps = initDeps, InitAfterMain = initAfterMain, Main = main}
-end
+return {InitDeps = initDeps, InitAfterMain = initAfterMain, Main = main}

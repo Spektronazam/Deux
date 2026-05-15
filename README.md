@@ -1,84 +1,180 @@
-# Dex - The Freedom Explorer
-![Logo](/logo.png)
+# Deux - The Successor Debugging Suite
 
-## Intro
-New Dex was planned to be a debugging suite.
-It was discontinued in mid 2021 when grand freedom was achieved, and the script was repurposed to serve the agency's true ambitions.
+![Deux Logo](/logo.png)
 
-Witness the most powerful explorer to have ever existed. Bringing unlimited freedom to everyone who has used it. Exploring places that have never been explored before.
-	
-This is the final version of this script, it will no longer be updated. Certain powerful features of this script are off-limits and won't be released.
-You are encouraged to edit, fork, do whatever with this. I pretty much won't be updating it anymore. Pull requests probably won't be accepted.
-Though I would highly appreciate it if you kept the credits in the script. I put a lot of hours into this during the time I worked on it.
+**Deux** is a complete rewrite and spiritual successor to New Dex — the most powerful debugging suite for Roblox. Built on the UNC/sUNC standard with zero Synapse-specific code, it runs on any modern executor.
 
-I have converted this from ModuleScript format (I used to develop this in studio) to a file format, to make it easier for whoever wants to continue or edit this. Build instructions are below.
-If you feel too lazy to build, I have provided the built version in the releases.
+## Install
 
-## Notes
-- There is no cloneref protection, add it if you want
-- It may be detected by more stuff; I don't know what these detections are nor am I interested in fixing it
-- Some stuff can be optimized further (ex: explorer node add/remove), it's up to you if you want to do it
-- Some stuff may break when roblox releases deferred events. Ex: Selecting a duplicated instance
+```lua
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Spektronazam/Deux/feat/successor-rewrite/out.lua"))()
+```
 
-## To Build
-1. Ensure you have Python 3 (I use 3.9.0)
-2. Run build.py
-3. The executable script will be created as out.lua
+## Features
 
-## High Level Roadmap
-List of stuff that I planned do before I realized that I shouldn't be working on this anymore. If you are really interested in continuing this, you could add this stuff and make New Dex the ultimate utility that I wanted it to be. I might be forgetting stuff since I haven't worked on it for so long.
-- Terminal
-	* basically command interface with useful commands (non troll or gross) to get around
-	* each command has all its funcs, state contained in a table
-- Debugging interface
-	* more than just a remotespy
-	* you can choose to hook any metamethod, instance func/prop/event/callback, or any func
-	* logging args/returns of those funcs (like a remotespy)
-	* realtime editing of your hooks (allowing easy debugging: arg apoofing, return spoofing, unhook) using script editor
-	* scripted filters
-	* save/load these configs
-	* default template would be set up to function like a remotespy
-- Explorer
-	* smart autofill for search
-	* more filters for search
-	* bookmarking / starring insts
-	* a lot of the things in right click that i planned but didn't finish
-- Properties
-	* Copy value on clipboard (what is displayed in the box, or formatted to be pasted into lua)
-	* Select object properties in explorer
-	* Tag Editor (I saw the new one on devforum recently, would be better as its own window)
-- Data viewing & finding
-	* the const, upval, etc searching
-	* list references of userdata, table, function (i wanted to make it so you can easily explore the references, opens new tab for each individual object)
-	* detailed view of selected function (env, consts, upvals, decompiled src, script path, references)
-	* easily create constant signatures
-	* thread exploring
-- Script viewer/editor
-	* some decent autofill
-	* info bar at bottom (line of error, line count, col count, etc)
-- Reference
-	* interactive api docs for instance props, funcs, etc
-	* docs for some other stuff such as 'Dex' global, plugin api, executor api, etc
-	* some tutorials with text, pics, and video (not doing video until roblox removes limit of 3 playing videos)
-- Plugins
-	* Easy way to add some stuff such as right click options, search filters, commands, etc
-	* Access to dex's api for windows, modules, etc
+| Category | Feature | Status |
+|----------|---------|--------|
+| **Core** | UNC/sUNC environment abstraction | ✅ |
+| **Core** | Cloneref hardening + gethui-first parenting | ✅ |
+| **Core** | Persistent JSON settings (versioned, per-place) | ✅ |
+| **Core** | Theme engine (Dark / Darker / Light + custom JSON) | ✅ |
+| **Core** | Central keybind system (rebindable, no conflicts) | ✅ |
+| **Core** | Toast notification system | ✅ |
+| **Core** | Pub/sub state store (selection bus, events) | ✅ |
+| **Explorer** | Click-to-select (3D parts + GUI objects) | ✅ |
+| **Explorer** | Bookmarks / starred instances (per-place) | ✅ |
+| **Explorer** | Advanced search (`class:` `name:` `tag:` `prop:` `nil:` `service:`) | ✅ |
+| **Explorer** | Multi-select (Ctrl+Click, Shift+Click) | ✅ |
+| **Explorer** | Nil instances tab | ✅ |
+| **Explorer** | Deferred-event-safe batch updates | ✅ |
+| **Explorer** | Full right-click context menu | ✅ |
+| **Properties** | Tag Editor (CollectionService) | ✅ |
+| **Properties** | Attribute CRUD (all types, rename, delete) | ✅ |
+| **Properties** | Copy value as Lua / display / JSON | ✅ |
+| **Properties** | Multi-instance editing with conflict detection | ✅ |
+| **Properties** | Signal connections viewer (getconnections) | ✅ |
+| **Properties** | Property search & category collapse | ✅ |
+| **Properties** | Property change history (undo) | ✅ |
+| **Script Editor** | Luau lexer with RichText syntax highlighting | ✅ |
+| **Script Editor** | Tabbed interface | ✅ |
+| **Script Editor** | Find / Replace (regex) | ✅ |
+| **Script Editor** | Run buffer (F5, sandboxed) | ✅ |
+| **Script Editor** | Decompile with timing + re-decompile + bytecode | ✅ |
+| **Script Editor** | Status bar (line/col/total/modified) | ✅ |
+| **Terminal** | 18 built-in commands | ✅ |
+| **Terminal** | Tab-complete (commands + instance paths) | ✅ |
+| **Terminal** | Command history (up/down, persisted) | ✅ |
+| **Terminal** | Plugin-extensible command registry | ✅ |
+| **Remote Spy** | Universal hook engine (metamethod + function + GC) | ✅ |
+| **Remote Spy** | Default preset (FireServer/InvokeServer/__namecall) | ✅ |
+| **Remote Spy** | Filter expressions (sandboxed Lua predicates) | ✅ |
+| **Remote Spy** | Replay / Copy as Script | ✅ |
+| **Remote Spy** | Save/load hook profiles | ✅ |
+| **Save Instance** | Wraps saveinstance with options UI | ✅ |
+| **Save Instance** | Scope: whole game / selection / nil | ✅ |
+| **Save Instance** | Save as Model (subtree, rbxmx) | ✅ |
+| **Data Inspector** | GC Explorer (filter by type/source/name/upvalue) | ✅ |
+| **Data Inspector** | Function detail (env, consts, upvals, decompile) | ✅ |
+| **Data Inspector** | Reference explorer (find all holders) | ✅ |
+| **Data Inspector** | Constant-signature builder | ✅ |
+| **Data Inspector** | Thread browser | ✅ |
+| **Network Spy** | Inbound RemoteEvent/Function listener | ✅ |
+| **Network Spy** | HTTP spy (RequestAsync, HttpGet) | ✅ |
+| **Network Spy** | WebSocket monitor | ✅ |
+| **API Reference** | Searchable class/member/enum docs | ✅ |
+| **API Reference** | RMD descriptions, tags, security levels | ✅ |
+| **Plugin System** | Plugin loader with sandboxed Dex API | ✅ |
+| **Plugin System** | Manifest (plugin.json), manager UI | ✅ |
+| **Plugin System** | Hot-reload on file change | ✅ |
+| **Workspace Tools** | Freecam (WASD+QE+RMB) | ✅ |
+| **Workspace Tools** | Noclip | ✅ |
+| **Workspace Tools** | Selection highlight (Highlight instance) | ✅ |
+| **Workspace Tools** | Quick toggles (Anchor, Transparent, Reset) | ✅ |
+| **Workspace Tools** | Animation viewer | ✅ |
+| **Console** | Captures print/warn/error + LogService | ✅ |
+| **Console** | Filter by level, text search | ✅ |
+| **Console** | Copy all / copy selection | ✅ |
 
-## Missing stuff from old Dex
-Features that existed in old Dex that I didn't get to make. These should be the first things you add if you plan to continue / edit this.
-- Click to select
-- Saving (instance specific in right click menu, and a menu for whole map saving)
-- Settings menu
-- Tabs in script viewer
+## Architecture
 
-## What is not Included
-Certain features and extensions are private and are reserved for agency use. These are not included in the public release of Dex
-- Binary SaveInstance Module
-- Client <-> Server Bridge
-- Secret Service Panel (Executor + Output Viewer)
-- Datastore Editor
-- 3D Model Viewer
+```
+Deux/
+├── core/                   # Core systems (loaded first)
+│   ├── Env.lua            # UNC/sUNC abstraction + capability detection
+│   ├── Settings.lua       # Persistent JSON settings engine
+│   ├── Theme.lua          # Theme engine (3 presets + custom)
+│   ├── Keybinds.lua       # Central keybind registry
+│   ├── Notifications.lua  # Toast notification system
+│   └── Store.lua          # Pub/sub state store
+├── modules/               # App modules
+│   ├── Lib.lua            # UI primitives (Window, Signal, ScrollBar, etc.)
+│   ├── Explorer.lua       # Instance tree explorer
+│   ├── Properties.lua     # Property editor + tags + attributes
+│   ├── ScriptEditor.lua   # Code editor with Luau highlighting
+│   ├── Terminal.lua        # Command palette / terminal
+│   ├── RemoteSpy.lua      # Universal hook/debug engine
+│   ├── SaveInstance.lua   # Save place/model UI
+│   ├── DataInspector.lua  # GC/function/reference explorer
+│   ├── NetworkSpy.lua     # Inbound + HTTP + WebSocket viewer
+│   ├── APIReference.lua   # Interactive API docs
+│   ├── PluginAPI.lua      # Plugin system + manager
+│   ├── WorkspaceTools.lua # Camera, highlight, toggles
+│   └── Console.lua        # Output capture console
+├── plugins/               # User plugins (loaded at runtime)
+│   └── samples/           # Example plugins
+├── main.lua               # Entry point + boot orchestrator
+├── build.py               # Build system (bundle + hash + manifest)
+├── VERSION                # Version string
+└── out.lua                # Built output (single file)
+```
 
-## Community Server
-If you would like to find more information (such as outdated docs), or talk to others interested in this script, you may join the server:<br>https://discord.gg/jnXFq2VBgU<br>
-Note that very limited to no support will be provided.
+## Building
+
+```bash
+python3 build.py              # Standard build -> out.lua
+python3 build.py --minify     # + out.min.lua (stripped comments/whitespace)
+python3 build.py --watch      # Rebuild on file changes
+```
+
+## Executor Compatibility
+
+Deux runs on any executor supporting the UNC/sUNC standard. At boot it probes for capabilities and gracefully disables features that require missing APIs.
+
+**Minimum requirements:** `readfile`, `writefile`, `makefolder`, `cloneref`, `gethui`
+
+**Full features require:** `hookfunction`, `hookmetamethod`, `getgc`, `getreg`, `getconnections`, `decompile`, `saveinstance`, `getscriptbytecode`, `getthreads`, `request`, `WebSocket`
+
+Run `version` in the Terminal to see your executor's compatibility score.
+
+## Keybinds (Defaults)
+
+| Key | Action |
+|-----|--------|
+| `RCtrl+D` | Toggle Deux menu |
+| `Alt+Click` | Click-to-select (3D/GUI) |
+| `Ctrl+C` | Copy instance path |
+| `Ctrl+B` | Toggle bookmark |
+| `Delete` | Delete selected |
+| `F5` | Run script buffer |
+| `Ctrl+D` | Re-decompile |
+| `Ctrl+F` | Find in script |
+| `Ctrl+S` | Save script |
+| `Ctrl+W` | Close tab |
+| `Ctrl+Z` | Undo property change |
+
+All keybinds are rebindable via Settings.
+
+## Plugin Development
+
+Place plugins in `deux/plugins/<name>/`:
+
+```
+deux/plugins/my-plugin/
+├── plugin.json    # {name, version, author, permissions}
+└── init.lua       # Entry point
+```
+
+```lua
+-- init.lua
+Dex.Terminal.AddCommand({
+    Name = "hello",
+    Description = "Say hello",
+    Run = function(args)
+        Dex.Notify("Hello from plugin!", "Success")
+    end
+})
+
+Dex.Explorer.AddRightClick("My Action", function(instance)
+    print("Clicked on", instance.Name)
+end)
+```
+
+## Credits
+
+- **Moon / LorekeeperZinnia** — Original New Dex architecture, Lib module, and UI system
+- **Spektronazam** — Deux successor rewrite (v2.0.0)
+- **UNC Community** — Unified Naming Convention standard
+
+## License
+
+MIT — See [LICENSE](LICENSE)

@@ -1,1 +1,13 @@
-/out.lua
+# Build output
+out.lua
+out.min.lua
+ModuleHashs.dat
+manifest.json
+
+# Python
+__pycache__/
+*.pyc
+
+# OS
+.DS_Store
+Thumbs.db
