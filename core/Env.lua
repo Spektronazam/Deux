@@ -237,7 +237,7 @@ register("isexecutorclosure", "isexecutorclosure", "is_executor_closure", "check
 register("lz4compress", "lz4compress")
 register("lz4decompress", "lz4decompress")
 register("messagebox", "messagebox", "message_box")
-register("rconsoleprinт", "rconsoleprint", "rconsoleprinт")
+register("rconsoleprint", "rconsoleprint", "rconsoleprint")
 register("rconsoleinfo", "rconsoleinfo")
 register("rconsolewarn", "rconsolewarn")
 register("rconsoleerr", "rconsoleerr")
