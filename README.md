@@ -7,7 +7,13 @@
 ## Install
 
 ```lua
-loadstring(game:HttpGet("https://raw.githubusercontent.com/Spektronazam/Deux/feat/successor-rewrite/out.lua"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Spektronazam/Deux/master/out.lua"))()
+```
+
+For the minified build (~10% smaller, same behavior):
+
+```lua
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Spektronazam/Deux/master/out.min.lua"))()
 ```
 
 ## Features
