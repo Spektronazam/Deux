@@ -37,7 +37,7 @@ MODULE_ORDER = [
     "Lib",
     "Explorer", "Properties", "ScriptEditor", "Terminal", "RemoteSpy",
     "SaveInstance", "DataInspector", "NetworkSpy", "APIReference",
-    "PluginAPI", "WorkspaceTools", "Console",
+    "PluginAPI", "WorkspaceTools", "Console", "ThemePicker",
 ]
 
 

@@ -73,7 +73,7 @@ local function main()
 
 	function DataInspector:RefreshGC()
 		if not hasGC() then
-			Notifications:Send("DataInspector", "GC capability not available", 3)
+			Notifications.Info("GC capability not available", 3)
 			return
 		end
 		gcCache = Env.getgc(true) or {}
@@ -380,11 +380,11 @@ local function main()
 				Position = UDim2.new(0, 0, 0, yPos),
 				Size = UDim2.new(1, 0, 0, ROW_HEIGHT),
 				BackgroundTransparency = i % 2 == 0 and 0.95 or 1,
-				BackgroundColor3 = Theme.Colors.Row or Color3.fromRGB(35, 35, 40),
+				BackgroundColor3 = Theme.Get("Row") or Color3.fromRGB(35, 35, 40),
 				BorderSizePixel = 0,
 				Font = Enum.Font.Code,
 				TextSize = 13,
-				TextColor3 = Theme.Colors.Text or Color3.new(1, 1, 1),
+				TextColor3 = Theme.Get("Text") or Color3.new(1, 1, 1),
 				TextXAlignment = Enum.TextXAlignment.Left,
 				Text = "  " .. displayText,
 				AutoButtonColor = true,
@@ -422,7 +422,7 @@ local function main()
 				BackgroundTransparency = 1,
 				Font = Enum.Font.Code,
 				TextSize = 12,
-				TextColor3 = color or Theme.Colors.Text or Color3.new(1,1,1),
+				TextColor3 = color or Theme.Get("Text") or Color3.new(1,1,1),
 				TextXAlignment = Enum.TextXAlignment.Left,
 				Text = text,
 				TextWrapped = true,
@@ -436,7 +436,7 @@ local function main()
 		end
 
 		-- Header
-		addLine("--- Function Detail ---", Theme.Colors.Accent or Color3.fromRGB(100, 180, 255))
+		addLine("--- Function Detail ---", Theme.Get("Accent") or Color3.fromRGB(100, 180, 255))
 
 		-- Info
 		if detail.Info then
@@ -452,7 +452,7 @@ local function main()
 
 		-- Constants
 		y = y + 4
-		addLine("Constants (" .. #detail.Constants .. "):", Theme.Colors.Accent or Color3.fromRGB(100, 180, 255))
+		addLine("Constants (" .. #detail.Constants .. "):", Theme.Get("Accent") or Color3.fromRGB(100, 180, 255))
 		for i, c in ipairs(detail.Constants) do
 			if i > 50 then
 				addLine("  ... (" .. (#detail.Constants - 50) .. " more)")
@@ -465,7 +465,7 @@ local function main()
 		y = y + 4
 		local upvalCount = 0
 		for _ in pairs(detail.Upvalues) do upvalCount = upvalCount + 1 end
-		addLine("Upvalues (" .. upvalCount .. "):", Theme.Colors.Accent or Color3.fromRGB(100, 180, 255))
+		addLine("Upvalues (" .. upvalCount .. "):", Theme.Get("Accent") or Color3.fromRGB(100, 180, 255))
 		local uvIdx = 0
 		for k, v in pairs(detail.Upvalues) do
 			uvIdx = uvIdx + 1
@@ -479,12 +479,12 @@ local function main()
 		-- Decompiled source
 		if detail.Source then
 			y = y + 4
-			addLine("Decompiled Source:", Theme.Colors.Accent or Color3.fromRGB(100, 180, 255))
+			addLine("Decompiled Source:", Theme.Get("Accent") or Color3.fromRGB(100, 180, 255))
 			for line in detail.Source:gmatch("[^\n]+") do
 				addLine("  " .. line)
 			end
 		elseif hasDecompile() then
-			addLine("(Decompiling...)", Theme.Colors.Muted or Color3.fromRGB(120,120,120))
+			addLine("(Decompiling...)", Theme.Get("Muted") or Color3.fromRGB(120,120,120))
 		end
 
 		-- Signature builder button
@@ -504,7 +504,7 @@ local function main()
 				local snippet = DataInspector:BuildSignature(selectedItem)
 				if snippet and Env.setclipboard then
 					Env.setclipboard(snippet)
-					Notifications:Send("DataInspector", "Signature snippet copied!", 2)
+					Notifications.Info("Signature snippet copied!", 2)
 				end
 			end
 		end)
@@ -552,7 +552,7 @@ local function main()
 			BackgroundTransparency = 1,
 			Font = Enum.Font.Code,
 			TextSize = 12,
-			TextColor3 = Theme.Colors.Accent or Color3.fromRGB(100, 180, 255),
+			TextColor3 = Theme.Get("Accent") or Color3.fromRGB(100, 180, 255),
 			TextXAlignment = Enum.TextXAlignment.Left,
 			Text = "References to: " .. current.Label,
 		})
@@ -565,10 +565,10 @@ local function main()
 				Position = UDim2.new(0, 4, 0, y),
 				Size = UDim2.new(1, -8, 0, lineH),
 				BackgroundTransparency = 0.95,
-				BackgroundColor3 = Theme.Colors.Row or Color3.fromRGB(35, 35, 40),
+				BackgroundColor3 = Theme.Get("Row") or Color3.fromRGB(35, 35, 40),
 				Font = Enum.Font.Code,
 				TextSize = 12,
-				TextColor3 = Theme.Colors.Text or Color3.new(1,1,1),
+				TextColor3 = Theme.Get("Text") or Color3.new(1,1,1),
 				TextXAlignment = Enum.TextXAlignment.Left,
 				Text = "  " .. ref.Path .. " -> " .. tostring(ref.Key),
 			})
@@ -586,7 +586,7 @@ local function main()
 				BackgroundTransparency = 1,
 				Font = Enum.Font.Code,
 				TextSize = 12,
-				TextColor3 = Theme.Colors.Muted or Color3.fromRGB(120,120,120),
+				TextColor3 = Theme.Get("Muted") or Color3.fromRGB(120,120,120),
 				TextXAlignment = Enum.TextXAlignment.Left,
 				Text = "  (no references found)",
 			})
@@ -611,7 +611,7 @@ local function main()
 			Parent = content,
 			Position = UDim2.new(0, 0, 0, 0),
 			Size = UDim2.new(1, 0, 0, 28),
-			BackgroundColor3 = Theme.Colors.TabBar or Color3.fromRGB(30, 30, 35),
+			BackgroundColor3 = Theme.Get("TabBar") or Color3.fromRGB(30, 30, 35),
 			BorderSizePixel = 0,
 		})
 
@@ -625,10 +625,10 @@ local function main()
 				Parent = tabBar,
 				Position = UDim2.new(0, (i-1) * 100, 0, 2),
 				Size = UDim2.new(0, 96, 0, 24),
-				BackgroundColor3 = activeTab == td.Key and (Theme.Colors.ActiveTab or Color3.fromRGB(60, 60, 80)) or (Theme.Colors.Tab or Color3.fromRGB(40, 40, 50)),
+				BackgroundColor3 = activeTab == td.Key and (Theme.Get("ActiveTab") or Color3.fromRGB(60, 60, 80)) or (Theme.Get("Tab") or Color3.fromRGB(40, 40, 50)),
 				Font = Enum.Font.SourceSansBold,
 				TextSize = 13,
-				TextColor3 = Theme.Colors.Text or Color3.new(1,1,1),
+				TextColor3 = Theme.Get("Text") or Color3.new(1,1,1),
 				Text = td.Name,
 			})
 			tabBtn.MouseButton1Click:Connect(function()
@@ -643,7 +643,7 @@ local function main()
 			Parent = content,
 			Position = UDim2.new(0, 0, 0, 30),
 			Size = UDim2.new(1, 0, 0, 26),
-			BackgroundColor3 = Theme.Colors.Panel or Color3.fromRGB(25, 25, 30),
+			BackgroundColor3 = Theme.Get("Panel") or Color3.fromRGB(25, 25, 30),
 			BorderSizePixel = 0,
 		})
 
@@ -748,7 +748,7 @@ local function main()
 			Parent = content,
 			Position = UDim2.new(0, 0, 0, 58),
 			Size = UDim2.new(0.5, -2, 1, -58),
-			BackgroundColor3 = Theme.Colors.Background or Color3.fromRGB(20, 20, 20),
+			BackgroundColor3 = Theme.Get("Background") or Color3.fromRGB(20, 20, 20),
 			BorderSizePixel = 0,
 			ScrollBarThickness = 6,
 			CanvasSize = UDim2.new(0, 0, 0, 0),
@@ -765,7 +765,7 @@ local function main()
 			Parent = content,
 			Position = UDim2.new(0.5, 2, 0, 58),
 			Size = UDim2.new(0.5, -2, 1, -58),
-			BackgroundColor3 = Theme.Colors.Panel or Color3.fromRGB(25, 25, 30),
+			BackgroundColor3 = Theme.Get("Panel") or Color3.fromRGB(25, 25, 30),
 			BorderSizePixel = 0,
 			ScrollBarThickness = 6,
 			CanvasSize = UDim2.new(0, 0, 0, 0),
@@ -808,11 +808,11 @@ local function main()
 				Position = UDim2.new(0, 0, 0, y),
 				Size = UDim2.new(1, 0, 0, ROW_HEIGHT),
 				BackgroundTransparency = i % 2 == 0 and 0.95 or 1,
-				BackgroundColor3 = Theme.Colors.Row or Color3.fromRGB(35, 35, 40),
+				BackgroundColor3 = Theme.Get("Row") or Color3.fromRGB(35, 35, 40),
 				BorderSizePixel = 0,
 				Font = Enum.Font.Code,
 				TextSize = 12,
-				TextColor3 = Theme.Colors.Text or Color3.new(1,1,1),
+				TextColor3 = Theme.Get("Text") or Color3.new(1,1,1),
 				TextXAlignment = Enum.TextXAlignment.Left,
 				Text = "  " .. text,
 			})
@@ -827,7 +827,7 @@ local function main()
 		DataInspector:BuildUI()
 
 		-- Listen for Store event
-		table.insert(connections, Store:On("explore_data", function(value)
+		table.insert(connections, Store.On("explore_data", function(value)
 			if value then
 				if type(value) == "function" then
 					DataInspector:ShowFunctionDetail(value)
