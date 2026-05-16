@@ -3,15 +3,15 @@ do
   if not prev then
     _G.DeuxBuild = {
       Version    = "2.0.0",
-      Commit     = "9fc1b9e",
-      BuildTime  = "2026-05-16T05:13:21Z",
+      Commit     = "1da80f3",
+      BuildTime  = "2026-05-16T05:41:26Z",
       Credits    = {"Moon/LorekeeperZinnia (New Dex original)", "iris (successor co-conspirator)", "Spektronazam (Deux rewrite)", "UNC Community"},
       Modules    = {
     {Name = "APIReference", SHA256 = "4288a2ed8c7962241024f1e95bf6991817a3a49d20f3e29ab8e0b1ae2800d221"},
     {Name = "Console", SHA256 = "c0ae9c734e260106e027129e225ced74e4058da8c6bacd1ee4a99ded9f2d38d2"},
     {Name = "DataInspector", SHA256 = "b3bcd852249da777897bfebef73745f202c36ea3912ef822a662f9156bd6d050"},
     {Name = "Env", SHA256 = "655d14d8118c242e815bc44725f74924e63d50c2ea304b1c939faf697385055f"},
-    {Name = "Explorer", SHA256 = "971896151e49c97e501417bf58ae4e08f5cc51b30f6964d7e6587a23b90105cd"},
+    {Name = "Explorer", SHA256 = "7cd1f813bc4f5f680aa036ec69e7cdb7c5b92d9a1efb3c2999b36b4cebaae49e"},
     {Name = "Keybinds", SHA256 = "90dcae39b20dc9dad53ae686379281955d82381b4da83e86029494258233e1e6"},
     {Name = "Lib", SHA256 = "40dc9d45b5384ce10279d2ccbc3ae7b5baca2d24279e8a8967c524b84f2664a7"},
     {Name = "NetworkSpy", SHA256 = "dde397c936f15b9b37a1d3fe7be762ac099abc302737e1ccbfff7c5520a89b43"},
@@ -7656,55 +7656,57 @@ local function main()
 		local viewHeight = scrollFrame.AbsoluteSize.Y
 		local startIdx = math.floor(scrollFrame.CanvasPosition.Y / ROW_HEIGHT) + 1
 		local endIdx = math.min(startIdx + math.ceil(viewHeight / ROW_HEIGHT) + 1, totalRows)
-		for _, row in ipairs(visibleRows) do
-			row.Visible = false
+		for _, entry in ipairs(visibleRows) do
+			entry.Frame.Visible = false
 		end
 		visibleRows = {}
 		for i = startIdx, endIdx do
 			local item = displayList[i]
 			if not item then continue end
-			local row = Explorer.GetOrCreateRow(i - startIdx + 1)
+			local entry = Explorer.GetOrCreateRow(i - startIdx + 1)
+			local frame = entry.Frame
 			local instance = searchActive and item or item.Instance
 			local node = searchActive and nodeMap[item] or item
 			local depth = node and node.Depth or 0
 			local isSelected = node and node.Selected or false
 			local isBookmarked = node and node.Bookmarked or false
-			row.Position = UDim2.new(0, 0, 0, (i - 1) * ROW_HEIGHT)
-			row.Size = UDim2.new(1, 0, 0, ROW_HEIGHT)
-			row.Visible = true
+			frame.Position = UDim2.new(0, 0, 0, (i - 1) * ROW_HEIGHT)
+			frame.Size = UDim2.new(1, 0, 0, ROW_HEIGHT)
+			frame.Visible = true
 			local indent = depth * INDENT_WIDTH
-			row.NameLabel.Position = UDim2.new(0, indent + ICON_SIZE + 4, 0, 0)
+			entry.NameLabel.Position = UDim2.new(0, indent + ICON_SIZE + 4, 0, 0)
 			local name, className = "", ""
 			pcall(function()
 				name = instance.Name
 				className = instance.ClassName
 			end)
-			row.NameLabel.Text = name
-			row.ClassLabel.Text = className
-			row.ClassLabel.Position = UDim2.new(0, indent + ICON_SIZE + 4 + row.NameLabel.TextBounds.X + 6, 0, 0)
+			entry.NameLabel.Text = name
+			entry.ClassLabel.Text = className
+			entry.ClassLabel.Position = UDim2.new(0, indent + ICON_SIZE + 4 + entry.NameLabel.TextBounds.X + 6, 0, 0)
 			local bgColor = isSelected and (Theme.Get("ListSelection") or Color3.fromRGB(11, 90, 175)) or Color3.fromRGB(0, 0, 0)
-			row.BackgroundColor3 = bgColor
-			row.BackgroundTransparency = isSelected and 0 or 1
-			if row.BookmarkDot then
-				row.BookmarkDot.Visible = isBookmarked
+			frame.BackgroundColor3 = bgColor
+			frame.BackgroundTransparency = isSelected and 0 or 1
+			if entry.BookmarkDot then
+				entry.BookmarkDot.Visible = isBookmarked
 			end
 			local hasChildren = false
 			if node then
 				pcall(function() hasChildren = #instance:GetChildren() > 0 end)
 			end
-			if row.Arrow then
-				row.Arrow.Visible = hasChildren
-				row.Arrow.Rotation = (node and node.Expanded) and 90 or 0
-				row.Arrow.Position = UDim2.new(0, indent, 0, 2)
+			if entry.Arrow then
+				entry.Arrow.Visible = hasChildren
+				entry.Arrow.Rotation = (node and node.Expanded) and 90 or 0
+				entry.Arrow.Position = UDim2.new(0, indent, 0, 2)
 			end
-			row._Node = node
-			row._Instance = instance
-			visibleRows[#visibleRows + 1] = row
+			entry.Node = node
+			entry.Instance = instance
+			if node then node.GuiRow = entry end
+			visibleRows[#visibleRows + 1] = entry
 		end
 	end
 	Explorer.GetOrCreateRow = function(poolIdx)
 		if rowPool[poolIdx] then return rowPool[poolIdx] end
-		local row = createSimple("TextButton", {
+		local frame = createSimple("TextButton", {
 			Name = "Row" .. poolIdx,
 			BackgroundColor3 = Color3.fromRGB(0, 0, 0),
 			BackgroundTransparency = 1,
@@ -7723,7 +7725,7 @@ local function main()
 			TextColor3 = Color3.fromRGB(180, 180, 180),
 			TextSize = 8,
 			Font = Enum.Font.Gotham,
-			Parent = row,
+			Parent = frame,
 		})
 		local nameLabel = createSimple("TextLabel", {
 			Name = "NameLabel",
@@ -7736,7 +7738,7 @@ local function main()
 			Font = Enum.Font.Gotham,
 			TextXAlignment = Enum.TextXAlignment.Left,
 			TextTruncate = Enum.TextTruncate.AtEnd,
-			Parent = row,
+			Parent = frame,
 		})
 		local classLabel = createSimple("TextLabel", {
 			Name = "ClassLabel",
@@ -7748,7 +7750,7 @@ local function main()
 			TextSize = 11,
 			Font = Enum.Font.Gotham,
 			TextXAlignment = Enum.TextXAlignment.Left,
-			Parent = row,
+			Parent = frame,
 		})
 		local bookmarkDot = createSimple("Frame", {
 			Name = "BookmarkDot",
@@ -7756,27 +7758,32 @@ local function main()
 			Size = UDim2.new(0, 4, 0, 4),
 			Position = UDim2.new(1, -8, 0.5, -2),
 			Visible = false,
-			Parent = row,
+			Parent = frame,
 		})
 		local dotCorner = Instance.new("UICorner")
 		dotCorner.CornerRadius = UDim.new(1, 0)
 		dotCorner.Parent = bookmarkDot
-		row.Arrow = arrow
-		row.NameLabel = nameLabel
-		row.ClassLabel = classLabel
-		row.BookmarkDot = bookmarkDot
-		row.MouseButton1Click:Connect(function()
-			local node = row._Node
+		local entry = {
+			Frame = frame,
+			Arrow = arrow,
+			NameLabel = nameLabel,
+			ClassLabel = classLabel,
+			BookmarkDot = bookmarkDot,
+			Node = nil,
+			Instance = nil,
+		}
+		frame.MouseButton1Click:Connect(function()
+			local node = entry.Node
 			if not node then return end
 			local uis = service.UserInputService
 			local shift = uis:IsKeyDown(Enum.KeyCode.LeftShift) or uis:IsKeyDown(Enum.KeyCode.RightShift)
 			local ctrl = uis:IsKeyDown(Enum.KeyCode.LeftControl) or uis:IsKeyDown(Enum.KeyCode.RightControl)
 			selectNode(node, ctrl, shift)
 		end)
-		row.MouseButton1Down:Connect(function()
+		frame.MouseButton1Down:Connect(function()
 		end)
-		row.MouseButton2Click:Connect(function()
-			local node = row._Node
+		frame.MouseButton2Click:Connect(function()
+			local node = entry.Node
 			if not node then return end
 			if not node.Selected then selectNode(node) end
 			local menu = createContextMenu(node)
@@ -7784,12 +7791,12 @@ local function main()
 		end)
 		arrow.InputBegan:Connect(function(input)
 			if input.UserInputType == Enum.UserInputType.MouseButton1 then
-				local node = row._Node
+				local node = entry.Node
 				if node then toggleNode(node) end
 			end
 		end)
-		rowPool[poolIdx] = row
-		return row
+		rowPool[poolIdx] = entry
+		return entry
 	end
 	Explorer.ScrollToNode = function(node)
 		if not scrollFrame then return end
