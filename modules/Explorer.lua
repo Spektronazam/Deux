@@ -750,8 +750,8 @@ local function main()
 		local endIdx = math.min(startIdx + math.ceil(viewHeight / ROW_HEIGHT) + 1, totalRows)
 		
 		-- Hide all existing visible rows
-		for _, row in ipairs(visibleRows) do
-			row.Visible = false
+		for _, entry in ipairs(visibleRows) do
+			entry.Frame.Visible = false
 		end
 		visibleRows = {}
 		
@@ -760,7 +760,8 @@ local function main()
 			local item = displayList[i]
 			if not item then continue end
 			
-			local row = Explorer.GetOrCreateRow(i - startIdx + 1)
+			local entry = Explorer.GetOrCreateRow(i - startIdx + 1)
+			local frame = entry.Frame
 			local instance = searchActive and item or item.Instance
 			local node = searchActive and nodeMap[item] or item
 			local depth = node and node.Depth or 0
@@ -768,13 +769,13 @@ local function main()
 			local isBookmarked = node and node.Bookmarked or false
 			
 			-- Position
-			row.Position = UDim2.new(0, 0, 0, (i - 1) * ROW_HEIGHT)
-			row.Size = UDim2.new(1, 0, 0, ROW_HEIGHT)
-			row.Visible = true
+			frame.Position = UDim2.new(0, 0, 0, (i - 1) * ROW_HEIGHT)
+			frame.Size = UDim2.new(1, 0, 0, ROW_HEIGHT)
+			frame.Visible = true
 			
 			-- Indent
 			local indent = depth * INDENT_WIDTH
-			row.NameLabel.Position = UDim2.new(0, indent + ICON_SIZE + 4, 0, 0)
+			entry.NameLabel.Position = UDim2.new(0, indent + ICON_SIZE + 4, 0, 0)
 			
 			-- Name & class
 			local name, className = "", ""
@@ -782,18 +783,18 @@ local function main()
 				name = instance.Name
 				className = instance.ClassName
 			end)
-			row.NameLabel.Text = name
-			row.ClassLabel.Text = className
-			row.ClassLabel.Position = UDim2.new(0, indent + ICON_SIZE + 4 + row.NameLabel.TextBounds.X + 6, 0, 0)
+			entry.NameLabel.Text = name
+			entry.ClassLabel.Text = className
+			entry.ClassLabel.Position = UDim2.new(0, indent + ICON_SIZE + 4 + entry.NameLabel.TextBounds.X + 6, 0, 0)
 			
 			-- Selection highlight
 			local bgColor = isSelected and (Theme.Get("ListSelection") or Color3.fromRGB(11, 90, 175)) or Color3.fromRGB(0, 0, 0)
-			row.BackgroundColor3 = bgColor
-			row.BackgroundTransparency = isSelected and 0 or 1
+			frame.BackgroundColor3 = bgColor
+			frame.BackgroundTransparency = isSelected and 0 or 1
 			
 			-- Bookmark indicator
-			if row.BookmarkDot then
-				row.BookmarkDot.Visible = isBookmarked
+			if entry.BookmarkDot then
+				entry.BookmarkDot.Visible = isBookmarked
 			end
 			
 			-- Expand arrow
@@ -801,24 +802,25 @@ local function main()
 			if node then
 				pcall(function() hasChildren = #instance:GetChildren() > 0 end)
 			end
-			if row.Arrow then
-				row.Arrow.Visible = hasChildren
-				row.Arrow.Rotation = (node and node.Expanded) and 90 or 0
-				row.Arrow.Position = UDim2.new(0, indent, 0, 2)
+			if entry.Arrow then
+				entry.Arrow.Visible = hasChildren
+				entry.Arrow.Rotation = (node and node.Expanded) and 90 or 0
+				entry.Arrow.Position = UDim2.new(0, indent, 0, 2)
 			end
 			
-			-- Store reference
-			row._Node = node
-			row._Instance = instance
+			-- Store reference (on the plain-Lua entry, NOT on the Roblox Instance)
+			entry.Node = node
+			entry.Instance = instance
+			if node then node.GuiRow = entry end
 			
-			visibleRows[#visibleRows + 1] = row
+			visibleRows[#visibleRows + 1] = entry
 		end
 	end
 	
 	Explorer.GetOrCreateRow = function(poolIdx)
 		if rowPool[poolIdx] then return rowPool[poolIdx] end
 		
-		local row = createSimple("TextButton", {
+		local frame = createSimple("TextButton", {
 			Name = "Row" .. poolIdx,
 			BackgroundColor3 = Color3.fromRGB(0, 0, 0),
 			BackgroundTransparency = 1,
@@ -838,7 +840,7 @@ local function main()
 			TextColor3 = Color3.fromRGB(180, 180, 180),
 			TextSize = 8,
 			Font = Enum.Font.Gotham,
-			Parent = row,
+			Parent = frame,
 		})
 		
 		local nameLabel = createSimple("TextLabel", {
@@ -852,7 +854,7 @@ local function main()
 			Font = Enum.Font.Gotham,
 			TextXAlignment = Enum.TextXAlignment.Left,
 			TextTruncate = Enum.TextTruncate.AtEnd,
-			Parent = row,
+			Parent = frame,
 		})
 		
 		local classLabel = createSimple("TextLabel", {
@@ -865,7 +867,7 @@ local function main()
 			TextSize = 11,
 			Font = Enum.Font.Gotham,
 			TextXAlignment = Enum.TextXAlignment.Left,
-			Parent = row,
+			Parent = frame,
 		})
 		
 		local bookmarkDot = createSimple("Frame", {
@@ -874,20 +876,28 @@ local function main()
 			Size = UDim2.new(0, 4, 0, 4),
 			Position = UDim2.new(1, -8, 0.5, -2),
 			Visible = false,
-			Parent = row,
+			Parent = frame,
 		})
 		local dotCorner = Instance.new("UICorner")
 		dotCorner.CornerRadius = UDim.new(1, 0)
 		dotCorner.Parent = bookmarkDot
 		
-		row.Arrow = arrow
-		row.NameLabel = nameLabel
-		row.ClassLabel = classLabel
-		row.BookmarkDot = bookmarkDot
+		-- Pool entries are plain Lua tables: Roblox Instances reject arbitrary
+		-- field assignment ("Arrow is not a valid member of TextButton"), so we
+		-- keep child references and per-row state on the table instead.
+		local entry = {
+			Frame = frame,
+			Arrow = arrow,
+			NameLabel = nameLabel,
+			ClassLabel = classLabel,
+			BookmarkDot = bookmarkDot,
+			Node = nil,
+			Instance = nil,
+		}
 		
 		-- Click handler
-		row.MouseButton1Click:Connect(function()
-			local node = row._Node
+		frame.MouseButton1Click:Connect(function()
+			local node = entry.Node
 			if not node then return end
 			local uis = service.UserInputService
 			local shift = uis:IsKeyDown(Enum.KeyCode.LeftShift) or uis:IsKeyDown(Enum.KeyCode.RightShift)
@@ -896,13 +906,13 @@ local function main()
 		end)
 		
 		-- Double click to expand
-		row.MouseButton1Down:Connect(function()
+		frame.MouseButton1Down:Connect(function()
 			-- Handled via ClickSystem if available
 		end)
 		
 		-- Right click
-		row.MouseButton2Click:Connect(function()
-			local node = row._Node
+		frame.MouseButton2Click:Connect(function()
+			local node = entry.Node
 			if not node then return end
 			if not node.Selected then selectNode(node) end
 			local menu = createContextMenu(node)
@@ -912,13 +922,13 @@ local function main()
 		-- Arrow click to toggle expand
 		arrow.InputBegan:Connect(function(input)
 			if input.UserInputType == Enum.UserInputType.MouseButton1 then
-				local node = row._Node
+				local node = entry.Node
 				if node then toggleNode(node) end
 			end
 		end)
 		
-		rowPool[poolIdx] = row
-		return row
+		rowPool[poolIdx] = entry
+		return entry
 	end
 	
 	Explorer.ScrollToNode = function(node)
