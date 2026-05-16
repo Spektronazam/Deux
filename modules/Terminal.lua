@@ -119,16 +119,16 @@ local function main()
 	end
 
 	local function printError(msg)
-		appendOutput(msg, Theme.Colors.Error or Color3.fromRGB(255, 80, 80))
+		appendOutput(msg, Theme.Get("Error") or Color3.fromRGB(255, 80, 80))
 	end
 
 	local function printSuccess(msg)
-		appendOutput(msg, Theme.Colors.Success or Color3.fromRGB(80, 255, 120))
+		appendOutput(msg, Theme.Get("Success") or Color3.fromRGB(80, 255, 120))
 	end
 
 	local function printInstanceLink(inst)
 		local path = getFullPath(inst)
-		appendOutput(path, Theme.Colors.Link or Color3.fromRGB(100, 180, 255), {
+		appendOutput(path, Theme.Get("Link") or Color3.fromRGB(100, 180, 255), {
 			type = "navigate",
 			instance = inst,
 		})
@@ -215,7 +215,7 @@ local function main()
 			end
 		end)
 
-		appendOutput("> " .. raw, Theme.Colors.Muted or Color3.fromRGB(180, 180, 180))
+		appendOutput("> " .. raw, Theme.Get("Muted") or Color3.fromRGB(180, 180, 180))
 
 		local parts = raw:split(" ")
 		local cmdName = table.remove(parts, 1)
@@ -245,7 +245,7 @@ local function main()
 				local path = table.concat(args, " ")
 				local inst = resolveInstance(path)
 				if inst then
-					Store:Fire("select_instance", inst)
+					Store.Emit("select_instance", inst)
 					printSuccess("Selected: " .. getFullPath(inst))
 				else
 					printError("Instance not found: " .. path)
@@ -264,7 +264,7 @@ local function main()
 				local path = table.concat(args, " ")
 				local inst = resolveInstance(path)
 				if inst then
-					Store:Fire("navigate_to", inst)
+					Store.Emit("navigate_to", inst)
 					printSuccess("Navigated to: " .. getFullPath(inst))
 				else
 					printError("Instance not found: " .. path)
@@ -303,7 +303,7 @@ local function main()
 			Category = "Navigation",
 			Run = function(args)
 				local depth = tonumber(args[1]) or 3
-				local sel = Store:Get("selected_instance")
+				local sel = Store.Get("selected_instance")
 				if not sel then
 					printError("No instance selected")
 					return
@@ -331,7 +331,7 @@ local function main()
 				local path = table.concat(args, " ")
 				local inst = resolveInstance(path)
 				if not inst then
-					inst = Store:Get("selected_instance")
+					inst = Store.Get("selected_instance")
 				end
 				if not inst then
 					printError("No instance to dump. Select one or provide a path.")
@@ -461,7 +461,7 @@ local function main()
 						Apps.SaveInstance:SavePlace()
 						printSuccess("Save place initiated...")
 					elseif mode == "selection" then
-						local sel = Store:Get("selected_instance")
+						local sel = Store.Get("selected_instance")
 						if sel then
 							Apps.SaveInstance:SaveModel(sel)
 							printSuccess("Save model initiated for: " .. sel.Name)
@@ -487,15 +487,15 @@ local function main()
 			Run = function(args)
 				local action = args[1] or "list"
 				if action == "add" then
-					local sel = Store:Get("selected_instance")
+					local sel = Store.Get("selected_instance")
 					if sel then
-						Store:Fire("bookmark_add", sel)
+						Store.Emit("bookmark_add", sel)
 						printSuccess("Bookmarked: " .. getFullPath(sel))
 					else
 						printError("No instance selected")
 					end
 				elseif action == "list" then
-					local bms = Store:Get("bookmarks") or {}
+					local bms = Store.Get("bookmarks") or {}
 					if #bms == 0 then
 						printOutput("No bookmarks.")
 					else
@@ -506,7 +506,7 @@ local function main()
 				elseif action == "rm" or action == "remove" then
 					local idx = tonumber(args[2])
 					if idx then
-						Store:Fire("bookmark_remove", idx)
+						Store.Emit("bookmark_remove", idx)
 						printSuccess("Removed bookmark #" .. idx)
 					else
 						printError("Usage: bookmark rm <index>")
@@ -707,7 +707,7 @@ local function main()
 				BackgroundTransparency = 1,
 				Font = Enum.Font.Code,
 				TextSize = 14,
-				TextColor3 = line.Color or Theme.Colors.Text or Color3.new(1, 1, 1),
+				TextColor3 = line.Color or Theme.Get("Text") or Color3.new(1, 1, 1),
 				TextXAlignment = Enum.TextXAlignment.Left,
 				TextWrapped = true,
 				RichText = true,
@@ -723,7 +723,7 @@ local function main()
 					Text = "",
 				})
 				btn.MouseButton1Click:Connect(function()
-					Store:Fire("navigate_to", line.ClickData.instance)
+					Store.Emit("navigate_to", line.ClickData.instance)
 				end)
 			end
 			yOffset = yOffset + lineHeight
@@ -747,7 +747,7 @@ local function main()
 			Parent = content,
 			Position = UDim2.new(0, 0, 0, 0),
 			Size = UDim2.new(1, 0, 1, -30),
-			BackgroundColor3 = Theme.Colors.Background or Color3.fromRGB(20, 20, 20),
+			BackgroundColor3 = Theme.Get("Background") or Color3.fromRGB(20, 20, 20),
 			BorderSizePixel = 0,
 			ScrollBarThickness = 6,
 			CanvasSize = UDim2.new(0, 0, 0, 0),
@@ -761,13 +761,13 @@ local function main()
 			Parent = content,
 			Position = UDim2.new(0, 0, 1, -30),
 			Size = UDim2.new(1, 0, 0, 30),
-			BackgroundColor3 = Theme.Colors.InputBackground or Color3.fromRGB(30, 30, 30),
+			BackgroundColor3 = Theme.Get("InputBackground") or Color3.fromRGB(30, 30, 30),
 			BorderSizePixel = 0,
 			Font = Enum.Font.Code,
 			TextSize = 14,
-			TextColor3 = Theme.Colors.Text or Color3.new(1, 1, 1),
+			TextColor3 = Theme.Get("Text") or Color3.new(1, 1, 1),
 			PlaceholderText = "Type a command...",
-			PlaceholderColor3 = Theme.Colors.Muted or Color3.fromRGB(120, 120, 120),
+			PlaceholderColor3 = Theme.Get("Muted") or Color3.fromRGB(120, 120, 120),
 			TextXAlignment = Enum.TextXAlignment.Left,
 			ClearTextOnFocus = false,
 			Text = "",
@@ -790,7 +790,7 @@ local function main()
 		end)
 
 		-- Key handling via UserInputService
-		local UIS = service("UserInputService")
+		local UIS = service.UserInputService
 		table.insert(connections, UIS.InputBegan:Connect(function(input, gameProcessed)
 			if not inputBox:IsFocused() then return end
 

@@ -98,7 +98,7 @@ local function main()
 	local function hookHTTP()
 		if not Env.hookfunction then return end
 		pcall(function()
-			local hs = service("HttpService")
+			local hs = service.HttpService
 			local oldReq = hs.RequestAsync
 			Env.hookfunction(oldReq, function(self, req)
 				local url = type(req) == "table" and req.Url or tostring(req)

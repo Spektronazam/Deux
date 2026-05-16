@@ -19,6 +19,7 @@ local Lib, API, RMD
 local Explorer, Properties, ScriptEditor, Terminal, RemoteSpy
 local SaveInstance, DataInspector, NetworkSpy, APIReference
 local PluginAPI, WorkspaceTools, Console
+local ThemePicker
 
 -- Module references (populated by build system)
 local EmbeddedModules = EmbeddedModules or {}
@@ -79,7 +80,8 @@ Main.MenuApps = {}
 Main.ModuleList = {
 	"Lib", "Explorer", "Properties", "ScriptEditor",
 	"Terminal", "RemoteSpy", "SaveInstance", "DataInspector",
-	"NetworkSpy", "APIReference", "PluginAPI", "WorkspaceTools", "Console"
+	"NetworkSpy", "APIReference", "PluginAPI", "WorkspaceTools", "Console",
+	"ThemePicker"
 }
 Main.DisplayOrders = {
 	SideWindow = 8,
@@ -244,6 +246,7 @@ Main.LoadModules = function()
 	PluginAPI = Main.Apps.PluginAPI
 	WorkspaceTools = Main.Apps.WorkspaceTools
 	Console = Main.Apps.Console
+	ThemePicker = Main.Apps.ThemePicker
 	
 	-- Call InitAfterMain on all modules
 	local appTable = {
@@ -259,6 +262,7 @@ Main.LoadModules = function()
 		PluginAPI = PluginAPI,
 		WorkspaceTools = WorkspaceTools,
 		Console = Console,
+		ThemePicker = ThemePicker,
 	}
 	
 	if Main.AppControls.Lib and Main.AppControls.Lib.InitAfterMain then
@@ -870,6 +874,9 @@ Main.CreateMainGui = function()
 	if Console and Console.Window then
 		Main.CreateApp({Name = "Console", Icon = "", Window = Console.Window})
 	end
+	if ThemePicker and ThemePicker.Window then
+		Main.CreateApp({Name = "Themes", Icon = "", Window = ThemePicker.Window})
+	end
 	
 	Main.ShowGui(gui)
 end
@@ -934,7 +941,7 @@ Main.Init = function()
 	if Lib and Lib.FastWait then Lib.FastWait() end
 
 	intro.SetProgress("Initializing Modules", 0.8)
-	local initOrder = {"Explorer", "Properties", "ScriptEditor", "Terminal", "RemoteSpy", "SaveInstance", "DataInspector", "NetworkSpy", "APIReference", "PluginAPI", "WorkspaceTools", "Console"}
+	local initOrder = {"Explorer", "Properties", "ScriptEditor", "Terminal", "RemoteSpy", "SaveInstance", "DataInspector", "NetworkSpy", "APIReference", "PluginAPI", "WorkspaceTools", "Console", "ThemePicker"}
 	for _, name in ipairs(initOrder) do
 		local app = Main.Apps[name]
 		if app and app.Init then

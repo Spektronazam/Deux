@@ -125,7 +125,7 @@ local function main()
 	function RemoteSpy:CreateHook(config)
 		-- config = {Type, Target, Method, Enabled, EditArgs, EditReturn, Block, OnFire}
 		if not Env.hookfunction and not Env.hookmetamethod then
-			Notifications:Send("RemoteSpy", "Hook capabilities not available", 3)
+			Notifications.Info("Hook capabilities not available", 3)
 			return nil
 		end
 
@@ -283,7 +283,7 @@ local function main()
 		end)
 
 		if not success then
-			Notifications:Send("RemoteSpy", "Hook failed: " .. tostring(err), 3)
+			Notifications.Info("Hook failed: " .. tostring(err), 3)
 			return nil
 		end
 
@@ -362,7 +362,7 @@ local function main()
 				Type = "metamethod",
 				Method = "__namecall",
 			})
-			Notifications:Send("RemoteSpy", "Default preset applied (namecall hook active)", 3)
+			Notifications.Info("Default preset applied (namecall hook active)", 3)
 		end
 	end
 
@@ -380,11 +380,11 @@ local function main()
 				LogReturns = hookDef.LogReturns,
 			})
 		end
-		local json = service("HttpService"):JSONEncode(profile)
+		local json = service.HttpService:JSONEncode(profile)
 		local path = "deux/saved/hooks/" .. (name or "default") .. ".json"
 		if Env.writefile then
 			Env.writefile(path, json)
-			Notifications:Send("RemoteSpy", "Profile saved: " .. path, 3)
+			Notifications.Info("Profile saved: " .. path, 3)
 		end
 	end
 
@@ -392,11 +392,11 @@ local function main()
 		local path = "deux/saved/hooks/" .. (name or "default") .. ".json"
 		if Env.readfile and Env.isfile and Env.isfile(path) then
 			local json = Env.readfile(path)
-			local profile = service("HttpService"):JSONDecode(json)
+			local profile = service.HttpService:JSONDecode(json)
 			for _, entry in ipairs(profile) do
 				self:CreateHook(entry)
 			end
-			Notifications:Send("RemoteSpy", "Profile loaded: " .. name, 3)
+			Notifications.Info("Profile loaded: " .. name, 3)
 		end
 	end
 
@@ -417,7 +417,7 @@ local function main()
 		local script = table.concat(lines, "\n")
 		if Env.setclipboard then
 			Env.setclipboard(script)
-			Notifications:Send("RemoteSpy", "Copied replay script to clipboard", 2)
+			Notifications.Info("Copied replay script to clipboard", 2)
 		end
 		return script
 	end
@@ -428,9 +428,9 @@ local function main()
 		if not logList then return end
 		local yPos = (index - 1) * logEntryHeight
 
-		local color = Theme.Colors.Text or Color3.new(1, 1, 1)
+		local color = Theme.Get("Text") or Color3.new(1, 1, 1)
 		if entry.Blocked then
-			color = Theme.Colors.Error or Color3.fromRGB(255, 80, 80)
+			color = Theme.Get("Error") or Color3.fromRGB(255, 80, 80)
 		end
 
 		local text = string.format("[%.2f] %s %s %s",
@@ -446,7 +446,7 @@ local function main()
 			Position = UDim2.new(0, 0, 0, yPos),
 			Size = UDim2.new(1, 0, 0, logEntryHeight),
 			BackgroundTransparency = index % 2 == 0 and 0.95 or 1,
-			BackgroundColor3 = Theme.Colors.Row or Color3.fromRGB(40, 40, 40),
+			BackgroundColor3 = Theme.Get("Row") or Color3.fromRGB(40, 40, 40),
 			BorderSizePixel = 0,
 			Font = Enum.Font.Code,
 			TextSize = 13,
@@ -480,7 +480,7 @@ local function main()
 		)
 		if Env.setclipboard then
 			Env.setclipboard(detail)
-			Notifications:Send("RemoteSpy", "Log detail copied to clipboard", 2)
+			Notifications.Info("Log detail copied to clipboard", 2)
 		end
 	end
 
@@ -501,7 +501,7 @@ local function main()
 				Position = UDim2.new(0, 0, 0, y),
 				Size = UDim2.new(1, 0, 0, 24),
 				BackgroundTransparency = 0.9,
-				BackgroundColor3 = Theme.Colors.Row or Color3.fromRGB(40, 40, 40),
+				BackgroundColor3 = Theme.Get("Row") or Color3.fromRGB(40, 40, 40),
 			})
 			createSimple("TextLabel", {
 				Parent = row,
@@ -510,7 +510,7 @@ local function main()
 				BackgroundTransparency = 1,
 				Font = Enum.Font.Code,
 				TextSize = 12,
-				TextColor3 = hookDef.Enabled and (Theme.Colors.Text or Color3.new(1,1,1)) or (Theme.Colors.Muted or Color3.fromRGB(100,100,100)),
+				TextColor3 = hookDef.Enabled and (Theme.Get("Text") or Color3.new(1,1,1)) or (Theme.Get("Muted") or Color3.fromRGB(100,100,100)),
 				TextXAlignment = Enum.TextXAlignment.Left,
 				Text = hookDef.Method .. " [" .. hookDef.Type .. "]",
 			})
@@ -561,13 +561,13 @@ local function main()
 			Parent = content,
 			Position = UDim2.new(0, 0, 0, 0),
 			Size = UDim2.new(0.7, -4, 0, 26),
-			BackgroundColor3 = Theme.Colors.InputBackground or Color3.fromRGB(30, 30, 30),
+			BackgroundColor3 = Theme.Get("InputBackground") or Color3.fromRGB(30, 30, 30),
 			BorderSizePixel = 0,
 			Font = Enum.Font.Code,
 			TextSize = 13,
-			TextColor3 = Theme.Colors.Text or Color3.new(1,1,1),
+			TextColor3 = Theme.Get("Text") or Color3.new(1,1,1),
 			PlaceholderText = "Filter: method == 'FireServer' and instance.Name:find('Remote')",
-			PlaceholderColor3 = Theme.Colors.Muted or Color3.fromRGB(100,100,100),
+			PlaceholderColor3 = Theme.Get("Muted") or Color3.fromRGB(100,100,100),
 			TextXAlignment = Enum.TextXAlignment.Left,
 			ClearTextOnFocus = false,
 			Text = "",
@@ -618,7 +618,7 @@ local function main()
 			Parent = content,
 			Position = UDim2.new(0, 0, 0, 30),
 			Size = UDim2.new(0.7, 0, 1, -30),
-			BackgroundColor3 = Theme.Colors.Background or Color3.fromRGB(20, 20, 20),
+			BackgroundColor3 = Theme.Get("Background") or Color3.fromRGB(20, 20, 20),
 			BorderSizePixel = 0,
 			ScrollBarThickness = 6,
 			CanvasSize = UDim2.new(0, 0, 0, 0),
@@ -631,7 +631,7 @@ local function main()
 			Parent = content,
 			Position = UDim2.new(0.7, 4, 0, 30),
 			Size = UDim2.new(0.3, -4, 1, -30),
-			BackgroundColor3 = Theme.Colors.Panel or Color3.fromRGB(25, 25, 30),
+			BackgroundColor3 = Theme.Get("Panel") or Color3.fromRGB(25, 25, 30),
 			BorderSizePixel = 0,
 			ScrollBarThickness = 4,
 			CanvasSize = UDim2.new(0, 0, 0, 0),

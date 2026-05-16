@@ -1700,6 +1700,16 @@ local function main()
 
 		funcs.SetSize = funcs.Resize
 
+		-- Returns the inner content frame that modules parent their UI into.
+		-- The content frame is the one created in createGui as `Content`,
+		-- captured into both self.GuiElems.Content and self.ContentPane.
+		funcs.GetContent = function(self)
+			return self.ContentPane or (self.GuiElems and self.GuiElems.Content)
+		end
+
+		-- Alias used by Explorer/Properties/ScriptEditor.
+		funcs.GetContentFrame = funcs.GetContent
+
 		funcs.SetTitle = function(self,title)
 			self.GuiElems.Title.Text = title
 		end

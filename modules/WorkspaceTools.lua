@@ -26,8 +26,8 @@ local function main()
 	local animTarget = nil
 	local window, toolbarFrame, animPanel
 
-	local UIS = service("UserInputService")
-	local RunService = service("RunService")
+	local UIS = service.UserInputService
+	local RunService = service.RunService
 	local Camera = workspace.CurrentCamera
 
 	-- Freecam
@@ -68,7 +68,7 @@ local function main()
 		end); connections[#connections+1] = freecamConn
 
 		if noclipActive then WSTools:EnableNoclip() end
-		Notifications:Send("WorkspaceTools", "Freecam ON (WASD+QE, RMB look)", 2)
+		if Notifications then Notifications.Info("Freecam ON (WASD+QE, RMB look)", 2) end
 	end
 
 	local function stopFreecam()
@@ -79,7 +79,7 @@ local function main()
 		if inputConn1 then inputConn1:Disconnect(); inputConn1 = nil end
 		if inputConn2 then inputConn2:Disconnect(); inputConn2 = nil end
 		WSTools:DisableNoclip(); keysDown = {}
-		Notifications:Send("WorkspaceTools", "Freecam OFF", 2)
+		if Notifications then Notifications.Info("Freecam OFF", 2) end
 	end
 
 	-- Noclip
@@ -111,8 +111,8 @@ local function main()
 	local function applyHighlights()
 		clearHighlights()
 		if not highlightActive then return end
-		local sel = Store:Get("selected_instances") or {Store:Get("selected_instance")}
-		local accent = Theme.Colors.Accent or Color3.fromRGB(80,160,255)
+		local sel = Store.GetSelection() or {}
+		local accent = (Theme and Theme.Get and Theme.Get("Accent")) or Color3.fromRGB(80,160,255)
 		for _, inst in ipairs(sel) do
 			if inst and (inst:IsA("BasePart") or inst:IsA("Model")) then
 				local ok, h = pcall(function()
@@ -132,18 +132,17 @@ local function main()
 
 	-- Quick toggles
 	local function getSel()
-		local s = Store:Get("selected_instances") or {Store:Get("selected_instance")}
-		return s
+		return Store.GetSelection() or {}
 	end
 
 	local function anchorSel()
 		for _, i in ipairs(getSel()) do if i and i:IsA("BasePart") then pcall(function() i.Anchored = not i.Anchored end) end end
-		Notifications:Send("WorkspaceTools", "Toggled Anchored", 2)
+		if Notifications then Notifications.Info("Toggled Anchored", 2) end
 	end
 
 	local function makeTransp()
 		for _, i in ipairs(getSel()) do if i and i:IsA("BasePart") then pcall(function() i.Transparency = 0.8 end) end end
-		Notifications:Send("WorkspaceTools", "Transparency -> 0.8", 2)
+		if Notifications then Notifications.Info("Transparency -> 0.8", 2) end
 	end
 
 	local function resetProps()
@@ -152,7 +151,7 @@ local function main()
 				pcall(function() i.Transparency = 0; i.Anchored = false; i.CanCollide = true end)
 			end
 		end
-		Notifications:Send("WorkspaceTools", "Reset properties", 2)
+		if Notifications then Notifications.Info("Reset properties", 2) end
 	end
 
 	-- Animation viewer
@@ -166,11 +165,11 @@ local function main()
 			TextColor3 = Color3.new(1,1,1),
 			Text = "Target: "..(animTarget and animTarget.Parent and animTarget.Parent.Name or "None (click)"),
 		}).MouseButton1Click:Connect(function()
-			local sel = Store:Get("selected_instance")
+			local sel = (Store.GetSelection() or {})[1]
 			if sel then
 				local hum = sel:FindFirstChildOfClass("Humanoid") or (sel:IsA("Humanoid") and sel)
 				if hum then animTarget = hum; WSTools:RenderAnim()
-				else Notifications:Send("WorkspaceTools", "Select a model with Humanoid", 2) end
+				elseif Notifications then Notifications.Info("Select a model with Humanoid", 2) end
 			end
 		end)
 		y = y + rh + 4
@@ -218,7 +217,7 @@ local function main()
 			{"Noclip", function()
 				noclipActive = not noclipActive
 				if freecamActive then if noclipActive then WSTools:EnableNoclip() else WSTools:DisableNoclip() end end
-				Notifications:Send("WorkspaceTools", "Noclip: "..(noclipActive and "ON" or "OFF"), 2)
+				if Notifications then Notifications.Info("Noclip: "..(noclipActive and "ON" or "OFF"), 2) end
 			end},
 			{"Highlight", function() highlightActive = not highlightActive; applyHighlights() end},
 			{"Anchor", anchorSel},
@@ -240,7 +239,7 @@ local function main()
 			ScrollBarThickness = 5, CanvasSize = UDim2.new(0,0,0,0), ScrollingDirection = Enum.ScrollingDirection.Y,
 		})
 
-		local selConn = Store:Listen("selected_instance", function()
+		local selConn = Store.Subscribe("selection", function()
 			if highlightActive then applyHighlights() end; WSTools:RenderAnim()
 		end)
 		if selConn then connections[#connections+1] = selConn end
@@ -250,7 +249,13 @@ local function main()
 
 	function WSTools:Destroy()
 		stopFreecam(); WSTools:DisableNoclip(); clearHighlights()
-		for _, c in ipairs(connections) do if typeof(c) == "RBXScriptConnection" then c:Disconnect() end end
+		for _, c in ipairs(connections) do
+			if typeof(c) == "RBXScriptConnection" then
+				c:Disconnect()
+			elseif type(c) == "function" then
+				pcall(c)
+			end
+		end
 		connections = {}; if window then window:Close() end
 	end
 

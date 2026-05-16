@@ -88,11 +88,11 @@ local function main()
 
 	function SaveInstance:SavePlace(overrideOptions)
 		if isSaving then
-			Notifications:Send("SaveInstance", "Already saving, please wait...", 3)
+			Notifications.Info("Already saving, please wait...", 3)
 			return
 		end
 		if not Env.saveinstance then
-			Notifications:Send("SaveInstance", "saveinstance not available in this executor", 3)
+			Notifications.Info("saveinstance not available in this executor", 3)
 			return
 		end
 
@@ -124,10 +124,10 @@ local function main()
 			isSaving = false
 			if ok then
 				setStatus("Saved!")
-				Notifications:Send("SaveInstance", "Place saved: " .. path, 5)
+				Notifications.Info("Place saved: " .. path, 5)
 			else
 				setStatus("Failed: " .. tostring(err))
-				Notifications:Send("SaveInstance", "Save failed: " .. tostring(err), 5)
+				Notifications.Info("Save failed: " .. tostring(err), 5)
 			end
 
 			-- Reset status after delay
@@ -139,15 +139,15 @@ local function main()
 
 	function SaveInstance:SaveModel(instance, overrideOptions)
 		if isSaving then
-			Notifications:Send("SaveInstance", "Already saving, please wait...", 3)
+			Notifications.Info("Already saving, please wait...", 3)
 			return
 		end
 		if not instance then
-			Notifications:Send("SaveInstance", "No instance provided", 3)
+			Notifications.Info("No instance provided", 3)
 			return
 		end
 		if not Env.saveinstance then
-			Notifications:Send("SaveInstance", "saveinstance not available in this executor", 3)
+			Notifications.Info("saveinstance not available in this executor", 3)
 			return
 		end
 
@@ -177,10 +177,10 @@ local function main()
 			isSaving = false
 			if ok then
 				setStatus("Saved!")
-				Notifications:Send("SaveInstance", "Model saved: " .. path, 5)
+				Notifications.Info("Model saved: " .. path, 5)
 			else
 				setStatus("Failed: " .. tostring(err))
-				Notifications:Send("SaveInstance", "Save failed: " .. tostring(err), 5)
+				Notifications.Info("Save failed: " .. tostring(err), 5)
 			end
 
 			task.delay(3, function()
@@ -217,7 +217,7 @@ local function main()
 				BackgroundTransparency = 1,
 				Font = Enum.Font.SourceSans,
 				TextSize = 14,
-				TextColor3 = Theme.Colors.Text or Color3.new(1,1,1),
+				TextColor3 = Theme.Get("Text") or Color3.new(1,1,1),
 				TextXAlignment = Enum.TextXAlignment.Left,
 				Text = label,
 			})
@@ -227,10 +227,10 @@ local function main()
 					Parent = row,
 					Position = UDim2.new(0.5, 4, 0, 2),
 					Size = UDim2.new(0.5, -12, 0, rowHeight - 4),
-					BackgroundColor3 = Theme.Colors.InputBackground or Color3.fromRGB(40, 40, 40),
+					BackgroundColor3 = Theme.Get("InputBackground") or Color3.fromRGB(40, 40, 40),
 					Font = Enum.Font.Code,
 					TextSize = 13,
-					TextColor3 = Theme.Colors.Text or Color3.new(1,1,1),
+					TextColor3 = Theme.Get("Text") or Color3.new(1,1,1),
 					Text = tostring(options[optionKey]),
 				})
 				btn.MouseButton1Click:Connect(function()
@@ -286,7 +286,7 @@ local function main()
 			BackgroundTransparency = 1,
 			Font = Enum.Font.SourceSansItalic,
 			TextSize = 14,
-			TextColor3 = Theme.Colors.Muted or Color3.fromRGB(160, 160, 160),
+			TextColor3 = Theme.Get("Muted") or Color3.fromRGB(160, 160, 160),
 			TextXAlignment = Enum.TextXAlignment.Left,
 			Text = "Ready",
 		})
@@ -321,11 +321,11 @@ local function main()
 			Text = "Save Selection",
 		})
 		saveSelBtn.MouseButton1Click:Connect(function()
-			local sel = Store:Get("selected_instance")
+			local sel = Store.Get("selected_instance")
 			if sel then
 				SaveInstance:SaveModel(sel)
 			else
-				Notifications:Send("SaveInstance", "No instance selected", 3)
+				Notifications.Info("No instance selected", 3)
 			end
 		end)
 	end
@@ -347,7 +347,7 @@ local function main()
 		SaveInstance:BuildUI()
 
 		-- Listen for Store event (right-click integration)
-		table.insert(connections, Store:On("save_instance", function(instance)
+		table.insert(connections, Store.On("save_instance", function(instance)
 			if instance then
 				SaveInstance:SaveModel(instance)
 			else

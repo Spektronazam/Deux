@@ -38,7 +38,7 @@ local function main()
 		if Env.isfile and Env.isfile(path) and Env.readfile then
 			local ok, c = pcall(Env.readfile, path)
 			if ok then
-				local ok2, m = pcall(function() return service("HttpService"):JSONDecode(c) end)
+				local ok2, m = pcall(function() return service.HttpService:JSONDecode(c) end)
 				if ok2 then return m end
 			end
 		end
@@ -88,7 +88,7 @@ local function main()
 				return w
 			end,
 		}
-		sb.Notify = function(msg, sev) Notifications:Send(name, tostring(msg), sev or 3) end
+		sb.Notify = function(msg, sev) Notifications.Info("[" .. name .. "] " .. tostring(msg), sev or 3) end
 		sb.Settings = {
 			Register = function(pn, schema)
 				pcall(function()
@@ -106,8 +106,14 @@ local function main()
 		sb.Theme = setmetatable({}, {__index = Theme, __newindex = function() logErr(name, "Theme is read-only") end})
 		sb.Store = setmetatable({}, {
 			__index = function(_, k)
-				if k == "Get" then return function(_, key) return Store:Get(key) end
-				elseif k == "Listen" then return function(_, ev, cb) return Store:Listen(ev, cb) end end
+				-- Expose a small read-only shim of the real Store so plugins can
+				-- inspect shared state and listen for events without depending on
+				-- internal call shapes.
+				if k == "Get" then return function(key) return Store.Get(key) end
+				elseif k == "GetSelection" then return Store.GetSelection
+				elseif k == "On" or k == "Listen" then return function(ev, cb) return Store.On(ev, cb) end
+				elseif k == "Subscribe" then return function(key, cb) return Store.Subscribe(key, cb) end
+				end
 			end,
 			__newindex = function() logErr(name, "Store is read-only") end,
 		})
@@ -156,7 +162,7 @@ local function main()
 
 		plugins[name] = {Name=name, Folder=folder, Manifest=manifest, Sandbox=sandbox, Enabled=true, LoadedAt=os.clock()}
 		if not table.find(pluginOrder, name) then pluginOrder[#pluginOrder+1] = name end
-		Notifications:Send("Plugins", "Loaded: "..name.." v"..(manifest.version or "?"), 2)
+		Notifications.Info("Loaded: "..name.." v"..(manifest.version or "?"), 2)
 	end
 
 	function PluginAPI:LoadAll()

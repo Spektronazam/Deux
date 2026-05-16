@@ -31,7 +31,7 @@ local function main()
 	local function levelColor(level)
 		if level == "warn" then return Color3.fromRGB(255,220,60)
 		elseif level == "error" then return Color3.fromRGB(255,80,80) end
-		return Theme.Colors.Text or Color3.new(1,1,1)
+		return Theme.Get("Text") or Color3.new(1,1,1)
 	end
 
 	local function matchesFilter(e)
@@ -73,7 +73,7 @@ local function main()
 				capture = Settings.Console.CaptureLogService
 			end
 			if not capture then return end
-			local LS = service("LogService")
+			local LS = service.LogService
 			local c = LS.MessageOut:Connect(function(msg, msgType)
 				local level = "info"
 				if msgType == Enum.MessageType.MessageWarning then level = "warn"
@@ -100,7 +100,7 @@ local function main()
 				local lbl = createSimple("TextButton", {
 					Parent = outputFrame, Position = UDim2.new(0,0,0,y), Size = UDim2.new(1,0,0,lh),
 					BackgroundTransparency = sel and 0.7 or 1,
-					BackgroundColor3 = sel and (Theme.Colors.Accent or Color3.fromRGB(60,120,200)) or Color3.fromRGB(20,20,20),
+					BackgroundColor3 = sel and (Theme.Get("Accent") or Color3.fromRGB(60,120,200)) or Color3.fromRGB(20,20,20),
 					BorderSizePixel = 0, Font = Enum.Font.Code, TextSize = 11,
 					TextColor3 = levelColor(e.Level), TextXAlignment = Enum.TextXAlignment.Left,
 					TextTruncate = Enum.TextTruncate.AtEnd, Text = " "..text, AutoButtonColor = false,
@@ -124,7 +124,7 @@ local function main()
 		end
 		if Env.setclipboard then
 			Env.setclipboard(table.concat(lines,"\n"))
-			Notifications:Send("Console", "Copied "..#lines.." lines", 2)
+			Notifications.Info("Copied "..#lines.." lines", 2)
 		end
 	end
 
@@ -136,10 +136,10 @@ local function main()
 				lines[#lines+1] = l.."["..e.Level:upper().."] "..e.Message
 			end
 		end
-		if #lines == 0 then Notifications:Send("Console", "Nothing selected", 2); return end
+		if #lines == 0 then Notifications.Info("Nothing selected", 2); return end
 		if Env.setclipboard then
 			Env.setclipboard(table.concat(lines,"\n"))
-			Notifications:Send("Console", "Copied "..#lines.." selected", 2)
+			Notifications.Info("Copied "..#lines.." selected", 2)
 		end
 	end
 

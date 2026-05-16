@@ -109,9 +109,9 @@ local function main()
 				local b = createSimple("TextButton", {
 					Parent = classListFrame, Position = UDim2.new(0,0,0,y), Size = UDim2.new(1,0,0,h),
 					BackgroundTransparency = selectedClass == cls.Name and 0.7 or 1,
-					BackgroundColor3 = Theme.Colors.Accent or Color3.fromRGB(60,120,200),
+					BackgroundColor3 = Theme.Get("Accent") or Color3.fromRGB(60,120,200),
 					BorderSizePixel = 0, Font = Enum.Font.Code, TextSize = 12,
-					TextColor3 = Theme.Colors.Text or Color3.new(1,1,1),
+					TextColor3 = Theme.Get("Text") or Color3.new(1,1,1),
 					TextXAlignment = Enum.TextXAlignment.Left, Text = " "..cls.Name, AutoButtonColor = true,
 				})
 				b.MouseButton1Click:Connect(function()
@@ -131,7 +131,7 @@ local function main()
 		createSimple("TextLabel", {
 			Parent = memberFrame, Position = UDim2.new(0,0,0,y), Size = UDim2.new(1,0,0,24),
 			BackgroundTransparency = 1, Font = Enum.Font.SourceSansBold, TextSize = 15,
-			TextColor3 = Theme.Colors.Text or Color3.new(1,1,1), TextXAlignment = Enum.TextXAlignment.Left,
+			TextColor3 = Theme.Get("Text") or Color3.new(1,1,1), TextXAlignment = Enum.TextXAlignment.Left,
 			Text = " "..className..(super ~= "" and (" < "..super) or ""),
 		})
 		y = y + 26
@@ -142,7 +142,7 @@ local function main()
 				Parent = memberFrame, Position = UDim2.new(0,0,0,y), Size = UDim2.new(1,0,0,20),
 				BackgroundColor3 = Color3.fromRGB(30,30,40), BackgroundTransparency = 0.5,
 				BorderSizePixel = 0, Font = Enum.Font.SourceSansBold, TextSize = 12,
-				TextColor3 = Theme.Colors.Accent or Color3.fromRGB(100,180,255),
+				TextColor3 = Theme.Get("Accent") or Color3.fromRGB(100,180,255),
 				TextXAlignment = Enum.TextXAlignment.Left, Text = "  "..title.." ("..#members..")",
 			})
 			y = y + 22
@@ -154,12 +154,12 @@ local function main()
 				local btn = createSimple("TextButton", {
 					Parent = memberFrame, Position = UDim2.new(0,6,0,y), Size = UDim2.new(1,-10,0,16),
 					BackgroundTransparency = 1, Font = Enum.Font.Code, TextSize = 11,
-					TextColor3 = Theme.Colors.Text or Color3.new(1,1,1),
+					TextColor3 = Theme.Get("Text") or Color3.new(1,1,1),
 					TextXAlignment = Enum.TextXAlignment.Left, Text = m.Name..typeStr..tagStr, AutoButtonColor = true,
 				})
 				if m.MemberType == "Property" then
 					btn.MouseButton1Click:Connect(function()
-						Store:Fire("open_property", {Class=className, Property=m.Name})
+						Store.Emit("open_property", {Class=className, Property=m.Name})
 					end)
 				end
 				y = y + 16
@@ -167,7 +167,7 @@ local function main()
 					createSimple("TextLabel", {
 						Parent = memberFrame, Position = UDim2.new(0,14,0,y), Size = UDim2.new(1,-18,0,14),
 						BackgroundTransparency = 1, Font = Enum.Font.SourceSansItalic, TextSize = 10,
-						TextColor3 = Theme.Colors.Muted or Color3.fromRGB(140,140,140),
+						TextColor3 = Theme.Get("Muted") or Color3.fromRGB(140,140,140),
 						TextXAlignment = Enum.TextXAlignment.Left, TextTruncate = Enum.TextTruncate.AtEnd, Text = desc,
 					})
 					y = y + 14
@@ -187,9 +187,9 @@ local function main()
 				local b = createSimple("TextButton", {
 					Parent = enumListFrame, Position = UDim2.new(0,0,0,y), Size = UDim2.new(1,0,0,h),
 					BackgroundTransparency = selectedEnum == en.Name and 0.7 or 1,
-					BackgroundColor3 = Theme.Colors.Accent or Color3.fromRGB(60,120,200),
+					BackgroundColor3 = Theme.Get("Accent") or Color3.fromRGB(60,120,200),
 					BorderSizePixel = 0, Font = Enum.Font.Code, TextSize = 12,
-					TextColor3 = Theme.Colors.Text or Color3.new(1,1,1),
+					TextColor3 = Theme.Get("Text") or Color3.new(1,1,1),
 					TextXAlignment = Enum.TextXAlignment.Left, Text = " "..en.Name, AutoButtonColor = true,
 				})
 				b.MouseButton1Click:Connect(function()
@@ -207,7 +207,7 @@ local function main()
 		createSimple("TextLabel", {
 			Parent = enumDetailFrame, Position = UDim2.new(0,0,0,0), Size = UDim2.new(1,0,0,22),
 			BackgroundTransparency = 1, Font = Enum.Font.SourceSansBold, TextSize = 14,
-			TextColor3 = Theme.Colors.Text or Color3.new(1,1,1),
+			TextColor3 = Theme.Get("Text") or Color3.new(1,1,1),
 			TextXAlignment = Enum.TextXAlignment.Left, Text = " Enum."..en.Name,
 		})
 		y = 24
@@ -217,7 +217,7 @@ local function main()
 				createSimple("TextLabel", {
 					Parent = enumDetailFrame, Position = UDim2.new(0,8,0,y), Size = UDim2.new(1,-12,0,16),
 					BackgroundTransparency = 1, Font = Enum.Font.Code, TextSize = 11,
-					TextColor3 = Theme.Colors.Text or Color3.new(1,1,1),
+					TextColor3 = Theme.Get("Text") or Color3.new(1,1,1),
 					TextXAlignment = Enum.TextXAlignment.Left, Text = name.." = "..v,
 				})
 				y = y + 16
@@ -237,7 +237,7 @@ local function main()
 			local b = createSimple("TextButton", {
 				Parent = searchFrame, Position = UDim2.new(0,0,0,y), Size = UDim2.new(1,0,0,h),
 				BackgroundTransparency = 1, Font = Enum.Font.Code, TextSize = 12,
-				TextColor3 = Theme.Colors.Text or Color3.new(1,1,1),
+				TextColor3 = Theme.Get("Text") or Color3.new(1,1,1),
 				TextXAlignment = Enum.TextXAlignment.Left, Text = " "..text, AutoButtonColor = true,
 			})
 			b.MouseButton1Click:Connect(function()

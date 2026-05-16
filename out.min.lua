@@ -3,29 +3,30 @@ do
   if not prev then
     _G.DeuxBuild = {
       Version    = "2.0.0",
-      Commit     = "8afef99",
-      BuildTime  = "2026-05-15T12:57:09Z",
+      Commit     = "9fc1b9e",
+      BuildTime  = "2026-05-16T05:13:21Z",
       Credits    = {"Moon/LorekeeperZinnia (New Dex original)", "iris (successor co-conspirator)", "Spektronazam (Deux rewrite)", "UNC Community"},
       Modules    = {
-    {Name = "APIReference", SHA256 = "c7c6f23fff5d40f0e3ee28471d7f93843b639941ac0888db8976b7b0fbc68428"},
-    {Name = "Console", SHA256 = "768416edd9624983d3f37b5f622331ace834ca3ecce167a7d185dcae76873cdc"},
-    {Name = "DataInspector", SHA256 = "78c5b57db8d6e2f0b754514a0ae4a4f782f872311eb615c8d82de2a332528dc3"},
+    {Name = "APIReference", SHA256 = "4288a2ed8c7962241024f1e95bf6991817a3a49d20f3e29ab8e0b1ae2800d221"},
+    {Name = "Console", SHA256 = "c0ae9c734e260106e027129e225ced74e4058da8c6bacd1ee4a99ded9f2d38d2"},
+    {Name = "DataInspector", SHA256 = "b3bcd852249da777897bfebef73745f202c36ea3912ef822a662f9156bd6d050"},
     {Name = "Env", SHA256 = "655d14d8118c242e815bc44725f74924e63d50c2ea304b1c939faf697385055f"},
     {Name = "Explorer", SHA256 = "971896151e49c97e501417bf58ae4e08f5cc51b30f6964d7e6587a23b90105cd"},
     {Name = "Keybinds", SHA256 = "90dcae39b20dc9dad53ae686379281955d82381b4da83e86029494258233e1e6"},
-    {Name = "Lib", SHA256 = "46f8ab45d4af370bc679e1782ff467c83bd27ea37a2e732afa67219047cd2a95"},
-    {Name = "NetworkSpy", SHA256 = "ece6083cf00d28b25eea3025b706d6d34936a48a7086c5771dd1137f9a519251"},
+    {Name = "Lib", SHA256 = "40dc9d45b5384ce10279d2ccbc3ae7b5baca2d24279e8a8967c524b84f2664a7"},
+    {Name = "NetworkSpy", SHA256 = "dde397c936f15b9b37a1d3fe7be762ac099abc302737e1ccbfff7c5520a89b43"},
     {Name = "Notifications", SHA256 = "85fbc0f9a498debf7cdfa2c5b9d22e3a54be85610290e34039366ad3262242fd"},
-    {Name = "PluginAPI", SHA256 = "4a09f751f524a3a54f805cdc90b5ffdd3599b3c766ec9fdd6a7d0a7b3dc2b12d"},
+    {Name = "PluginAPI", SHA256 = "edc0fee6c975c11981df74da99423bae7fb6c396a5ed357c0fc6f3bc986aeb16"},
     {Name = "Properties", SHA256 = "fa0885fd5afdf27ded3549a304ae32f8fadc9896f3f80d5d43b0148e873a7fae"},
-    {Name = "RemoteSpy", SHA256 = "bb15e459274f133ea263cc7a208299f6c29abbe2534cbed804687e6c9b5e5256"},
-    {Name = "SaveInstance", SHA256 = "993790e047ea2eec20c7c9e47e33188a036dade40ee9986cfd5acad4f04c8740"},
+    {Name = "RemoteSpy", SHA256 = "7f26f732e8e92b5432c4d678052b46f569512fb232aebbe0a50c877ddfa01a3b"},
+    {Name = "SaveInstance", SHA256 = "ed5842e6b2c10d49c99b683ed105639e8f1d18f3e9a0cbdd5b9af1f05eb53029"},
     {Name = "ScriptEditor", SHA256 = "32c18b60b8e482d2e38ae6dcd5450ebd82df3e2be1a0146d780acaefba5084ff"},
     {Name = "Settings", SHA256 = "0734d3c944bf5fdf372fd300a2cea62b16d1d31018553ad4bd9265f8b51e0cd6"},
     {Name = "Store", SHA256 = "3ac813ffe966dd16ab3b186412f5485074115a95322c3df0ce72f4ec2e9cc522"},
-    {Name = "Terminal", SHA256 = "c9cbcde2d527c643f715892c8ac55275a5eb36e76acd1e1b16f02f3db5b1c80b"},
-    {Name = "Theme", SHA256 = "eeab5c112c3c599f34296e1b9fd8b95511b458c25d089afd6f353e4c119abd50"},
-    {Name = "WorkspaceTools", SHA256 = "9bc8f290d852127586ac6de8134cbb86e939e1d9039c071265e535eedd75a050"}
+    {Name = "Terminal", SHA256 = "8696dacf3d5ff8951030d8aee79e390df86922b83f75d008ba8a58bca284f6d5"},
+    {Name = "Theme", SHA256 = "d5a9ffdcf12be1994bd1cfe785a76210b19b9d6ca3bfd73d4a06867535cbba08"},
+    {Name = "ThemePicker", SHA256 = "6fc96700071d05ab5fc0a45ab606ddc908ab2d018682cad021c3a87425b89dec"},
+    {Name = "WorkspaceTools", SHA256 = "87968a461d6241ecb5636cb36a5ae7dddae2f36324ecfd4aedddc83507d032a0"}
       },
     }
   end
@@ -665,11 +666,12 @@ return Settings
 end
 EmbeddedModules["Theme"] = function()
 local Theme = {}
-local Env, Settings, HttpService
+local Env, Settings, HttpService, Lighting
 local currentTheme = {}
 local subscribers = {}
 local globalSubscribers = {}
 local currentPresetName = "Dark"
+local currentFontName = "Gotham"
 local rgb = Color3.fromRGB
 local function colorToTable(c)
 	return {math.floor(c.R * 255), math.floor(c.G * 255), math.floor(c.B * 255)}
@@ -849,6 +851,299 @@ Theme.Presets = {
 			TypeAnnotation = rgb(38, 127, 153),
 		},
 	},
+	New = {
+		Name = "New",
+		Main1 = rgb(48, 50, 56),
+		Main2 = rgb(40, 42, 48),
+		Main3 = rgb(34, 36, 42),
+		Outline1 = rgb(28, 30, 35),
+		Outline2 = rgb(56, 60, 68),
+		Outline3 = rgb(24, 26, 30),
+		TextBox = rgb(34, 36, 42),
+		Menu = rgb(28, 30, 35),
+		ListSelection = rgb(0, 110, 200),
+		Button = rgb(60, 64, 72),
+		ButtonHover = rgb(70, 74, 84),
+		ButtonPress = rgb(45, 48, 54),
+		Highlight = rgb(78, 82, 92),
+		Text = rgb(232, 234, 240),
+		TextDim = rgb(170, 176, 188),
+		PlaceholderText = rgb(110, 114, 124),
+		Important = rgb(255, 90, 90),
+		Success = rgb(80, 200, 130),
+		Warning = rgb(255, 200, 60),
+		Accent = rgb(56, 142, 235),
+		ScrollBar = rgb(78, 82, 92),
+		ScrollBarHover = rgb(98, 102, 114),
+		Separator = rgb(36, 38, 44),
+		TabActive = rgb(60, 64, 72),
+		TabInactive = rgb(34, 36, 42),
+		Notification = rgb(40, 42, 48),
+		NotificationBorder = rgb(70, 74, 84),
+		Syntax = {
+			Text = rgb(220, 222, 228),
+			Background = rgb(34, 36, 42),
+			Selection = rgb(255, 255, 255),
+			SelectionBack = rgb(0, 110, 200),
+			Operator = rgb(220, 222, 228),
+			Number = rgb(255, 198, 0),
+			String = rgb(173, 241, 149),
+			Comment = rgb(110, 114, 124),
+			Keyword = rgb(248, 109, 124),
+			Error = rgb(255, 60, 60),
+			FindBackground = rgb(141, 118, 0),
+			MatchingWord = rgb(78, 82, 92),
+			BuiltIn = rgb(132, 214, 247),
+			CurrentLine = rgb(48, 56, 78),
+			LocalMethod = rgb(253, 251, 172),
+			LocalProperty = rgb(97, 161, 241),
+			Nil = rgb(255, 198, 0),
+			Bool = rgb(255, 198, 0),
+			Function = rgb(248, 109, 124),
+			Local = rgb(248, 109, 124),
+			Self = rgb(248, 109, 124),
+			FunctionName = rgb(253, 251, 172),
+			Bracket = rgb(220, 222, 228),
+			TypeAnnotation = rgb(78, 201, 176),
+		},
+	},
+	Dex = {
+		Name = "Dex",
+		Main1 = rgb(52, 52, 52),
+		Main2 = rgb(45, 45, 45),
+		Main3 = rgb(38, 38, 38),
+		Outline1 = rgb(33, 33, 33),
+		Outline2 = rgb(55, 55, 55),
+		Outline3 = rgb(30, 30, 30),
+		TextBox = rgb(38, 38, 38),
+		Menu = rgb(32, 32, 32),
+		ListSelection = rgb(11, 90, 175),
+		Button = rgb(60, 60, 60),
+		ButtonHover = rgb(68, 68, 68),
+		ButtonPress = rgb(40, 40, 40),
+		Highlight = rgb(75, 75, 75),
+		Text = rgb(255, 255, 255),
+		TextDim = rgb(180, 180, 180),
+		PlaceholderText = rgb(100, 100, 100),
+		Important = rgb(255, 80, 80),
+		Success = rgb(80, 200, 120),
+		Warning = rgb(255, 200, 50),
+		Accent = rgb(0, 162, 255),
+		ScrollBar = rgb(80, 80, 80),
+		ScrollBarHover = rgb(100, 100, 100),
+		Separator = rgb(40, 40, 40),
+		TabActive = rgb(60, 60, 60),
+		TabInactive = rgb(38, 38, 38),
+		Notification = rgb(45, 45, 45),
+		NotificationBorder = rgb(70, 70, 70),
+		Syntax = {
+			Text = rgb(204, 204, 204),
+			Background = rgb(36, 36, 36),
+			Selection = rgb(255, 255, 255),
+			SelectionBack = rgb(11, 90, 175),
+			Operator = rgb(204, 204, 204),
+			Number = rgb(255, 198, 0),
+			String = rgb(173, 241, 149),
+			Comment = rgb(102, 102, 102),
+			Keyword = rgb(248, 109, 124),
+			Error = rgb(255, 60, 60),
+			FindBackground = rgb(141, 118, 0),
+			MatchingWord = rgb(85, 85, 85),
+			BuiltIn = rgb(132, 214, 247),
+			CurrentLine = rgb(45, 50, 65),
+			LocalMethod = rgb(253, 251, 172),
+			LocalProperty = rgb(97, 161, 241),
+			Nil = rgb(255, 198, 0),
+			Bool = rgb(255, 198, 0),
+			Function = rgb(248, 109, 124),
+			Local = rgb(248, 109, 124),
+			Self = rgb(248, 109, 124),
+			FunctionName = rgb(253, 251, 172),
+			Bracket = rgb(204, 204, 204),
+			TypeAnnotation = rgb(78, 201, 176),
+		},
+	},
+	["Old Dex"] = {
+		Name = "Old Dex",
+		Main1 = rgb(212, 208, 200),
+		Main2 = rgb(196, 192, 184),
+		Main3 = rgb(228, 224, 216),
+		Outline1 = rgb(120, 116, 108),
+		Outline2 = rgb(140, 136, 128),
+		Outline3 = rgb(160, 156, 148),
+		TextBox = rgb(255, 255, 255),
+		Menu = rgb(228, 224, 216),
+		ListSelection = rgb(49, 106, 197),
+		Button = rgb(212, 208, 200),
+		ButtonHover = rgb(228, 224, 216),
+		ButtonPress = rgb(180, 176, 168),
+		Highlight = rgb(196, 192, 184),
+		Text = rgb(0, 0, 0),
+		TextDim = rgb(80, 80, 80),
+		PlaceholderText = rgb(140, 136, 128),
+		Important = rgb(180, 30, 30),
+		Success = rgb(20, 130, 60),
+		Warning = rgb(180, 120, 0),
+		Accent = rgb(49, 106, 197),
+		ScrollBar = rgb(160, 156, 148),
+		ScrollBarHover = rgb(140, 136, 128),
+		Separator = rgb(180, 176, 168),
+		TabActive = rgb(228, 224, 216),
+		TabInactive = rgb(196, 192, 184),
+		Notification = rgb(228, 224, 216),
+		NotificationBorder = rgb(140, 136, 128),
+		Syntax = {
+			Text = rgb(0, 0, 0),
+			Background = rgb(255, 255, 255),
+			Selection = rgb(0, 0, 0),
+			SelectionBack = rgb(160, 200, 240),
+			Operator = rgb(0, 0, 0),
+			Number = rgb(0, 0, 200),
+			String = rgb(160, 30, 30),
+			Comment = rgb(0, 120, 0),
+			Keyword = rgb(0, 0, 200),
+			Error = rgb(220, 0, 0),
+			FindBackground = rgb(255, 255, 150),
+			MatchingWord = rgb(220, 220, 220),
+			BuiltIn = rgb(60, 100, 160),
+			CurrentLine = rgb(240, 240, 200),
+			LocalMethod = rgb(140, 80, 0),
+			LocalProperty = rgb(40, 80, 140),
+			Nil = rgb(0, 0, 200),
+			Bool = rgb(0, 0, 200),
+			Function = rgb(0, 0, 200),
+			Local = rgb(0, 0, 200),
+			Self = rgb(0, 0, 200),
+			FunctionName = rgb(140, 80, 0),
+			Bracket = rgb(0, 0, 0),
+			TypeAnnotation = rgb(60, 100, 160),
+		},
+	},
+	["Synapse X"] = {
+		Name = "Synapse X",
+		Main1 = rgb(28, 30, 38),
+		Main2 = rgb(22, 24, 32),
+		Main3 = rgb(18, 20, 28),
+		Outline1 = rgb(14, 16, 22),
+		Outline2 = rgb(36, 40, 52),
+		Outline3 = rgb(10, 12, 18),
+		TextBox = rgb(20, 22, 30),
+		Menu = rgb(16, 18, 26),
+		ListSelection = rgb(124, 77, 255),
+		Button = rgb(36, 40, 52),
+		ButtonHover = rgb(48, 54, 70),
+		ButtonPress = rgb(28, 32, 42),
+		Highlight = rgb(60, 68, 88),
+		Text = rgb(230, 232, 240),
+		TextDim = rgb(160, 168, 188),
+		PlaceholderText = rgb(96, 102, 120),
+		Important = rgb(255, 80, 120),
+		Success = rgb(80, 220, 160),
+		Warning = rgb(255, 200, 80),
+		Accent = rgb(124, 77, 255),
+		ScrollBar = rgb(60, 68, 88),
+		ScrollBarHover = rgb(80, 90, 116),
+		Separator = rgb(20, 22, 30),
+		TabActive = rgb(36, 40, 52),
+		TabInactive = rgb(22, 24, 32),
+		Notification = rgb(22, 24, 32),
+		NotificationBorder = rgb(60, 68, 88),
+		Syntax = {
+			Text = rgb(220, 222, 235),
+			Background = rgb(18, 20, 28),
+			Selection = rgb(255, 255, 255),
+			SelectionBack = rgb(80, 50, 180),
+			Operator = rgb(220, 222, 235),
+			Number = rgb(255, 174, 102),
+			String = rgb(195, 232, 141),
+			Comment = rgb(110, 116, 138),
+			Keyword = rgb(199, 146, 234),
+			Error = rgb(255, 80, 100),
+			FindBackground = rgb(124, 77, 255),
+			MatchingWord = rgb(60, 68, 88),
+			BuiltIn = rgb(130, 200, 255),
+			CurrentLine = rgb(36, 40, 56),
+			LocalMethod = rgb(255, 215, 130),
+			LocalProperty = rgb(130, 200, 255),
+			Nil = rgb(255, 174, 102),
+			Bool = rgb(255, 174, 102),
+			Function = rgb(199, 146, 234),
+			Local = rgb(199, 146, 234),
+			Self = rgb(199, 146, 234),
+			FunctionName = rgb(255, 215, 130),
+			Bracket = rgb(220, 222, 235),
+			TypeAnnotation = rgb(124, 220, 220),
+		},
+	},
+	SirMeme = {
+		Name = "SirMeme",
+		Main1 = rgb(34, 30, 30),
+		Main2 = rgb(28, 24, 24),
+		Main3 = rgb(22, 20, 20),
+		Outline1 = rgb(18, 16, 16),
+		Outline2 = rgb(48, 38, 38),
+		Outline3 = rgb(14, 12, 12),
+		TextBox = rgb(22, 20, 20),
+		Menu = rgb(18, 16, 16),
+		ListSelection = rgb(200, 60, 60),
+		Button = rgb(50, 40, 40),
+		ButtonHover = rgb(64, 50, 50),
+		ButtonPress = rgb(36, 28, 28),
+		Highlight = rgb(80, 60, 60),
+		Text = rgb(240, 232, 226),
+		TextDim = rgb(180, 168, 162),
+		PlaceholderText = rgb(110, 100, 96),
+		Important = rgb(255, 90, 90),
+		Success = rgb(180, 220, 100),
+		Warning = rgb(255, 200, 80),
+		Accent = rgb(220, 80, 70),
+		ScrollBar = rgb(80, 60, 60),
+		ScrollBarHover = rgb(110, 84, 84),
+		Separator = rgb(28, 24, 24),
+		TabActive = rgb(50, 40, 40),
+		TabInactive = rgb(28, 24, 24),
+		Notification = rgb(28, 24, 24),
+		NotificationBorder = rgb(80, 60, 60),
+		Syntax = {
+			Text = rgb(232, 224, 218),
+			Background = rgb(22, 20, 20),
+			Selection = rgb(255, 255, 255),
+			SelectionBack = rgb(160, 50, 50),
+			Operator = rgb(232, 224, 218),
+			Number = rgb(255, 180, 90),
+			String = rgb(200, 220, 130),
+			Comment = rgb(120, 110, 105),
+			Keyword = rgb(255, 130, 110),
+			Error = rgb(255, 80, 80),
+			FindBackground = rgb(180, 80, 60),
+			MatchingWord = rgb(80, 60, 60),
+			BuiltIn = rgb(255, 200, 130),
+			CurrentLine = rgb(48, 36, 36),
+			LocalMethod = rgb(255, 220, 150),
+			LocalProperty = rgb(220, 180, 130),
+			Nil = rgb(255, 180, 90),
+			Bool = rgb(255, 180, 90),
+			Function = rgb(255, 130, 110),
+			Local = rgb(255, 130, 110),
+			Self = rgb(255, 130, 110),
+			FunctionName = rgb(255, 220, 150),
+			Bracket = rgb(232, 224, 218),
+			TypeAnnotation = rgb(180, 200, 220),
+		},
+	},
+}
+Theme.PresetOrder = {"New", "Dex", "Old Dex", "Synapse X", "SirMeme", "Dark", "Darker", "Light"}
+Theme.Fonts = {
+	{Name = "Gotham", Font = Enum.Font.Gotham},
+	{Name = "GothamMedium", Font = Enum.Font.GothamMedium},
+	{Name = "GothamBold", Font = Enum.Font.GothamBold},
+	{Name = "Code", Font = Enum.Font.Code},
+	{Name = "Plex", Font = Enum.Font.RobotoMono},
+	{Name = "RobotoMono", Font = Enum.Font.RobotoMono},
+	{Name = "SourceSans", Font = Enum.Font.SourceSans},
+	{Name = "SourceSansBold", Font = Enum.Font.SourceSansBold},
+	{Name = "Arial", Font = Enum.Font.Arial},
+	{Name = "Ubuntu", Font = Enum.Font.Ubuntu},
 }
 local function notifyKey(key, newVal, oldVal)
 	local keySubscribers = subscribers[key]
@@ -877,11 +1172,16 @@ function Theme.Init(envRef, settingsRef, serviceTable)
 	Env = envRef
 	Settings = settingsRef
 	HttpService = serviceTable.HttpService or game:GetService("HttpService")
+	Lighting = serviceTable.Lighting or game:GetService("Lighting")
 	local savedPreset = Settings and Settings.Get and Settings.Get("General.Theme")
 	if savedPreset and Theme.Presets[savedPreset] then
 		Theme.Apply(savedPreset, true)
 	else
 		Theme.Apply("Dark", true)
+	end
+	local savedFont = Settings and Settings.Get and Settings.Get("General.Font")
+	if savedFont then
+		Theme.SetFont(savedFont, true)
 	end
 end
 function Theme.Apply(presetName, silent)
@@ -1040,6 +1340,166 @@ function Theme.ListSavedThemes()
 		end
 	end
 	return themes
+end
+function Theme.SetKey(key, value)
+	if string.find(key, ".", 1, true) then
+		local parts = string.split(key, ".")
+		local sub = currentTheme[parts[1]]
+		if type(sub) ~= "table" then return false end
+		local old = sub[parts[2]]
+		sub[parts[2]] = value
+		notifyKey(key, value, old)
+		return true
+	end
+	local old = currentTheme[key]
+	currentTheme[key] = value
+	notifyKey(key, value, old)
+	return true
+end
+local function lerpColor(a, b, t)
+	return Color3.new(
+		a.R + (b.R - a.R) * t,
+		a.G + (b.G - a.G) * t,
+		a.B + (b.B - a.B) * t
+	)
+end
+local function relativeLuminance(c)
+	return 0.2126 * c.R + 0.7152 * c.G + 0.0722 * c.B
+end
+local function shift(c, amount)
+	return Color3.new(
+		math.clamp(c.R + amount, 0, 1),
+		math.clamp(c.G + amount, 0, 1),
+		math.clamp(c.B + amount, 0, 1)
+	)
+end
+function Theme.BuildSmart(seed, accentSeed)
+	local lum = relativeLuminance(seed)
+	local isLight = lum > 0.55
+	local main1 = seed
+	local main2 = shift(seed, isLight and -0.06 or -0.04)
+	local main3 = shift(seed, isLight and -0.12 or -0.08)
+	local outline1 = shift(seed, isLight and -0.20 or -0.12)
+	local outline2 = shift(seed, isLight and -0.10 or 0.06)
+	local text = isLight and rgb(20, 20, 20) or rgb(240, 240, 240)
+	local textDim = isLight and rgb(80, 80, 80) or rgb(170, 170, 170)
+	local accent = accentSeed or lerpColor(seed, rgb(56, 142, 235), isLight and 0.5 or 0.7)
+	local button = shift(seed, isLight and -0.04 or 0.06)
+	local buttonHover = shift(button, isLight and -0.04 or 0.06)
+	local buttonPress = shift(button, isLight and -0.10 or -0.06)
+	local theme = {
+		Name = "Smart",
+		Main1 = main1, Main2 = main2, Main3 = main3,
+		Outline1 = outline1, Outline2 = outline2, Outline3 = shift(seed, isLight and -0.16 or -0.10),
+		TextBox = main3, Menu = main3,
+		ListSelection = accent,
+		Button = button, ButtonHover = buttonHover, ButtonPress = buttonPress,
+		Highlight = shift(button, 0.04),
+		Text = text, TextDim = textDim, PlaceholderText = isLight and rgb(140,140,140) or rgb(110,110,110),
+		Important = rgb(255, 80, 80), Success = rgb(80, 200, 130), Warning = rgb(255, 200, 50),
+		Accent = accent,
+		ScrollBar = shift(seed, 0.06), ScrollBarHover = shift(seed, 0.12),
+		Separator = main2, TabActive = button, TabInactive = main3,
+		Notification = main2, NotificationBorder = outline2,
+		Syntax = {
+			Text = text,
+			Background = main3,
+			Selection = isLight and rgb(0,0,0) or rgb(255,255,255),
+			SelectionBack = accent,
+			Operator = text,
+			Number = isLight and rgb(9, 134, 88) or rgb(255, 198, 0),
+			String = isLight and rgb(163, 21, 21) or rgb(173, 241, 149),
+			Comment = isLight and rgb(0, 128, 0) or rgb(110, 116, 138),
+			Keyword = isLight and rgb(0, 0, 200) or rgb(248, 109, 124),
+			Error = rgb(255, 60, 60),
+			FindBackground = accent,
+			MatchingWord = shift(button, 0.06),
+			BuiltIn = isLight and rgb(38, 127, 153) or rgb(132, 214, 247),
+			CurrentLine = shift(main3, isLight and -0.04 or 0.04),
+			LocalMethod = isLight and rgb(116, 83, 0) or rgb(253, 251, 172),
+			LocalProperty = isLight and rgb(0, 70, 140) or rgb(97, 161, 241),
+			Nil = isLight and rgb(9, 134, 88) or rgb(255, 198, 0),
+			Bool = isLight and rgb(9, 134, 88) or rgb(255, 198, 0),
+			Function = isLight and rgb(0, 0, 200) or rgb(248, 109, 124),
+			Local = isLight and rgb(0, 0, 200) or rgb(248, 109, 124),
+			Self = isLight and rgb(0, 0, 200) or rgb(248, 109, 124),
+			FunctionName = isLight and rgb(116, 83, 0) or rgb(253, 251, 172),
+			Bracket = text,
+			TypeAnnotation = isLight and rgb(38, 127, 153) or rgb(78, 201, 176),
+		},
+	}
+	return theme
+end
+function Theme.SmartFromWorld(silent)
+	local seed
+	local accentSeed
+	if Lighting then
+		local amb = Lighting.Ambient
+		local out = Lighting.OutdoorAmbient
+		local mix = lerpColor(amb, out, 0.5)
+		seed = shift(mix, -0.35)
+		local brighter = relativeLuminance(amb) > relativeLuminance(out) and amb or out
+		accentSeed = lerpColor(brighter, rgb(60, 150, 240), 0.6)
+	else
+		seed = rgb(40, 42, 48)
+		accentSeed = rgb(56, 142, 235)
+	end
+	local smart = Theme.BuildSmart(seed, accentSeed)
+	currentPresetName = "Smart"
+	currentTheme = smart
+	if Settings and Settings.Set then
+		Settings.Set("General.Theme", "Smart", true)
+	end
+	if not silent then notifyAll() end
+	return true
+end
+local function findFontEntry(name)
+	for _, entry in ipairs(Theme.Fonts) do
+		if entry.Name == name then return entry end
+	end
+	return nil
+end
+function Theme.GetFontName()
+	return currentFontName
+end
+function Theme.GetFont()
+	local entry = findFontEntry(currentFontName)
+	return entry and entry.Font or Enum.Font.Gotham
+end
+function Theme.ListFonts()
+	local names = {}
+	for _, entry in ipairs(Theme.Fonts) do
+		names[#names + 1] = entry.Name
+	end
+	return names
+end
+function Theme.SetFont(name, silent)
+	local entry = findFontEntry(name)
+	if not entry then return false end
+	local old = currentFontName
+	currentFontName = name
+	if Settings and Settings.Set then
+		Settings.Set("General.Font", name, true)
+	end
+	if not silent then
+		notifyKey("Font", entry.Font, findFontEntry(old) and findFontEntry(old).Font)
+	end
+	return true
+end
+function Theme.RegisterFont(name, font)
+	if type(name) ~= "string" or not font then return false end
+	if findFontEntry(name) then return false end
+	Theme.Fonts[#Theme.Fonts + 1] = {Name = name, Font = font, Custom = true}
+	return true
+end
+function Theme.RegisterFontFromAssetId(name, assetId)
+	if not assetId then return false end
+	local id = tonumber(assetId) or assetId
+	local s, fontObject = pcall(function()
+		return Font.new("rbxassetid://" .. tostring(id))
+	end)
+	if not s or not fontObject then return false end
+	return Theme.RegisterFont(name, fontObject)
 end
 return Theme
 end
@@ -3069,6 +3529,10 @@ local function main()
 			self.GuiElems.Main.Size = UDim2.new(0,self.SizeX,0,self.SizeY)
 		end
 		funcs.SetSize = funcs.Resize
+		funcs.GetContent = function(self)
+			return self.ContentPane or (self.GuiElems and self.GuiElems.Content)
+		end
+		funcs.GetContentFrame = funcs.GetContent
 		funcs.SetTitle = function(self,title)
 			self.GuiElems.Title.Text = title
 		end
@@ -9022,14 +9486,14 @@ local function main()
 		appendOutput(table.concat(parts, " "))
 	end
 	local function printError(msg)
-		appendOutput(msg, Theme.Colors.Error or Color3.fromRGB(255, 80, 80))
+		appendOutput(msg, Theme.Get("Error") or Color3.fromRGB(255, 80, 80))
 	end
 	local function printSuccess(msg)
-		appendOutput(msg, Theme.Colors.Success or Color3.fromRGB(80, 255, 120))
+		appendOutput(msg, Theme.Get("Success") or Color3.fromRGB(80, 255, 120))
 	end
 	local function printInstanceLink(inst)
 		local path = getFullPath(inst)
-		appendOutput(path, Theme.Colors.Link or Color3.fromRGB(100, 180, 255), {
+		appendOutput(path, Theme.Get("Link") or Color3.fromRGB(100, 180, 255), {
 			type = "navigate",
 			instance = inst,
 		})
@@ -9096,7 +9560,7 @@ local function main()
 				Settings.Terminal.History = history
 			end
 		end)
-		appendOutput("> " .. raw, Theme.Colors.Muted or Color3.fromRGB(180, 180, 180))
+		appendOutput("> " .. raw, Theme.Get("Muted") or Color3.fromRGB(180, 180, 180))
 		local parts = raw:split(" ")
 		local cmdName = table.remove(parts, 1)
 		local cmd = commands[cmdName:lower()]
@@ -9120,7 +9584,7 @@ local function main()
 				local path = table.concat(args, " ")
 				local inst = resolveInstance(path)
 				if inst then
-					Store:Fire("select_instance", inst)
+					Store.Emit("select_instance", inst)
 					printSuccess("Selected: " .. getFullPath(inst))
 				else
 					printError("Instance not found: " .. path)
@@ -9137,7 +9601,7 @@ local function main()
 				local path = table.concat(args, " ")
 				local inst = resolveInstance(path)
 				if inst then
-					Store:Fire("navigate_to", inst)
+					Store.Emit("navigate_to", inst)
 					printSuccess("Navigated to: " .. getFullPath(inst))
 				else
 					printError("Instance not found: " .. path)
@@ -9172,7 +9636,7 @@ local function main()
 			Category = "Navigation",
 			Run = function(args)
 				local depth = tonumber(args[1]) or 3
-				local sel = Store:Get("selected_instance")
+				local sel = Store.Get("selected_instance")
 				if not sel then
 					printError("No instance selected")
 					return
@@ -9198,7 +9662,7 @@ local function main()
 				local path = table.concat(args, " ")
 				local inst = resolveInstance(path)
 				if not inst then
-					inst = Store:Get("selected_instance")
+					inst = Store.Get("selected_instance")
 				end
 				if not inst then
 					printError("No instance to dump. Select one or provide a path.")
@@ -9318,7 +9782,7 @@ local function main()
 						Apps.SaveInstance:SavePlace()
 						printSuccess("Save place initiated...")
 					elseif mode == "selection" then
-						local sel = Store:Get("selected_instance")
+						local sel = Store.Get("selected_instance")
 						if sel then
 							Apps.SaveInstance:SaveModel(sel)
 							printSuccess("Save model initiated for: " .. sel.Name)
@@ -9342,15 +9806,15 @@ local function main()
 			Run = function(args)
 				local action = args[1] or "list"
 				if action == "add" then
-					local sel = Store:Get("selected_instance")
+					local sel = Store.Get("selected_instance")
 					if sel then
-						Store:Fire("bookmark_add", sel)
+						Store.Emit("bookmark_add", sel)
 						printSuccess("Bookmarked: " .. getFullPath(sel))
 					else
 						printError("No instance selected")
 					end
 				elseif action == "list" then
-					local bms = Store:Get("bookmarks") or {}
+					local bms = Store.Get("bookmarks") or {}
 					if #bms == 0 then
 						printOutput("No bookmarks.")
 					else
@@ -9361,7 +9825,7 @@ local function main()
 				elseif action == "rm" or action == "remove" then
 					local idx = tonumber(args[2])
 					if idx then
-						Store:Fire("bookmark_remove", idx)
+						Store.Emit("bookmark_remove", idx)
 						printSuccess("Removed bookmark #" .. idx)
 					else
 						printError("Usage: bookmark rm <index>")
@@ -9542,7 +10006,7 @@ local function main()
 				BackgroundTransparency = 1,
 				Font = Enum.Font.Code,
 				TextSize = 14,
-				TextColor3 = line.Color or Theme.Colors.Text or Color3.new(1, 1, 1),
+				TextColor3 = line.Color or Theme.Get("Text") or Color3.new(1, 1, 1),
 				TextXAlignment = Enum.TextXAlignment.Left,
 				TextWrapped = true,
 				RichText = true,
@@ -9557,7 +10021,7 @@ local function main()
 					Text = "",
 				})
 				btn.MouseButton1Click:Connect(function()
-					Store:Fire("navigate_to", line.ClickData.instance)
+					Store.Emit("navigate_to", line.ClickData.instance)
 				end)
 			end
 			yOffset = yOffset + lineHeight
@@ -9577,7 +10041,7 @@ local function main()
 			Parent = content,
 			Position = UDim2.new(0, 0, 0, 0),
 			Size = UDim2.new(1, 0, 1, -30),
-			BackgroundColor3 = Theme.Colors.Background or Color3.fromRGB(20, 20, 20),
+			BackgroundColor3 = Theme.Get("Background") or Color3.fromRGB(20, 20, 20),
 			BorderSizePixel = 0,
 			ScrollBarThickness = 6,
 			CanvasSize = UDim2.new(0, 0, 0, 0),
@@ -9589,13 +10053,13 @@ local function main()
 			Parent = content,
 			Position = UDim2.new(0, 0, 1, -30),
 			Size = UDim2.new(1, 0, 0, 30),
-			BackgroundColor3 = Theme.Colors.InputBackground or Color3.fromRGB(30, 30, 30),
+			BackgroundColor3 = Theme.Get("InputBackground") or Color3.fromRGB(30, 30, 30),
 			BorderSizePixel = 0,
 			Font = Enum.Font.Code,
 			TextSize = 14,
-			TextColor3 = Theme.Colors.Text or Color3.new(1, 1, 1),
+			TextColor3 = Theme.Get("Text") or Color3.new(1, 1, 1),
 			PlaceholderText = "Type a command...",
-			PlaceholderColor3 = Theme.Colors.Muted or Color3.fromRGB(120, 120, 120),
+			PlaceholderColor3 = Theme.Get("Muted") or Color3.fromRGB(120, 120, 120),
 			TextXAlignment = Enum.TextXAlignment.Left,
 			ClearTextOnFocus = false,
 			Text = "",
@@ -9612,7 +10076,7 @@ local function main()
 			completionCandidates = {}
 			completionIndex = 0
 		end)
-		local UIS = service("UserInputService")
+		local UIS = service.UserInputService
 		table.insert(connections, UIS.InputBegan:Connect(function(input, gameProcessed)
 			if not inputBox:IsFocused() then return end
 			if input.KeyCode == Enum.KeyCode.Up then
@@ -9762,7 +10226,7 @@ local function main()
 	end
 	function RemoteSpy:CreateHook(config)
 		if not Env.hookfunction and not Env.hookmetamethod then
-			Notifications:Send("RemoteSpy", "Hook capabilities not available", 3)
+			Notifications.Info("Hook capabilities not available", 3)
 			return nil
 		end
 		local id = generateId()
@@ -9896,7 +10360,7 @@ local function main()
 			end
 		end)
 		if not success then
-			Notifications:Send("RemoteSpy", "Hook failed: " .. tostring(err), 3)
+			Notifications.Info("Hook failed: " .. tostring(err), 3)
 			return nil
 		end
 		hooks[id] = hookDef
@@ -9960,7 +10424,7 @@ local function main()
 				Type = "metamethod",
 				Method = "__namecall",
 			})
-			Notifications:Send("RemoteSpy", "Default preset applied (namecall hook active)", 3)
+			Notifications.Info("Default preset applied (namecall hook active)", 3)
 		end
 	end
 	function RemoteSpy:SaveProfile(name)
@@ -9975,22 +10439,22 @@ local function main()
 				LogReturns = hookDef.LogReturns,
 			})
 		end
-		local json = service("HttpService"):JSONEncode(profile)
+		local json = service.HttpService:JSONEncode(profile)
 		local path = "deux/saved/hooks/" .. (name or "default") .. ".json"
 		if Env.writefile then
 			Env.writefile(path, json)
-			Notifications:Send("RemoteSpy", "Profile saved: " .. path, 3)
+			Notifications.Info("Profile saved: " .. path, 3)
 		end
 	end
 	function RemoteSpy:LoadProfile(name)
 		local path = "deux/saved/hooks/" .. (name or "default") .. ".json"
 		if Env.readfile and Env.isfile and Env.isfile(path) then
 			local json = Env.readfile(path)
-			local profile = service("HttpService"):JSONDecode(json)
+			local profile = service.HttpService:JSONDecode(json)
 			for _, entry in ipairs(profile) do
 				self:CreateHook(entry)
 			end
-			Notifications:Send("RemoteSpy", "Profile loaded: " .. name, 3)
+			Notifications.Info("Profile loaded: " .. name, 3)
 		end
 	end
 	function RemoteSpy:CopyAsScript(logEntry)
@@ -10008,16 +10472,16 @@ local function main()
 		local script = table.concat(lines, "\n")
 		if Env.setclipboard then
 			Env.setclipboard(script)
-			Notifications:Send("RemoteSpy", "Copied replay script to clipboard", 2)
+			Notifications.Info("Copied replay script to clipboard", 2)
 		end
 		return script
 	end
 	function RemoteSpy:RenderLogEntry(entry, index)
 		if not logList then return end
 		local yPos = (index - 1) * logEntryHeight
-		local color = Theme.Colors.Text or Color3.new(1, 1, 1)
+		local color = Theme.Get("Text") or Color3.new(1, 1, 1)
 		if entry.Blocked then
-			color = Theme.Colors.Error or Color3.fromRGB(255, 80, 80)
+			color = Theme.Get("Error") or Color3.fromRGB(255, 80, 80)
 		end
 		local text = string.format("[%.2f] %s %s %s",
 			entry.Timestamp,
@@ -10031,7 +10495,7 @@ local function main()
 			Position = UDim2.new(0, 0, 0, yPos),
 			Size = UDim2.new(1, 0, 0, logEntryHeight),
 			BackgroundTransparency = index % 2 == 0 and 0.95 or 1,
-			BackgroundColor3 = Theme.Colors.Row or Color3.fromRGB(40, 40, 40),
+			BackgroundColor3 = Theme.Get("Row") or Color3.fromRGB(40, 40, 40),
 			BorderSizePixel = 0,
 			Font = Enum.Font.Code,
 			TextSize = 13,
@@ -10060,7 +10524,7 @@ local function main()
 		)
 		if Env.setclipboard then
 			Env.setclipboard(detail)
-			Notifications:Send("RemoteSpy", "Log detail copied to clipboard", 2)
+			Notifications.Info("Log detail copied to clipboard", 2)
 		end
 	end
 	function RemoteSpy:RenderHookPanel()
@@ -10078,7 +10542,7 @@ local function main()
 				Position = UDim2.new(0, 0, 0, y),
 				Size = UDim2.new(1, 0, 0, 24),
 				BackgroundTransparency = 0.9,
-				BackgroundColor3 = Theme.Colors.Row or Color3.fromRGB(40, 40, 40),
+				BackgroundColor3 = Theme.Get("Row") or Color3.fromRGB(40, 40, 40),
 			})
 			createSimple("TextLabel", {
 				Parent = row,
@@ -10087,7 +10551,7 @@ local function main()
 				BackgroundTransparency = 1,
 				Font = Enum.Font.Code,
 				TextSize = 12,
-				TextColor3 = hookDef.Enabled and (Theme.Colors.Text or Color3.new(1,1,1)) or (Theme.Colors.Muted or Color3.fromRGB(100,100,100)),
+				TextColor3 = hookDef.Enabled and (Theme.Get("Text") or Color3.new(1,1,1)) or (Theme.Get("Muted") or Color3.fromRGB(100,100,100)),
 				TextXAlignment = Enum.TextXAlignment.Left,
 				Text = hookDef.Method .. " [" .. hookDef.Type .. "]",
 			})
@@ -10132,13 +10596,13 @@ local function main()
 			Parent = content,
 			Position = UDim2.new(0, 0, 0, 0),
 			Size = UDim2.new(0.7, -4, 0, 26),
-			BackgroundColor3 = Theme.Colors.InputBackground or Color3.fromRGB(30, 30, 30),
+			BackgroundColor3 = Theme.Get("InputBackground") or Color3.fromRGB(30, 30, 30),
 			BorderSizePixel = 0,
 			Font = Enum.Font.Code,
 			TextSize = 13,
-			TextColor3 = Theme.Colors.Text or Color3.new(1,1,1),
+			TextColor3 = Theme.Get("Text") or Color3.new(1,1,1),
 			PlaceholderText = "Filter: method == 'FireServer' and instance.Name:find('Remote')",
-			PlaceholderColor3 = Theme.Colors.Muted or Color3.fromRGB(100,100,100),
+			PlaceholderColor3 = Theme.Get("Muted") or Color3.fromRGB(100,100,100),
 			TextXAlignment = Enum.TextXAlignment.Left,
 			ClearTextOnFocus = false,
 			Text = "",
@@ -10183,7 +10647,7 @@ local function main()
 			Parent = content,
 			Position = UDim2.new(0, 0, 0, 30),
 			Size = UDim2.new(0.7, 0, 1, -30),
-			BackgroundColor3 = Theme.Colors.Background or Color3.fromRGB(20, 20, 20),
+			BackgroundColor3 = Theme.Get("Background") or Color3.fromRGB(20, 20, 20),
 			BorderSizePixel = 0,
 			ScrollBarThickness = 6,
 			CanvasSize = UDim2.new(0, 0, 0, 0),
@@ -10194,7 +10658,7 @@ local function main()
 			Parent = content,
 			Position = UDim2.new(0.7, 4, 0, 30),
 			Size = UDim2.new(0.3, -4, 1, -30),
-			BackgroundColor3 = Theme.Colors.Panel or Color3.fromRGB(25, 25, 30),
+			BackgroundColor3 = Theme.Get("Panel") or Color3.fromRGB(25, 25, 30),
 			BorderSizePixel = 0,
 			ScrollBarThickness = 4,
 			CanvasSize = UDim2.new(0, 0, 0, 0),
@@ -10316,11 +10780,11 @@ local function main()
 	end
 	function SaveInstance:SavePlace(overrideOptions)
 		if isSaving then
-			Notifications:Send("SaveInstance", "Already saving, please wait...", 3)
+			Notifications.Info("Already saving, please wait...", 3)
 			return
 		end
 		if not Env.saveinstance then
-			Notifications:Send("SaveInstance", "saveinstance not available in this executor", 3)
+			Notifications.Info("saveinstance not available in this executor", 3)
 			return
 		end
 		isSaving = true
@@ -10347,10 +10811,10 @@ local function main()
 			isSaving = false
 			if ok then
 				setStatus("Saved!")
-				Notifications:Send("SaveInstance", "Place saved: " .. path, 5)
+				Notifications.Info("Place saved: " .. path, 5)
 			else
 				setStatus("Failed: " .. tostring(err))
-				Notifications:Send("SaveInstance", "Save failed: " .. tostring(err), 5)
+				Notifications.Info("Save failed: " .. tostring(err), 5)
 			end
 			task.delay(3, function()
 				setStatus("Ready")
@@ -10359,15 +10823,15 @@ local function main()
 	end
 	function SaveInstance:SaveModel(instance, overrideOptions)
 		if isSaving then
-			Notifications:Send("SaveInstance", "Already saving, please wait...", 3)
+			Notifications.Info("Already saving, please wait...", 3)
 			return
 		end
 		if not instance then
-			Notifications:Send("SaveInstance", "No instance provided", 3)
+			Notifications.Info("No instance provided", 3)
 			return
 		end
 		if not Env.saveinstance then
-			Notifications:Send("SaveInstance", "saveinstance not available in this executor", 3)
+			Notifications.Info("saveinstance not available in this executor", 3)
 			return
 		end
 		isSaving = true
@@ -10392,10 +10856,10 @@ local function main()
 			isSaving = false
 			if ok then
 				setStatus("Saved!")
-				Notifications:Send("SaveInstance", "Model saved: " .. path, 5)
+				Notifications.Info("Model saved: " .. path, 5)
 			else
 				setStatus("Failed: " .. tostring(err))
-				Notifications:Send("SaveInstance", "Save failed: " .. tostring(err), 5)
+				Notifications.Info("Save failed: " .. tostring(err), 5)
 			end
 			task.delay(3, function()
 				setStatus("Ready")
@@ -10425,7 +10889,7 @@ local function main()
 				BackgroundTransparency = 1,
 				Font = Enum.Font.SourceSans,
 				TextSize = 14,
-				TextColor3 = Theme.Colors.Text or Color3.new(1,1,1),
+				TextColor3 = Theme.Get("Text") or Color3.new(1,1,1),
 				TextXAlignment = Enum.TextXAlignment.Left,
 				Text = label,
 			})
@@ -10434,10 +10898,10 @@ local function main()
 					Parent = row,
 					Position = UDim2.new(0.5, 4, 0, 2),
 					Size = UDim2.new(0.5, -12, 0, rowHeight - 4),
-					BackgroundColor3 = Theme.Colors.InputBackground or Color3.fromRGB(40, 40, 40),
+					BackgroundColor3 = Theme.Get("InputBackground") or Color3.fromRGB(40, 40, 40),
 					Font = Enum.Font.Code,
 					TextSize = 13,
-					TextColor3 = Theme.Colors.Text or Color3.new(1,1,1),
+					TextColor3 = Theme.Get("Text") or Color3.new(1,1,1),
 					Text = tostring(options[optionKey]),
 				})
 				btn.MouseButton1Click:Connect(function()
@@ -10486,7 +10950,7 @@ local function main()
 			BackgroundTransparency = 1,
 			Font = Enum.Font.SourceSansItalic,
 			TextSize = 14,
-			TextColor3 = Theme.Colors.Muted or Color3.fromRGB(160, 160, 160),
+			TextColor3 = Theme.Get("Muted") or Color3.fromRGB(160, 160, 160),
 			TextXAlignment = Enum.TextXAlignment.Left,
 			Text = "Ready",
 		})
@@ -10517,11 +10981,11 @@ local function main()
 			Text = "Save Selection",
 		})
 		saveSelBtn.MouseButton1Click:Connect(function()
-			local sel = Store:Get("selected_instance")
+			local sel = Store.Get("selected_instance")
 			if sel then
 				SaveInstance:SaveModel(sel)
 			else
-				Notifications:Send("SaveInstance", "No instance selected", 3)
+				Notifications.Info("No instance selected", 3)
 			end
 		end)
 	end
@@ -10536,7 +11000,7 @@ local function main()
 			end
 		end)
 		SaveInstance:BuildUI()
-		table.insert(connections, Store:On("save_instance", function(instance)
+		table.insert(connections, Store.On("save_instance", function(instance)
 			if instance then
 				SaveInstance:SaveModel(instance)
 			else
@@ -10620,7 +11084,7 @@ local function main()
 	end
 	function DataInspector:RefreshGC()
 		if not hasGC() then
-			Notifications:Send("DataInspector", "GC capability not available", 3)
+			Notifications.Info("GC capability not available", 3)
 			return
 		end
 		gcCache = Env.getgc(true) or {}
@@ -10876,11 +11340,11 @@ local function main()
 				Position = UDim2.new(0, 0, 0, yPos),
 				Size = UDim2.new(1, 0, 0, ROW_HEIGHT),
 				BackgroundTransparency = i % 2 == 0 and 0.95 or 1,
-				BackgroundColor3 = Theme.Colors.Row or Color3.fromRGB(35, 35, 40),
+				BackgroundColor3 = Theme.Get("Row") or Color3.fromRGB(35, 35, 40),
 				BorderSizePixel = 0,
 				Font = Enum.Font.Code,
 				TextSize = 13,
-				TextColor3 = Theme.Colors.Text or Color3.new(1, 1, 1),
+				TextColor3 = Theme.Get("Text") or Color3.new(1, 1, 1),
 				TextXAlignment = Enum.TextXAlignment.Left,
 				Text = "  " .. displayText,
 				AutoButtonColor = true,
@@ -10912,7 +11376,7 @@ local function main()
 				BackgroundTransparency = 1,
 				Font = Enum.Font.Code,
 				TextSize = 12,
-				TextColor3 = color or Theme.Colors.Text or Color3.new(1,1,1),
+				TextColor3 = color or Theme.Get("Text") or Color3.new(1,1,1),
 				TextXAlignment = Enum.TextXAlignment.Left,
 				Text = text,
 				TextWrapped = true,
@@ -10923,7 +11387,7 @@ local function main()
 			addLine("No item selected")
 			return
 		end
-		addLine("--- Function Detail ---", Theme.Colors.Accent or Color3.fromRGB(100, 180, 255))
+		addLine("--- Function Detail ---", Theme.Get("Accent") or Color3.fromRGB(100, 180, 255))
 		if detail.Info then
 			addLine("Name: " .. (detail.Info.name or "anonymous"))
 			addLine("Source: " .. (detail.ScriptPath or "unknown"))
@@ -10935,7 +11399,7 @@ local function main()
 			end
 		end
 		y = y + 4
-		addLine("Constants (" .. #detail.Constants .. "):", Theme.Colors.Accent or Color3.fromRGB(100, 180, 255))
+		addLine("Constants (" .. #detail.Constants .. "):", Theme.Get("Accent") or Color3.fromRGB(100, 180, 255))
 		for i, c in ipairs(detail.Constants) do
 			if i > 50 then
 				addLine("  ... (" .. (#detail.Constants - 50) .. " more)")
@@ -10946,7 +11410,7 @@ local function main()
 		y = y + 4
 		local upvalCount = 0
 		for _ in pairs(detail.Upvalues) do upvalCount = upvalCount + 1 end
-		addLine("Upvalues (" .. upvalCount .. "):", Theme.Colors.Accent or Color3.fromRGB(100, 180, 255))
+		addLine("Upvalues (" .. upvalCount .. "):", Theme.Get("Accent") or Color3.fromRGB(100, 180, 255))
 		local uvIdx = 0
 		for k, v in pairs(detail.Upvalues) do
 			uvIdx = uvIdx + 1
@@ -10958,12 +11422,12 @@ local function main()
 		end
 		if detail.Source then
 			y = y + 4
-			addLine("Decompiled Source:", Theme.Colors.Accent or Color3.fromRGB(100, 180, 255))
+			addLine("Decompiled Source:", Theme.Get("Accent") or Color3.fromRGB(100, 180, 255))
 			for line in detail.Source:gmatch("[^\n]+") do
 				addLine("  " .. line)
 			end
 		elseif hasDecompile() then
-			addLine("(Decompiling...)", Theme.Colors.Muted or Color3.fromRGB(120,120,120))
+			addLine("(Decompiling...)", Theme.Get("Muted") or Color3.fromRGB(120,120,120))
 		end
 		y = y + 8
 		local sigBtn = createSimple("TextButton", {
@@ -10981,7 +11445,7 @@ local function main()
 				local snippet = DataInspector:BuildSignature(selectedItem)
 				if snippet and Env.setclipboard then
 					Env.setclipboard(snippet)
-					Notifications:Send("DataInspector", "Signature snippet copied!", 2)
+					Notifications.Info("Signature snippet copied!", 2)
 				end
 			end
 		end)
@@ -11021,7 +11485,7 @@ local function main()
 			BackgroundTransparency = 1,
 			Font = Enum.Font.Code,
 			TextSize = 12,
-			TextColor3 = Theme.Colors.Accent or Color3.fromRGB(100, 180, 255),
+			TextColor3 = Theme.Get("Accent") or Color3.fromRGB(100, 180, 255),
 			TextXAlignment = Enum.TextXAlignment.Left,
 			Text = "References to: " .. current.Label,
 		})
@@ -11033,10 +11497,10 @@ local function main()
 				Position = UDim2.new(0, 4, 0, y),
 				Size = UDim2.new(1, -8, 0, lineH),
 				BackgroundTransparency = 0.95,
-				BackgroundColor3 = Theme.Colors.Row or Color3.fromRGB(35, 35, 40),
+				BackgroundColor3 = Theme.Get("Row") or Color3.fromRGB(35, 35, 40),
 				Font = Enum.Font.Code,
 				TextSize = 12,
-				TextColor3 = Theme.Colors.Text or Color3.new(1,1,1),
+				TextColor3 = Theme.Get("Text") or Color3.new(1,1,1),
 				TextXAlignment = Enum.TextXAlignment.Left,
 				Text = "  " .. ref.Path .. " -> " .. tostring(ref.Key),
 			})
@@ -11053,7 +11517,7 @@ local function main()
 				BackgroundTransparency = 1,
 				Font = Enum.Font.Code,
 				TextSize = 12,
-				TextColor3 = Theme.Colors.Muted or Color3.fromRGB(120,120,120),
+				TextColor3 = Theme.Get("Muted") or Color3.fromRGB(120,120,120),
 				TextXAlignment = Enum.TextXAlignment.Left,
 				Text = "  (no references found)",
 			})
@@ -11070,7 +11534,7 @@ local function main()
 			Parent = content,
 			Position = UDim2.new(0, 0, 0, 0),
 			Size = UDim2.new(1, 0, 0, 28),
-			BackgroundColor3 = Theme.Colors.TabBar or Color3.fromRGB(30, 30, 35),
+			BackgroundColor3 = Theme.Get("TabBar") or Color3.fromRGB(30, 30, 35),
 			BorderSizePixel = 0,
 		})
 		local tabDefs = {
@@ -11083,10 +11547,10 @@ local function main()
 				Parent = tabBar,
 				Position = UDim2.new(0, (i-1) * 100, 0, 2),
 				Size = UDim2.new(0, 96, 0, 24),
-				BackgroundColor3 = activeTab == td.Key and (Theme.Colors.ActiveTab or Color3.fromRGB(60, 60, 80)) or (Theme.Colors.Tab or Color3.fromRGB(40, 40, 50)),
+				BackgroundColor3 = activeTab == td.Key and (Theme.Get("ActiveTab") or Color3.fromRGB(60, 60, 80)) or (Theme.Get("Tab") or Color3.fromRGB(40, 40, 50)),
 				Font = Enum.Font.SourceSansBold,
 				TextSize = 13,
-				TextColor3 = Theme.Colors.Text or Color3.new(1,1,1),
+				TextColor3 = Theme.Get("Text") or Color3.new(1,1,1),
 				Text = td.Name,
 			})
 			tabBtn.MouseButton1Click:Connect(function()
@@ -11099,7 +11563,7 @@ local function main()
 			Parent = content,
 			Position = UDim2.new(0, 0, 0, 30),
 			Size = UDim2.new(1, 0, 0, 26),
-			BackgroundColor3 = Theme.Colors.Panel or Color3.fromRGB(25, 25, 30),
+			BackgroundColor3 = Theme.Get("Panel") or Color3.fromRGB(25, 25, 30),
 			BorderSizePixel = 0,
 		})
 		local typeBtn = createSimple("TextButton", {
@@ -11192,7 +11656,7 @@ local function main()
 			Parent = content,
 			Position = UDim2.new(0, 0, 0, 58),
 			Size = UDim2.new(0.5, -2, 1, -58),
-			BackgroundColor3 = Theme.Colors.Background or Color3.fromRGB(20, 20, 20),
+			BackgroundColor3 = Theme.Get("Background") or Color3.fromRGB(20, 20, 20),
 			BorderSizePixel = 0,
 			ScrollBarThickness = 6,
 			CanvasSize = UDim2.new(0, 0, 0, 0),
@@ -11207,7 +11671,7 @@ local function main()
 			Parent = content,
 			Position = UDim2.new(0.5, 2, 0, 58),
 			Size = UDim2.new(0.5, -2, 1, -58),
-			BackgroundColor3 = Theme.Colors.Panel or Color3.fromRGB(25, 25, 30),
+			BackgroundColor3 = Theme.Get("Panel") or Color3.fromRGB(25, 25, 30),
 			BorderSizePixel = 0,
 			ScrollBarThickness = 6,
 			CanvasSize = UDim2.new(0, 0, 0, 0),
@@ -11244,11 +11708,11 @@ local function main()
 				Position = UDim2.new(0, 0, 0, y),
 				Size = UDim2.new(1, 0, 0, ROW_HEIGHT),
 				BackgroundTransparency = i % 2 == 0 and 0.95 or 1,
-				BackgroundColor3 = Theme.Colors.Row or Color3.fromRGB(35, 35, 40),
+				BackgroundColor3 = Theme.Get("Row") or Color3.fromRGB(35, 35, 40),
 				BorderSizePixel = 0,
 				Font = Enum.Font.Code,
 				TextSize = 12,
-				TextColor3 = Theme.Colors.Text or Color3.new(1,1,1),
+				TextColor3 = Theme.Get("Text") or Color3.new(1,1,1),
 				TextXAlignment = Enum.TextXAlignment.Left,
 				Text = "  " .. text,
 			})
@@ -11258,7 +11722,7 @@ local function main()
 	end
 	function DataInspector:Init()
 		DataInspector:BuildUI()
-		table.insert(connections, Store:On("explore_data", function(value)
+		table.insert(connections, Store.On("explore_data", function(value)
 			if value then
 				if type(value) == "function" then
 					DataInspector:ShowFunctionDetail(value)
@@ -11377,7 +11841,7 @@ local function main()
 	local function hookHTTP()
 		if not Env.hookfunction then return end
 		pcall(function()
-			local hs = service("HttpService")
+			local hs = service.HttpService
 			local oldReq = hs.RequestAsync
 			Env.hookfunction(oldReq, function(self, req)
 				local url = type(req) == "table" and req.Url or tostring(req)
@@ -11591,9 +12055,9 @@ local function main()
 				local b = createSimple("TextButton", {
 					Parent = classListFrame, Position = UDim2.new(0,0,0,y), Size = UDim2.new(1,0,0,h),
 					BackgroundTransparency = selectedClass == cls.Name and 0.7 or 1,
-					BackgroundColor3 = Theme.Colors.Accent or Color3.fromRGB(60,120,200),
+					BackgroundColor3 = Theme.Get("Accent") or Color3.fromRGB(60,120,200),
 					BorderSizePixel = 0, Font = Enum.Font.Code, TextSize = 12,
-					TextColor3 = Theme.Colors.Text or Color3.new(1,1,1),
+					TextColor3 = Theme.Get("Text") or Color3.new(1,1,1),
 					TextXAlignment = Enum.TextXAlignment.Left, Text = " "..cls.Name, AutoButtonColor = true,
 				})
 				b.MouseButton1Click:Connect(function()
@@ -11612,7 +12076,7 @@ local function main()
 		createSimple("TextLabel", {
 			Parent = memberFrame, Position = UDim2.new(0,0,0,y), Size = UDim2.new(1,0,0,24),
 			BackgroundTransparency = 1, Font = Enum.Font.SourceSansBold, TextSize = 15,
-			TextColor3 = Theme.Colors.Text or Color3.new(1,1,1), TextXAlignment = Enum.TextXAlignment.Left,
+			TextColor3 = Theme.Get("Text") or Color3.new(1,1,1), TextXAlignment = Enum.TextXAlignment.Left,
 			Text = " "..className..(super ~= "" and (" < "..super) or ""),
 		})
 		y = y + 26
@@ -11622,7 +12086,7 @@ local function main()
 				Parent = memberFrame, Position = UDim2.new(0,0,0,y), Size = UDim2.new(1,0,0,20),
 				BackgroundColor3 = Color3.fromRGB(30,30,40), BackgroundTransparency = 0.5,
 				BorderSizePixel = 0, Font = Enum.Font.SourceSansBold, TextSize = 12,
-				TextColor3 = Theme.Colors.Accent or Color3.fromRGB(100,180,255),
+				TextColor3 = Theme.Get("Accent") or Color3.fromRGB(100,180,255),
 				TextXAlignment = Enum.TextXAlignment.Left, Text = "  "..title.." ("..#members..")",
 			})
 			y = y + 22
@@ -11634,12 +12098,12 @@ local function main()
 				local btn = createSimple("TextButton", {
 					Parent = memberFrame, Position = UDim2.new(0,6,0,y), Size = UDim2.new(1,-10,0,16),
 					BackgroundTransparency = 1, Font = Enum.Font.Code, TextSize = 11,
-					TextColor3 = Theme.Colors.Text or Color3.new(1,1,1),
+					TextColor3 = Theme.Get("Text") or Color3.new(1,1,1),
 					TextXAlignment = Enum.TextXAlignment.Left, Text = m.Name..typeStr..tagStr, AutoButtonColor = true,
 				})
 				if m.MemberType == "Property" then
 					btn.MouseButton1Click:Connect(function()
-						Store:Fire("open_property", {Class=className, Property=m.Name})
+						Store.Emit("open_property", {Class=className, Property=m.Name})
 					end)
 				end
 				y = y + 16
@@ -11647,7 +12111,7 @@ local function main()
 					createSimple("TextLabel", {
 						Parent = memberFrame, Position = UDim2.new(0,14,0,y), Size = UDim2.new(1,-18,0,14),
 						BackgroundTransparency = 1, Font = Enum.Font.SourceSansItalic, TextSize = 10,
-						TextColor3 = Theme.Colors.Muted or Color3.fromRGB(140,140,140),
+						TextColor3 = Theme.Get("Muted") or Color3.fromRGB(140,140,140),
 						TextXAlignment = Enum.TextXAlignment.Left, TextTruncate = Enum.TextTruncate.AtEnd, Text = desc,
 					})
 					y = y + 14
@@ -11665,9 +12129,9 @@ local function main()
 				local b = createSimple("TextButton", {
 					Parent = enumListFrame, Position = UDim2.new(0,0,0,y), Size = UDim2.new(1,0,0,h),
 					BackgroundTransparency = selectedEnum == en.Name and 0.7 or 1,
-					BackgroundColor3 = Theme.Colors.Accent or Color3.fromRGB(60,120,200),
+					BackgroundColor3 = Theme.Get("Accent") or Color3.fromRGB(60,120,200),
 					BorderSizePixel = 0, Font = Enum.Font.Code, TextSize = 12,
-					TextColor3 = Theme.Colors.Text or Color3.new(1,1,1),
+					TextColor3 = Theme.Get("Text") or Color3.new(1,1,1),
 					TextXAlignment = Enum.TextXAlignment.Left, Text = " "..en.Name, AutoButtonColor = true,
 				})
 				b.MouseButton1Click:Connect(function()
@@ -11684,7 +12148,7 @@ local function main()
 		createSimple("TextLabel", {
 			Parent = enumDetailFrame, Position = UDim2.new(0,0,0,0), Size = UDim2.new(1,0,0,22),
 			BackgroundTransparency = 1, Font = Enum.Font.SourceSansBold, TextSize = 14,
-			TextColor3 = Theme.Colors.Text or Color3.new(1,1,1),
+			TextColor3 = Theme.Get("Text") or Color3.new(1,1,1),
 			TextXAlignment = Enum.TextXAlignment.Left, Text = " Enum."..en.Name,
 		})
 		y = 24
@@ -11694,7 +12158,7 @@ local function main()
 				createSimple("TextLabel", {
 					Parent = enumDetailFrame, Position = UDim2.new(0,8,0,y), Size = UDim2.new(1,-12,0,16),
 					BackgroundTransparency = 1, Font = Enum.Font.Code, TextSize = 11,
-					TextColor3 = Theme.Colors.Text or Color3.new(1,1,1),
+					TextColor3 = Theme.Get("Text") or Color3.new(1,1,1),
 					TextXAlignment = Enum.TextXAlignment.Left, Text = name.." = "..v,
 				})
 				y = y + 16
@@ -11713,7 +12177,7 @@ local function main()
 			local b = createSimple("TextButton", {
 				Parent = searchFrame, Position = UDim2.new(0,0,0,y), Size = UDim2.new(1,0,0,h),
 				BackgroundTransparency = 1, Font = Enum.Font.Code, TextSize = 12,
-				TextColor3 = Theme.Colors.Text or Color3.new(1,1,1),
+				TextColor3 = Theme.Get("Text") or Color3.new(1,1,1),
 				TextXAlignment = Enum.TextXAlignment.Left, Text = " "..text, AutoButtonColor = true,
 			})
 			b.MouseButton1Click:Connect(function()
@@ -11818,7 +12282,7 @@ local function main()
 		if Env.isfile and Env.isfile(path) and Env.readfile then
 			local ok, c = pcall(Env.readfile, path)
 			if ok then
-				local ok2, m = pcall(function() return service("HttpService"):JSONDecode(c) end)
+				local ok2, m = pcall(function() return service.HttpService:JSONDecode(c) end)
 				if ok2 then return m end
 			end
 		end
@@ -11865,7 +12329,7 @@ local function main()
 				return w
 			end,
 		}
-		sb.Notify = function(msg, sev) Notifications:Send(name, tostring(msg), sev or 3) end
+		sb.Notify = function(msg, sev) Notifications.Info("[" .. name .. "] " .. tostring(msg), sev or 3) end
 		sb.Settings = {
 			Register = function(pn, schema)
 				pcall(function()
@@ -11883,8 +12347,11 @@ local function main()
 		sb.Theme = setmetatable({}, {__index = Theme, __newindex = function() logErr(name, "Theme is read-only") end})
 		sb.Store = setmetatable({}, {
 			__index = function(_, k)
-				if k == "Get" then return function(_, key) return Store:Get(key) end
-				elseif k == "Listen" then return function(_, ev, cb) return Store:Listen(ev, cb) end end
+				if k == "Get" then return function(key) return Store.Get(key) end
+				elseif k == "GetSelection" then return Store.GetSelection
+				elseif k == "On" or k == "Listen" then return function(ev, cb) return Store.On(ev, cb) end
+				elseif k == "Subscribe" then return function(key, cb) return Store.Subscribe(key, cb) end
+				end
 			end,
 			__newindex = function() logErr(name, "Store is read-only") end,
 		})
@@ -11926,7 +12393,7 @@ local function main()
 		if not ok2 then logErr(name, "Runtime: "..tostring(runErr)); return end
 		plugins[name] = {Name=name, Folder=folder, Manifest=manifest, Sandbox=sandbox, Enabled=true, LoadedAt=os.clock()}
 		if not table.find(pluginOrder, name) then pluginOrder[#pluginOrder+1] = name end
-		Notifications:Send("Plugins", "Loaded: "..name.." v"..(manifest.version or "?"), 2)
+		Notifications.Info("Loaded: "..name.." v"..(manifest.version or "?"), 2)
 	end
 	function PluginAPI:LoadAll()
 		for _, f in ipairs(getFolders()) do loadPlugin(f) end
@@ -12083,8 +12550,8 @@ local function main()
 	local originalCollisions = {}
 	local animTarget = nil
 	local window, toolbarFrame, animPanel
-	local UIS = service("UserInputService")
-	local RunService = service("RunService")
+	local UIS = service.UserInputService
+	local RunService = service.RunService
 	local Camera = workspace.CurrentCamera
 	local function startFreecam()
 		if freecamActive then return end
@@ -12120,7 +12587,7 @@ local function main()
 			end
 		end); connections[#connections+1] = freecamConn
 		if noclipActive then WSTools:EnableNoclip() end
-		Notifications:Send("WorkspaceTools", "Freecam ON (WASD+QE, RMB look)", 2)
+		if Notifications then Notifications.Info("Freecam ON (WASD+QE, RMB look)", 2) end
 	end
 	local function stopFreecam()
 		if not freecamActive then return end; freecamActive = false
@@ -12130,7 +12597,7 @@ local function main()
 		if inputConn1 then inputConn1:Disconnect(); inputConn1 = nil end
 		if inputConn2 then inputConn2:Disconnect(); inputConn2 = nil end
 		WSTools:DisableNoclip(); keysDown = {}
-		Notifications:Send("WorkspaceTools", "Freecam OFF", 2)
+		if Notifications then Notifications.Info("Freecam OFF", 2) end
 	end
 	function WSTools:EnableNoclip()
 		if noclipConn then return end
@@ -12156,8 +12623,8 @@ local function main()
 	local function applyHighlights()
 		clearHighlights()
 		if not highlightActive then return end
-		local sel = Store:Get("selected_instances") or {Store:Get("selected_instance")}
-		local accent = Theme.Colors.Accent or Color3.fromRGB(80,160,255)
+		local sel = Store.GetSelection() or {}
+		local accent = (Theme and Theme.Get and Theme.Get("Accent")) or Color3.fromRGB(80,160,255)
 		for _, inst in ipairs(sel) do
 			if inst and (inst:IsA("BasePart") or inst:IsA("Model")) then
 				local ok, h = pcall(function()
@@ -12175,16 +12642,15 @@ local function main()
 		end
 	end
 	local function getSel()
-		local s = Store:Get("selected_instances") or {Store:Get("selected_instance")}
-		return s
+		return Store.GetSelection() or {}
 	end
 	local function anchorSel()
 		for _, i in ipairs(getSel()) do if i and i:IsA("BasePart") then pcall(function() i.Anchored = not i.Anchored end) end end
-		Notifications:Send("WorkspaceTools", "Toggled Anchored", 2)
+		if Notifications then Notifications.Info("Toggled Anchored", 2) end
 	end
 	local function makeTransp()
 		for _, i in ipairs(getSel()) do if i and i:IsA("BasePart") then pcall(function() i.Transparency = 0.8 end) end end
-		Notifications:Send("WorkspaceTools", "Transparency -> 0.8", 2)
+		if Notifications then Notifications.Info("Transparency -> 0.8", 2) end
 	end
 	local function resetProps()
 		for _, i in ipairs(getSel()) do
@@ -12192,7 +12658,7 @@ local function main()
 				pcall(function() i.Transparency = 0; i.Anchored = false; i.CanCollide = true end)
 			end
 		end
-		Notifications:Send("WorkspaceTools", "Reset properties", 2)
+		if Notifications then Notifications.Info("Reset properties", 2) end
 	end
 	function WSTools:RenderAnim()
 		if not animPanel then return end
@@ -12204,11 +12670,11 @@ local function main()
 			TextColor3 = Color3.new(1,1,1),
 			Text = "Target: "..(animTarget and animTarget.Parent and animTarget.Parent.Name or "None (click)"),
 		}).MouseButton1Click:Connect(function()
-			local sel = Store:Get("selected_instance")
+			local sel = (Store.GetSelection() or {})[1]
 			if sel then
 				local hum = sel:FindFirstChildOfClass("Humanoid") or (sel:IsA("Humanoid") and sel)
 				if hum then animTarget = hum; WSTools:RenderAnim()
-				else Notifications:Send("WorkspaceTools", "Select a model with Humanoid", 2) end
+				elseif Notifications then Notifications.Info("Select a model with Humanoid", 2) end
 			end
 		end)
 		y = y + rh + 4
@@ -12251,7 +12717,7 @@ local function main()
 			{"Noclip", function()
 				noclipActive = not noclipActive
 				if freecamActive then if noclipActive then WSTools:EnableNoclip() else WSTools:DisableNoclip() end end
-				Notifications:Send("WorkspaceTools", "Noclip: "..(noclipActive and "ON" or "OFF"), 2)
+				if Notifications then Notifications.Info("Noclip: "..(noclipActive and "ON" or "OFF"), 2) end
 			end},
 			{"Highlight", function() highlightActive = not highlightActive; applyHighlights() end},
 			{"Anchor", anchorSel},
@@ -12271,7 +12737,7 @@ local function main()
 			BackgroundColor3 = Color3.fromRGB(20,20,22), BorderSizePixel = 0,
 			ScrollBarThickness = 5, CanvasSize = UDim2.new(0,0,0,0), ScrollingDirection = Enum.ScrollingDirection.Y,
 		})
-		local selConn = Store:Listen("selected_instance", function()
+		local selConn = Store.Subscribe("selection", function()
 			if highlightActive then applyHighlights() end; WSTools:RenderAnim()
 		end)
 		if selConn then connections[#connections+1] = selConn end
@@ -12279,7 +12745,13 @@ local function main()
 	function WSTools:Init() WSTools:BuildUI(); WSTools:RenderAnim() end
 	function WSTools:Destroy()
 		stopFreecam(); WSTools:DisableNoclip(); clearHighlights()
-		for _, c in ipairs(connections) do if typeof(c) == "RBXScriptConnection" then c:Disconnect() end end
+		for _, c in ipairs(connections) do
+			if typeof(c) == "RBXScriptConnection" then
+				c:Disconnect()
+			elseif type(c) == "function" then
+				pcall(c)
+			end
+		end
 		connections = {}; if window then window:Close() end
 	end
 	WSTools:Init()
@@ -12314,7 +12786,7 @@ local function main()
 	local function levelColor(level)
 		if level == "warn" then return Color3.fromRGB(255,220,60)
 		elseif level == "error" then return Color3.fromRGB(255,80,80) end
-		return Theme.Colors.Text or Color3.new(1,1,1)
+		return Theme.Get("Text") or Color3.new(1,1,1)
 	end
 	local function matchesFilter(e)
 		if filterLevel == "warn" and e.Level ~= "warn" and e.Level ~= "error" then return false end
@@ -12350,7 +12822,7 @@ local function main()
 				capture = Settings.Console.CaptureLogService
 			end
 			if not capture then return end
-			local LS = service("LogService")
+			local LS = service.LogService
 			local c = LS.MessageOut:Connect(function(msg, msgType)
 				local level = "info"
 				if msgType == Enum.MessageType.MessageWarning then level = "warn"
@@ -12375,7 +12847,7 @@ local function main()
 				local lbl = createSimple("TextButton", {
 					Parent = outputFrame, Position = UDim2.new(0,0,0,y), Size = UDim2.new(1,0,0,lh),
 					BackgroundTransparency = sel and 0.7 or 1,
-					BackgroundColor3 = sel and (Theme.Colors.Accent or Color3.fromRGB(60,120,200)) or Color3.fromRGB(20,20,20),
+					BackgroundColor3 = sel and (Theme.Get("Accent") or Color3.fromRGB(60,120,200)) or Color3.fromRGB(20,20,20),
 					BorderSizePixel = 0, Font = Enum.Font.Code, TextSize = 11,
 					TextColor3 = levelColor(e.Level), TextXAlignment = Enum.TextXAlignment.Left,
 					TextTruncate = Enum.TextTruncate.AtEnd, Text = " "..text, AutoButtonColor = false,
@@ -12398,7 +12870,7 @@ local function main()
 		end
 		if Env.setclipboard then
 			Env.setclipboard(table.concat(lines,"\n"))
-			Notifications:Send("Console", "Copied "..#lines.." lines", 2)
+			Notifications.Info("Copied "..#lines.." lines", 2)
 		end
 	end
 	function Console:CopySelection()
@@ -12409,10 +12881,10 @@ local function main()
 				lines[#lines+1] = l.."["..e.Level:upper().."] "..e.Message
 			end
 		end
-		if #lines == 0 then Notifications:Send("Console", "Nothing selected", 2); return end
+		if #lines == 0 then Notifications.Info("Nothing selected", 2); return end
 		if Env.setclipboard then
 			Env.setclipboard(table.concat(lines,"\n"))
-			Notifications:Send("Console", "Copied "..#lines.." selected", 2)
+			Notifications.Info("Copied "..#lines.." selected", 2)
 		end
 	end
 	function Console:Clear() logs = {}; selectedLines = {}; Console:Render() end
@@ -12481,6 +12953,362 @@ local function main()
 end
 return {InitDeps = initDeps, InitAfterMain = initAfterMain, Main = main}
 end
+EmbeddedModules["ThemePicker"] = function()
+local Main, Lib, Apps, Settings, Theme, Store, Keybinds, Notifications, Env
+local API, RMD, env, service, plr, create, createSimple
+local function initDeps(data)
+	Main = data.Main; Lib = data.Lib; Apps = data.Apps
+	Settings = data.Settings; Theme = data.Theme; Store = data.Store
+	Keybinds = data.Keybinds; Notifications = data.Notifications; Env = data.Env
+	API = data.API; RMD = data.RMD; env = data.Env or data.env
+	service = data.service; plr = data.plr; create = data.create; createSimple = data.createSimple
+end
+local function initAfterMain(appTable) end
+local MANUAL_KEYS = {
+	"Main1", "Main2", "Main3",
+	"Outline1", "Outline2", "Outline3",
+	"TextBox", "Menu", "ListSelection",
+	"Button", "ButtonHover", "ButtonPress",
+	"Highlight", "Text", "TextDim", "PlaceholderText",
+	"Important", "Success", "Warning", "Accent",
+	"ScrollBar", "ScrollBarHover", "Separator",
+	"TabActive", "TabInactive",
+	"Notification", "NotificationBorder",
+}
+local function main()
+	local ThemePicker = {}
+	local window
+	local presetList, manualList, fontList
+	local activePresetButton
+	local connections = {}
+	local function bg(key, fallback)
+		return Theme.Get(key) or fallback
+	end
+	local function makeButton(parent, text, x, y, w, h, opts)
+		opts = opts or {}
+		return createSimple("TextButton", {
+			Parent = parent, Position = UDim2.new(0, x, 0, y), Size = UDim2.new(0, w, 0, h),
+			BackgroundColor3 = opts.bg or bg("Button", Color3.fromRGB(60, 60, 60)),
+			BorderSizePixel = 0,
+			Font = opts.font or Enum.Font.Gotham, TextSize = opts.textSize or 12,
+			TextColor3 = opts.textColor or bg("Text", Color3.new(1, 1, 1)),
+			Text = text, AutoButtonColor = true,
+		})
+	end
+	local function makeLabel(parent, text, x, y, w, h, opts)
+		opts = opts or {}
+		return createSimple("TextLabel", {
+			Parent = parent, Position = UDim2.new(0, x, 0, y), Size = UDim2.new(0, w, 0, h),
+			BackgroundTransparency = 1,
+			Font = opts.font or Enum.Font.Gotham, TextSize = opts.textSize or 12,
+			TextColor3 = opts.textColor or bg("Text", Color3.new(1, 1, 1)),
+			Text = text, TextXAlignment = opts.align or Enum.TextXAlignment.Left,
+		})
+	end
+	local function presetButtonFor(name)
+		local preset = Theme.Presets[name]
+		if not preset then return nil end
+		local swatchBg = preset.Main2 or preset.Main1 or Color3.fromRGB(45, 45, 45)
+		local swatchFg = preset.Text or Color3.new(1, 1, 1)
+		local swatchAccent = preset.Accent or Color3.fromRGB(0, 120, 215)
+		return swatchBg, swatchFg, swatchAccent
+	end
+	local function renderPresets()
+		if not presetList then return end
+		for _, c in ipairs(presetList:GetChildren()) do
+			if c:IsA("GuiObject") then c:Destroy() end
+		end
+		local rowHeight = 28
+		local y = 0
+		local current = Theme.GetCurrentName()
+		local smartRow = createSimple("TextButton", {
+			Parent = presetList, Position = UDim2.new(0, 0, 0, y), Size = UDim2.new(1, -4, 0, rowHeight),
+			BackgroundColor3 = bg("Button", Color3.fromRGB(60, 60, 60)),
+			BorderSizePixel = 0, Font = Enum.Font.GothamBold, TextSize = 12,
+			TextColor3 = bg("Text", Color3.new(1, 1, 1)),
+			Text = "  Smart  (auto from world)", TextXAlignment = Enum.TextXAlignment.Left,
+			AutoButtonColor = true,
+		})
+		if current == "Smart" then
+			smartRow.BackgroundColor3 = bg("Accent", Color3.fromRGB(0, 120, 215))
+			activePresetButton = smartRow
+		end
+		smartRow.MouseButton1Click:Connect(function()
+			local ok = Theme.SmartFromWorld()
+			if ok and Notifications then
+				Notifications.Info("Smart theme applied from current world lighting", 2)
+			end
+			renderPresets()
+		end)
+		y = y + rowHeight + 4
+		local order = Theme.PresetOrder or {}
+		for _, name in ipairs(order) do
+			local preset = Theme.Presets[name]
+			if preset then
+				local swatchBg, swatchFg, swatchAccent = presetButtonFor(name)
+				local row = createSimple("TextButton", {
+					Parent = presetList, Position = UDim2.new(0, 0, 0, y), Size = UDim2.new(1, -4, 0, rowHeight),
+					BackgroundColor3 = bg("Button", Color3.fromRGB(60, 60, 60)),
+					BorderSizePixel = 0, Text = "", AutoButtonColor = true,
+				})
+				createSimple("Frame", {
+					Parent = row, Position = UDim2.new(0, 6, 0, 6), Size = UDim2.new(0, 12, 0, 16),
+					BackgroundColor3 = swatchBg, BorderSizePixel = 0,
+				})
+				createSimple("Frame", {
+					Parent = row, Position = UDim2.new(0, 20, 0, 6), Size = UDim2.new(0, 12, 0, 16),
+					BackgroundColor3 = swatchAccent, BorderSizePixel = 0,
+				})
+				createSimple("Frame", {
+					Parent = row, Position = UDim2.new(0, 34, 0, 6), Size = UDim2.new(0, 12, 0, 16),
+					BackgroundColor3 = swatchFg, BorderSizePixel = 0,
+				})
+				createSimple("TextLabel", {
+					Parent = row, Position = UDim2.new(0, 56, 0, 0), Size = UDim2.new(1, -64, 1, 0),
+					BackgroundTransparency = 1,
+					Font = Enum.Font.Gotham, TextSize = 12,
+					TextColor3 = bg("Text", Color3.new(1, 1, 1)),
+					Text = name, TextXAlignment = Enum.TextXAlignment.Left,
+				})
+				if current == name then
+					row.BackgroundColor3 = bg("Accent", Color3.fromRGB(0, 120, 215))
+					activePresetButton = row
+				end
+				row.MouseButton1Click:Connect(function()
+					Theme.Apply(name)
+					if Notifications then Notifications.Info("Theme: " .. name, 2) end
+					renderPresets()
+					ThemePicker:RenderManual()
+				end)
+				y = y + rowHeight + 4
+			end
+		end
+		presetList.CanvasSize = UDim2.new(0, 0, 0, y)
+	end
+	function ThemePicker:RenderManual()
+		if not manualList then return end
+		for _, c in ipairs(manualList:GetChildren()) do
+			if c:IsA("GuiObject") then c:Destroy() end
+		end
+		local rowHeight = 22
+		local y = 0
+		for _, key in ipairs(MANUAL_KEYS) do
+			local current = Theme.Get(key)
+			if typeof(current) == "Color3" then
+				local row = createSimple("Frame", {
+					Parent = manualList, Position = UDim2.new(0, 0, 0, y), Size = UDim2.new(1, -4, 0, rowHeight),
+					BackgroundTransparency = 1, BorderSizePixel = 0,
+				})
+				createSimple("TextLabel", {
+					Parent = row, Position = UDim2.new(0, 6, 0, 0), Size = UDim2.new(0, 130, 1, 0),
+					BackgroundTransparency = 1,
+					Font = Enum.Font.Code, TextSize = 11,
+					TextColor3 = bg("Text", Color3.new(1, 1, 1)),
+					Text = key, TextXAlignment = Enum.TextXAlignment.Left,
+				})
+				local swatch = createSimple("TextButton", {
+					Parent = row, Position = UDim2.new(0, 140, 0, 2), Size = UDim2.new(1, -150, 0, rowHeight - 4),
+					BackgroundColor3 = current, BorderSizePixel = 1,
+					BorderColor3 = bg("Outline2", Color3.fromRGB(70, 70, 70)),
+					Text = string.format("rgb(%d, %d, %d)",
+						math.floor(current.R * 255 + 0.5),
+						math.floor(current.G * 255 + 0.5),
+						math.floor(current.B * 255 + 0.5)),
+					Font = Enum.Font.Code, TextSize = 10,
+					TextColor3 = (current.R + current.G + current.B) / 3 > 0.5
+						and Color3.new(0, 0, 0) or Color3.new(1, 1, 1),
+					AutoButtonColor = false,
+				})
+				local picker = self._picker
+				if not picker then
+					picker = Lib.ColorPicker.new()
+					self._picker = picker
+				end
+				swatch.MouseButton1Click:Connect(function()
+					if self._pickerConn then self._pickerConn:Disconnect() end
+					self._pickerConn = picker.OnSelect:Connect(function(col)
+						Theme.SetKey(key, col)
+						ThemePicker:RenderManual()
+					end)
+					picker:SetColor(current)
+					picker:Show()
+				end)
+				y = y + rowHeight + 2
+			end
+		end
+		manualList.CanvasSize = UDim2.new(0, 0, 0, y)
+	end
+	local function renderFonts()
+		if not fontList then return end
+		for _, c in ipairs(fontList:GetChildren()) do
+			if c:IsA("GuiObject") then c:Destroy() end
+		end
+		local rowHeight = 26
+		local y = 0
+		local currentFont = Theme.GetFontName()
+		for _, name in ipairs(Theme.ListFonts()) do
+			local row = createSimple("TextButton", {
+				Parent = fontList, Position = UDim2.new(0, 0, 0, y), Size = UDim2.new(1, -4, 0, rowHeight),
+				BackgroundColor3 = bg("Button", Color3.fromRGB(60, 60, 60)),
+				BorderSizePixel = 0, Text = "", AutoButtonColor = true,
+			})
+			local fontEntry
+			for _, e in ipairs(Theme.Fonts) do
+				if e.Name == name then fontEntry = e break end
+			end
+			createSimple("TextLabel", {
+				Parent = row, Position = UDim2.new(0, 8, 0, 0), Size = UDim2.new(0.5, -8, 1, 0),
+				BackgroundTransparency = 1,
+				Font = (fontEntry and typeof(fontEntry.Font) == "EnumItem") and fontEntry.Font or Enum.Font.Gotham,
+				TextSize = 13,
+				TextColor3 = bg("Text", Color3.new(1, 1, 1)),
+				Text = name, TextXAlignment = Enum.TextXAlignment.Left,
+			})
+			createSimple("TextLabel", {
+				Parent = row, Position = UDim2.new(0.5, 0, 0, 0), Size = UDim2.new(0.5, -8, 1, 0),
+				BackgroundTransparency = 1,
+				Font = (fontEntry and typeof(fontEntry.Font) == "EnumItem") and fontEntry.Font or Enum.Font.Gotham,
+				TextSize = 11,
+				TextColor3 = bg("TextDim", Color3.fromRGB(180, 180, 180)),
+				Text = "The quick brown fox", TextXAlignment = Enum.TextXAlignment.Left,
+			})
+			if currentFont == name then
+				row.BackgroundColor3 = bg("Accent", Color3.fromRGB(0, 120, 215))
+			end
+			row.MouseButton1Click:Connect(function()
+				Theme.SetFont(name)
+				if Notifications then Notifications.Info("Font: " .. name, 2) end
+				renderFonts()
+			end)
+			y = y + rowHeight + 2
+		end
+		fontList.CanvasSize = UDim2.new(0, 0, 0, y)
+	end
+	local function buildCustomFontRow(parent, x, y, w)
+		local row = createSimple("Frame", {
+			Parent = parent, Position = UDim2.new(0, x, 0, y), Size = UDim2.new(0, w, 0, 26),
+			BackgroundTransparency = 1,
+		})
+		local nameInput = createSimple("TextBox", {
+			Parent = row, Position = UDim2.new(0, 0, 0, 0), Size = UDim2.new(0.35, -2, 1, 0),
+			BackgroundColor3 = bg("TextBox", Color3.fromRGB(38, 38, 38)),
+			Font = Enum.Font.Code, TextSize = 11,
+			TextColor3 = bg("Text", Color3.new(1, 1, 1)),
+			PlaceholderText = "FontName", PlaceholderColor3 = bg("PlaceholderText", Color3.fromRGB(110, 110, 110)),
+			Text = "", ClearTextOnFocus = false, BorderSizePixel = 0,
+		})
+		local idInput = createSimple("TextBox", {
+			Parent = row, Position = UDim2.new(0.35, 2, 0, 0), Size = UDim2.new(0.45, -4, 1, 0),
+			BackgroundColor3 = bg("TextBox", Color3.fromRGB(38, 38, 38)),
+			Font = Enum.Font.Code, TextSize = 11,
+			TextColor3 = bg("Text", Color3.new(1, 1, 1)),
+			PlaceholderText = "rbxassetid:// or asset id",
+			PlaceholderColor3 = bg("PlaceholderText", Color3.fromRGB(110, 110, 110)),
+			Text = "", ClearTextOnFocus = false, BorderSizePixel = 0,
+		})
+		local addBtn = createSimple("TextButton", {
+			Parent = row, Position = UDim2.new(0.8, 2, 0, 0), Size = UDim2.new(0.2, -2, 1, 0),
+			BackgroundColor3 = bg("Accent", Color3.fromRGB(56, 142, 235)),
+			BorderSizePixel = 0,
+			Font = Enum.Font.GothamBold, TextSize = 11,
+			TextColor3 = Color3.new(1, 1, 1), Text = "Add",
+			AutoButtonColor = true,
+		})
+		addBtn.MouseButton1Click:Connect(function()
+			local n = nameInput.Text
+			local id = idInput.Text
+			if not n or n == "" or not id or id == "" then
+				if Notifications then Notifications.Warning("Both font name and asset id are required") end
+				return
+			end
+			local digits = id:match("(%d+)$") or id:match("(%d+)")
+			local assetId = digits or id
+			local ok = Theme.RegisterFontFromAssetId(n, assetId)
+			if ok then
+				if Notifications then Notifications.Success("Font loaded: " .. n) end
+				nameInput.Text = ""
+				idInput.Text = ""
+				renderFonts()
+			else
+				if Notifications then Notifications.Error("Failed to load font (executor may lack Font.new)") end
+			end
+		end)
+	end
+	function ThemePicker:BuildUI()
+		window = Lib.Window.new()
+		window:SetTitle("Themes")
+		window:SetSize(560, 420)
+		ThemePicker.Window = window
+		local content = window:GetContent()
+		local header = createSimple("Frame", {
+			Parent = content, Position = UDim2.new(0, 0, 0, 0), Size = UDim2.new(1, 0, 0, 22),
+			BackgroundColor3 = bg("Main2", Color3.fromRGB(45, 45, 45)),
+			BorderSizePixel = 0,
+		})
+		makeLabel(header, "General Themes", 6, 0, 180, 22, {textColor = bg("TextDim", Color3.fromRGB(180,180,180)), font = Enum.Font.GothamBold})
+		makeLabel(header, "Manual", 200, 0, 180, 22, {textColor = bg("TextDim", Color3.fromRGB(180,180,180)), font = Enum.Font.GothamBold})
+		makeLabel(header, "Fonts", 400, 0, 140, 22, {textColor = bg("TextDim", Color3.fromRGB(180,180,180)), font = Enum.Font.GothamBold})
+		presetList = createSimple("ScrollingFrame", {
+			Parent = content, Position = UDim2.new(0, 0, 0, 26), Size = UDim2.new(0, 196, 1, -56),
+			BackgroundColor3 = bg("Main3", Color3.fromRGB(38, 38, 38)),
+			BorderSizePixel = 0, ScrollBarThickness = 4,
+			CanvasSize = UDim2.new(0, 0, 0, 0),
+			ScrollingDirection = Enum.ScrollingDirection.Y,
+		})
+		manualList = createSimple("ScrollingFrame", {
+			Parent = content, Position = UDim2.new(0, 200, 0, 26), Size = UDim2.new(0, 196, 1, -56),
+			BackgroundColor3 = bg("Main3", Color3.fromRGB(38, 38, 38)),
+			BorderSizePixel = 0, ScrollBarThickness = 4,
+			CanvasSize = UDim2.new(0, 0, 0, 0),
+			ScrollingDirection = Enum.ScrollingDirection.Y,
+		})
+		fontList = createSimple("ScrollingFrame", {
+			Parent = content, Position = UDim2.new(0, 400, 0, 26), Size = UDim2.new(1, -400, 1, -56),
+			BackgroundColor3 = bg("Main3", Color3.fromRGB(38, 38, 38)),
+			BorderSizePixel = 0, ScrollBarThickness = 4,
+			CanvasSize = UDim2.new(0, 0, 0, 0),
+			ScrollingDirection = Enum.ScrollingDirection.Y,
+		})
+		local footer = createSimple("Frame", {
+			Parent = content, Position = UDim2.new(0, 0, 1, -28), Size = UDim2.new(1, 0, 0, 28),
+			BackgroundColor3 = bg("Main2", Color3.fromRGB(45, 45, 45)),
+			BorderSizePixel = 0,
+		})
+		local resetBtn = makeButton(footer, "Reset to Dark", 6, 4, 110, 20)
+		resetBtn.MouseButton1Click:Connect(function()
+			Theme.Apply("Dark")
+			if Notifications then Notifications.Info("Theme reset to Dark", 2) end
+			renderPresets()
+			ThemePicker:RenderManual()
+			renderFonts()
+		end)
+		buildCustomFontRow(footer, 124, 1, 420)
+		renderPresets()
+		ThemePicker:RenderManual()
+		renderFonts()
+		local conn = Theme.SubscribeAll(function()
+			renderPresets()
+			ThemePicker:RenderManual()
+			renderFonts()
+		end)
+		if conn then connections[#connections + 1] = conn end
+	end
+	function ThemePicker:Init()
+		ThemePicker:BuildUI()
+	end
+	function ThemePicker:Destroy()
+		for _, c in ipairs(connections) do
+			if type(c) == "function" then pcall(c) end
+		end
+		connections = {}
+		if self._pickerConn then self._pickerConn:Disconnect(); self._pickerConn = nil end
+		if window then window:Close() end
+	end
+	ThemePicker:Init()
+	return ThemePicker
+end
+return {InitDeps = initDeps, InitAfterMain = initAfterMain, Main = main}
+end
 if _G.DeuxLoaded then return end
 _G.DeuxLoaded = true
 local Env, Settings, Theme, Keybinds, Notifications, Store
@@ -12488,6 +13316,7 @@ local Lib, API, RMD
 local Explorer, Properties, ScriptEditor, Terminal, RemoteSpy
 local SaveInstance, DataInspector, NetworkSpy, APIReference
 local PluginAPI, WorkspaceTools, Console
+local ThemePicker
 local EmbeddedModules = EmbeddedModules or {}
 local serviceCache = {}
 local service = setmetatable({}, {
@@ -12536,7 +13365,8 @@ Main.MenuApps = {}
 Main.ModuleList = {
 	"Lib", "Explorer", "Properties", "ScriptEditor",
 	"Terminal", "RemoteSpy", "SaveInstance", "DataInspector",
-	"NetworkSpy", "APIReference", "PluginAPI", "WorkspaceTools", "Console"
+	"NetworkSpy", "APIReference", "PluginAPI", "WorkspaceTools", "Console",
+	"ThemePicker"
 }
 Main.DisplayOrders = {
 	SideWindow = 8,
@@ -12668,6 +13498,7 @@ Main.LoadModules = function()
 	PluginAPI = Main.Apps.PluginAPI
 	WorkspaceTools = Main.Apps.WorkspaceTools
 	Console = Main.Apps.Console
+	ThemePicker = Main.Apps.ThemePicker
 	local appTable = {
 		Explorer = Explorer,
 		Properties = Properties,
@@ -12681,6 +13512,7 @@ Main.LoadModules = function()
 		PluginAPI = PluginAPI,
 		WorkspaceTools = WorkspaceTools,
 		Console = Console,
+		ThemePicker = ThemePicker,
 	}
 	if Main.AppControls.Lib and Main.AppControls.Lib.InitAfterMain then
 		Main.AppControls.Lib.InitAfterMain(appTable)
@@ -13190,6 +14022,9 @@ Main.CreateMainGui = function()
 	if Console and Console.Window then
 		Main.CreateApp({Name = "Console", Icon = "", Window = Console.Window})
 	end
+	if ThemePicker and ThemePicker.Window then
+		Main.CreateApp({Name = "Themes", Icon = "", Window = ThemePicker.Window})
+	end
 	Main.ShowGui(gui)
 end
 Main.Init = function()
@@ -13239,7 +14074,7 @@ Main.Init = function()
 	Main.LoadModules()
 	if Lib and Lib.FastWait then Lib.FastWait() end
 	intro.SetProgress("Initializing Modules", 0.8)
-	local initOrder = {"Explorer", "Properties", "ScriptEditor", "Terminal", "RemoteSpy", "SaveInstance", "DataInspector", "NetworkSpy", "APIReference", "PluginAPI", "WorkspaceTools", "Console"}
+	local initOrder = {"Explorer", "Properties", "ScriptEditor", "Terminal", "RemoteSpy", "SaveInstance", "DataInspector", "NetworkSpy", "APIReference", "PluginAPI", "WorkspaceTools", "Console", "ThemePicker"}
 	for _, name in ipairs(initOrder) do
 		local app = Main.Apps[name]
 		if app and app.Init then
